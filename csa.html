@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AP CSA 学习平台 · Java 从零到 5 分</title>
+<style>  :root{
+    --bg:#eef1f8; --card:rgba(255,255,255,0.30); --line:rgba(0,0,0,0.08);
+    --text:#1c1c1e; --muted:#6e6e73; --soft:#9a9aa0;
+    --accent:#0a84ff; --accent2:#5e5ce6; --accent-soft:rgba(10,132,255,0.10);
+    --good:#34c759; --good-soft:rgba(52,199,89,0.14); --bad:#ff3b30; --bad-soft:rgba(255,59,48,0.12);
+    --warn:#ff9500; --warn-soft:rgba(255,149,0,0.14); --code-bg:#f2f4f9; --code-text:#1c1c1e;
+    --radius:22px; --shadow:0 18px 40px rgba(60,80,160,0.16), 0 4px 14px rgba(60,80,160,0.10);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:"SF Pro Text",-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:
+      radial-gradient(1100px 800px at 88% -12%, rgba(94,92,230,0.22), transparent 55%),
+      radial-gradient(950px 750px at -8% 12%, rgba(10,132,255,0.20), transparent 55%),
+      radial-gradient(900px 700px at 50% 115%, rgba(52,199,89,0.15), transparent 55%),
+      var(--bg);
+    background-attachment:fixed;
+    color:var(--text); line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  code,.mono{font-family:"SF Mono","Cascadia Code",Consolas,"Courier New",monospace;}
+  button{font-family:inherit; cursor:pointer; border:none; color:inherit;}
+
+  /* ---------- 顶栏（玻璃） ---------- */
+  header{
+    position:sticky; top:0; z-index:30;
+    background:rgba(255,255,255,0.32);
+    backdrop-filter:blur(28px) saturate(180%); -webkit-backdrop-filter:blur(28px) saturate(180%);
+    border-bottom:1px solid rgba(255,255,255,0.6);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 22px; gap:12px;
+    box-shadow:0 1px 0 rgba(0,0,0,0.03);
+  }
+  .brand{font-weight:700; font-size:18px; letter-spacing:.2px; white-space:nowrap; color:var(--text);}
+  .brand small{font-weight:500; color:var(--muted); font-size:12px; margin-left:8px;}
+  .stats{display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;}
+  .stat{
+    background:rgba(255,255,255,0.5); border:1px solid rgba(255,255,255,0.6);
+    padding:5px 12px; border-radius:999px; font-weight:600; font-size:13px; white-space:nowrap;
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  }
+
+  /* ---------- 布局 ---------- */
+  .layout{display:flex; max-width:1180px; margin:0 auto; gap:22px; padding:22px; min-height:calc(100vh - 60px);}
+  aside{width:232px; flex-shrink:0;}
+  main{flex:1; min-width:0;}
+
+  /* ---------- 侧边栏（玻璃） ---------- */
+  #sidebar{
+    position:sticky; top:82px; display:flex; flex-direction:column; gap:6px;
+    background:var(--card); backdrop-filter:blur(28px) saturate(180%); -webkit-backdrop-filter:blur(28px) saturate(180%);
+    border:1px solid rgba(255,255,255,0.6); border-radius:var(--radius);
+    padding:14px; box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,0.7);
+  }
+  .nav-btn{
+    text-align:left; background:none; padding:9px 12px; border-radius:12px;
+    font-size:14px; color:var(--text); transition:.15s; display:flex; align-items:center; gap:8px;
+  }
+  .nav-btn:hover{background:rgba(255,255,255,0.6);}
+  .nav-btn.active{
+    background:linear-gradient(135deg,#0a84ff,#5e5ce6); color:#fff; font-weight:600;
+    box-shadow:0 6px 18px rgba(10,132,255,.28);
+  }
+  .nav-btn .dot{width:8px; height:8px; border-radius:50%; background:var(--soft); flex-shrink:0;}
+  .nav-btn.done .dot{background:var(--good);}
+  .nav-group{font-size:11px; color:var(--soft); font-weight:700; letter-spacing:1px; margin:10px 6px 2px; text-transform:uppercase;}
+
+  /* ---------- 卡片（玻璃） ---------- */
+  .card{
+    background:var(--card); backdrop-filter:blur(28px) saturate(180%); -webkit-backdrop-filter:blur(28px) saturate(180%);
+    border:1px solid rgba(255,255,255,0.6); border-radius:var(--radius); padding:24px;
+    box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,0.7); margin-bottom:18px;
+  }
+  h1{font-size:26px; font-weight:700; margin-bottom:6px; letter-spacing:-.2px;}
+  h2{font-size:20px; font-weight:700; margin:22px 0 10px; letter-spacing:-.2px;}
+  h3{font-size:16px; font-weight:700; margin:18px 0 8px; display:flex; align-items:center; gap:8px;}
+  .sub{color:var(--muted); font-size:14px;}
+  .muted{color:var(--muted);}
+  .row{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .spread{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+
+  .btn{
+    display:inline-flex; align-items:center; gap:8px; font-weight:600; font-size:14px;
+    padding:10px 18px; border-radius:14px; transition:.15s;
+    background:linear-gradient(135deg,#0a84ff,#5e5ce6); color:#fff;
+    box-shadow:0 4px 14px rgba(10,132,255,.25);
+  }
+  .btn:hover{transform:translateY(-1px); box-shadow:0 8px 22px rgba(10,132,255,.32);}
+  .btn.ghost{background:rgba(255,255,255,0.5); color:var(--accent); border:1px solid rgba(0,0,0,0.08); box-shadow:none;}
+  .btn.ghost:hover{background:rgba(255,255,255,0.8);}
+  .btn.sm{padding:7px 13px; font-size:13px; border-radius:11px;}
+  .btn:disabled{opacity:.5; cursor:not-allowed; transform:none; box-shadow:none;}
+
+  /* ---------- 首页 ---------- */
+  .hero{
+    background:linear-gradient(135deg,#0a84ff,#5e5ce6,#bf5af2); color:#fff;
+    border-radius:var(--radius); padding:32px 30px; margin-bottom:18px;
+    box-shadow:0 14px 40px rgba(94,92,230,.3), inset 0 1px 0 rgba(255,255,255,0.35);
+  }
+  .hero h1{font-size:28px;}
+  .hero p{opacity:.95; margin:8px 0 16px; max-width:640px;}
+  .unit-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px;}
+  .unit-card{
+    background:var(--card); backdrop-filter:blur(26px) saturate(180%); -webkit-backdrop-filter:blur(26px) saturate(180%);
+    border:1px solid rgba(255,255,255,0.6); border-radius:var(--radius);
+    padding:18px; box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,0.7);
+    transition:.15s; cursor:pointer; position:relative; overflow:hidden;
+  }
+  .unit-card:hover{transform:translateY(-3px); box-shadow:0 16px 40px rgba(31,38,135,0.14), inset 0 1px 0 rgba(255,255,255,0.7);}
+  .unit-card .bar{position:absolute; top:0; left:0; height:4px; width:100%; background:rgba(0,0,0,0.05);}
+  .unit-card .bar i{display:block; height:100%; background:linear-gradient(90deg,#34c759,#0a84ff);}
+  .unit-card .icon{font-size:30px;}
+  .unit-card h3{margin:8px 0 2px; font-size:16px;}
+  .unit-card .cn{font-size:13px; color:var(--muted); font-weight:600;}
+  .unit-card .pct{font-size:12px; color:var(--soft); margin-top:6px;}
+
+  /* ---------- 进度条 ---------- */
+  .pbar{height:10px; background:rgba(0,0,0,0.06); border-radius:999px; overflow:hidden;}
+  .pbar i{display:block; height:100%; background:linear-gradient(90deg,#0a84ff,#5e5ce6); border-radius:999px; transition:.4s;}
+  .pbar.good i{background:linear-gradient(90deg,#34c759,#0a84ff);}
+
+  /* ---------- 学习块 ---------- */
+  .block-code{
+    background:var(--code-bg); color:var(--code-text); border:1px solid rgba(0,0,0,0.06); border-radius:14px; padding:16px 18px;
+    font-size:14px; line-height:1.6; overflow-x:auto; margin:10px 0; white-space:pre;
+  }
+  .kw{color:#a855f7; font-weight:600;} .st{color:#16a34a;} .num{color:#dc2626;} .cm{color:#94a3b8; font-style:italic;}
+  .callout{border-radius:14px; padding:12px 16px; margin:12px 0; font-size:14px; display:flex; gap:10px;}
+  .callout.tip{background:var(--good-soft); border-left:4px solid var(--good);}
+  .callout.warn{background:var(--warn-soft); border-left:4px solid var(--warn);}
+  .callout.err{background:var(--bad-soft); border-left:4px solid var(--bad);}
+  .callout .ico{font-size:18px; line-height:1.4;}
+  ul.li{margin:8px 0 8px 4px; padding-left:22px;}
+  ul.li li{margin:4px 0;}
+  p.body{margin:8px 0; font-size:15px;}
+  p.body code, .li code, .explain code, .q-text code{background:var(--accent-soft); color:var(--accent); padding:1px 6px; border-radius:6px; font-size:.92em;}
+
+  .tabs{display:inline-flex; background:rgba(0,0,0,0.05); border-radius:12px; padding:4px; margin-bottom:16px;}
+  .tab{padding:8px 18px; border-radius:9px; font-weight:600; font-size:14px; color:var(--muted); background:none;}
+  .tab.active{background:#fff; color:var(--accent); box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+
+  /* ---------- 题目 ---------- */
+  .q-text{font-size:16px; font-weight:600; margin:4px 0 12px;}
+  .q-meta{font-size:12px; color:var(--soft); margin-bottom:6px;}
+  .options{display:flex; flex-direction:column; gap:10px; margin-top:6px;}
+  .opt{
+    text-align:left; background:rgba(255,255,255,0.5); border:1.5px solid var(--line); border-radius:14px;
+    padding:12px 16px; font-size:15px; transition:.12s; display:flex; gap:12px; align-items:flex-start;
+  }
+  .opt .ltr{font-weight:700; color:var(--accent); flex-shrink:0;}
+  .opt:hover{border-color:var(--accent); background:rgba(255,255,255,0.8);}
+  .opt.correct{border-color:var(--good); background:var(--good-soft);}
+  .opt.wrong{border-color:var(--bad); background:var(--bad-soft);}
+  .opt.active{border-color:var(--accent); background:var(--accent-soft);}
+  .opt.disabled{pointer-events:none;}
+  .explain{margin-top:14px; border-radius:14px; padding:14px 16px; font-size:14px;}
+  .explain.good{background:var(--good-soft);}
+  .explain.bad{background:var(--bad-soft);}
+  .explain b{display:block; margin-bottom:4px;}
+
+  /* ---------- FRQ ---------- */
+  textarea{
+    width:100%; min-height:140px; border:1.5px solid var(--line); border-radius:14px; background:rgba(255,255,255,0.6); color:var(--text);
+    padding:12px; font-size:14px; font-family:inherit; resize:vertical; margin:10px 0;
+  }
+  textarea:focus{outline:none; border-color:var(--accent); background:#fff;}
+  .rubric{background:var(--warn-soft); border-left:4px solid var(--warn); border-radius:14px; padding:14px 16px; margin:10px 0; font-size:14px;}
+  .rubric li{margin:5px 0;}
+  .checkrow{display:flex; gap:12px; align-items:center; padding:8px 0; border-bottom:1px dashed var(--line);}
+  .checkrow input{width:18px; height:18px; accent-color:var(--accent);}
+
+  /* ---------- 徽章 ---------- */
+  .badges{display:flex; gap:10px; flex-wrap:wrap;}
+  .badge{
+    display:flex; flex-direction:column; align-items:center; gap:4px; padding:12px; min-width:86px;
+    border-radius:14px; background:rgba(255,255,255,0.5); border:1px solid var(--line); font-size:12px; text-align:center;
+  }
+  .badge .b-ico{font-size:26px; filter:grayscale(1); opacity:.4;}
+  .badge.earned .b-ico{filter:none; opacity:1;}
+  .badge.earned{border-color:rgba(255,149,0,.5); background:var(--warn-soft);}
+
+  /* ---------- 提示 / 彩带 ---------- */
+  #toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+    background:rgba(28,28,30,0.85); color:#fff; border:1px solid rgba(255,255,255,0.2); padding:12px 20px; border-radius:14px; font-size:14px;
+    opacity:0; transition:.3s; z-index:99; max-width:90vw; box-shadow:0 10px 30px rgba(0,0,0,.25);
+    backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  }
+  #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  .confetti{position:fixed; top:-20px; z-index:100; pointer-events:none; animation:fall linear forwards;}
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg); opacity:.2;}}
+
+  /* ---------- 响应式 ---------- */
+  @media(max-width:820px){
+    .layout{flex-direction:column; padding:12px;}
+    aside{width:100%;}
+    #sidebar{position:static; flex-direction:row; overflow-x:auto; gap:4px; padding:10px;}
+    .nav-btn{white-space:nowrap;}
+    .nav-group{display:none;}
+    .brand small{display:none;}
+  }
+  .table-wrap{overflow-x:auto;}
+  table{border-collapse:collapse; width:100%; font-size:14px; margin:10px 0;}
+  th,td{border:1px solid var(--line); padding:8px 12px; text-align:left;}
+  th{background:var(--accent-soft);}
+  td code{background:var(--accent-soft); color:var(--accent); padding:1px 6px; border-radius:6px;}
+.demo{margin:14px 0;padding:16px;background:#fbfcff;border:1px solid rgba(0,0,0,0.06);border-radius:16px;}
+.demo-title{font-weight:700;font-size:14px;margin-bottom:10px;}
+.demo-svg{overflow:hidden;}
+.demo-controls{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+.demo-ctl{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);}
+.demo-ctl input[type=range]{width:100%;accent-color:#5e5ce6;cursor:pointer;}
+.demo-note{margin-top:10px;font-size:12px;color:var(--muted);line-height:1.5;}
+.video-block{margin:14px 0;padding:14px 16px;background:#f0f6ff;border:1px solid rgba(10,132,255,.16);border-radius:14px;}
+.video-title{font-weight:700;font-size:13px;margin-bottom:10px;color:#0a84ff;}
+.video-link{display:flex;align-items:center;gap:10px;padding:9px 12px;margin:6px 0;background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:10px;text-decoration:none;color:var(--text);transition:.15s;}
+.video-link:hover{border-color:#0a84ff;box-shadow:0 4px 12px rgba(10,132,255,.12);}
+.video-ico{font-size:16px;}
+.video-txt{flex:1;font-size:13px;}
+.video-arrow{color:#9aa0aa;}
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">☕ AP CSA 学习平台<small>Java 从零到 5 分</small></div>
+    <div class="stats">
+      <a href="index.html" class="stat" style="text-decoration:none;font-weight:700">🏠 选科目</a>
+      <span class="stat" id="stat-level">Lv.1 新手</span>
+      <span class="stat" id="stat-xp">0 XP</span>
+      <span class="stat" id="stat-streak">🔥 0 天</span>
+      <span class="stat" id="stat-pct">0% 掌握</span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside><nav id="sidebar"></nav></aside>
+    <main id="main"></main>
+  </div>
+
+  <div id="toast"></div>
+
+<script>const UNITS = [];
+UNITS.push({
+  id: 0, title: "Getting Started", cn: "零基础入门", icon: "🐣",
+  objective: "Understand programs, variables, and types from scratch · 从零认识程序、变量与类型",
+  lesson: [
+    {t:"h", text:"What is a Program? · 什么是程序"},
+    {t:"p", text:"A **program** (程序) is a set of instructions for the computer, executed **top to bottom, one line at a time** — like following a recipe."},
+    {t:"c", code:`public class Hello {
+    public static void main(String[] args) {
+        System.out.println("Hello, world!");
+    }
+}`},
+    {t:"p", text:"Don't worry about `public static` for now — just remember the key line: `System.out.println(...)` means **print what's inside the parentheses to the screen**. Text goes in double quotes `\"...\"`."},
+    {t:"h", text:"What is a Variable? · 什么是变量"},
+    {t:"p", text:"A **variable** (变量) is a **named box** that holds data. The label (name) lets you find it and use what's inside."},
+    {t:"c", code:`int age = 12;
+// Read as: make a box that only holds integers, name it "age", put 12 in it`},
+    {t:"h", text:"What is a Type? · 什么是类型"},
+    {t:"p", text:"A **type** (类型) decides **what a box can hold**. Each type has its own rules — the wrong kind causes an error."},
+    {t:"c", code:`int      holds integers      e.g. -5, 0, 42
+double   holds decimals      e.g. 3.14, -0.5
+boolean  holds true/false
+char     holds one character e.g. 'A', '7'   (single quotes)
+String   holds text          e.g. "hello"   (double quotes)`},
+    {t:"warn", text:"Putting the wrong kind in a box is an error: `int x = 3.5` is wrong (an integer box can't hold a decimal), and `int y = \"hi\"` is wrong too."},
+    {t:"h", text:"Declare → Assign → Use · 变量的三步"},
+    {t:"c", code:`int score;                  // ① declare: a box named score, for integers
+score = 95;                 // ② assign: put 95 in it
+System.out.println(score);  // ③ use: print it → 95
+
+// Or do it in one step:
+int score = 95;`},
+    {t:"li", items:["Program = instructions, executed top to bottom","Variable = a named box with a type","int, double, boolean, char, String","`System.out.println(...)` prints to the screen"]},
+    {t:"video", title:"Recommended Videos · 推荐视频", links:[
+      {site:"YouTube", label:"Crash Course Computer Science（计算机科学入门）", url:"https://www.youtube.com/playlist?list=PL8dPuuaLjXtNlUrzyH5r6jN9ulIgZBpdo"},
+      {site:"Bilibili", label:"Ron老师讲APCSA（AP计算机科学A课程）", url:"https://www.bilibili.com/cheese/play/ss160110203"},
+    ]},
+  ],
+  questions: [
+    {kind:"mcq", q:"What does `System.out.println(...)` do?", options:["Prints content to the screen","Saves content to a file","Pauses the program","Computes a result"], answer:0, explain:"println means \"print a line\" — it outputs the content to the screen.（println 就是打印一行。）"},
+    {kind:"mcq", q:"A variable is most like?", options:["A labeled box","A computed result","A folder","A piece of text"], answer:0, explain:"A variable is a named box that holds data.（变量=有名字的盒子。）"},
+    {kind:"mcq", q:"What can an `int` variable hold?", options:["An integer","A decimal","Text","True or false"], answer:0, explain:"int holds integers like 12, -5, 0.（int 只能装整数。）"},
+    {kind:"mcq", q:"What can a `boolean` variable hold?", options:["true or false","Any integer","A decimal","A piece of text"], answer:0, explain:"boolean only holds true or false.（boolean 只装 true/false。）"},
+    {kind:"mcq", q:"A `char` value uses which quotes?", options:["Single quotes ''","Double quotes \"\"","No quotes","Square brackets []"], answer:0, explain:"char holds one character in single quotes, like 'A'.（char 用单引号。）"},
+    {kind:"mcq", q:"A `String` value uses which quotes?", options:["Double quotes \"\"","Single quotes ''","No quotes","Parentheses ()"], answer:0, explain:"String holds text in double quotes, like \"hello\".（String 用双引号。）"},
+    {kind:"trace", q:"What does `System.out.println(\"Hi\");` display?", options:["Hi","\"Hi\"","Hi with quotes","Nothing"], answer:0, explain:"The double quotes just tell the computer \"this is text\"; only Hi is printed.（只打印 Hi，不带引号。）"},
+    {kind:"mcq", q:"What does `int x = 5;` do?", options:["Creates an integer box x and puts 5 in it","Prints 5","Compares x and 5","Deletes x"], answer:0, explain:"int declares the type, x is the name, = 5 puts 5 in the box.（声明 int 变量 x 并赋值 5。）"},
+  ],
+});
+
+UNITS.push({
+  id: 1, title: "Primitive Types", cn: "基础类型", icon: "🔢",
+  objective: "Learn variables, the four primitive types, arithmetic, and casting · 掌握变量、四种原始类型、运算与类型转换",
+  lesson: [
+    {t:"h", text:"Review: Variables as Labeled Boxes · 回忆：变量是盒子"},
+    {t:"p", text:"From the last lesson, a variable is a **named box with a type** (有名字、有类型的盒子). This lesson focuses on **arithmetic** and **casting** (类型转换)."},
+    {t:"h", text:"Review: 5 Common Types · 复习 5 种类型"},
+    {t:"c", code:`int      integers      e.g. int age = 12;
+double   decimals      e.g. double pi = 3.14;
+boolean  true/false    e.g. boolean ok = true;
+char     one character e.g. char grade = 'A';   // single quotes
+String   text          e.g. String name = "Alex"; // double quotes`},
+    {t:"tip", text:"Mnemonic: **int integers, double decimals, boolean true/false, char one char, String text**."},
+    {t:"h", text:"Arithmetic Operations · 算术运算"},
+    {t:"c", code:`+ add    - subtract    * multiply    / divide    % remainder
+int a = 7 + 3;   // 10
+int b = 7 - 3;   // 4
+int c = 7 * 3;   // 21
+int d = 7 / 2;   // 3  ← note!`},
+    {t:"warn", text:"**Integer division truncates** (整数相除会截断): `7 / 2` is 3, not 3.5 — like \"7 apples for 2 people, each gets 3, the leftover 1 is dropped\". To get 3.5, write `7.0 / 2` or `(double) 7 / 2`."},
+    {t:"h", text:"Modulo % · 取余"},
+    {t:"p", text:"`%` gives the **remainder** (余数). `13 % 5` is \"13 divided by 5 leaves a remainder of\" → 3. Check parity with `n % 2 == 0` (even) or `n % 2 == 1` (odd)."},
+    {t:"h", text:"Order of Operations · 运算顺序"},
+    {t:"c", code:`Step 1: parentheses ( )
+Step 2: *  /  %   (multiply, divide, remainder)
+Step 3: +  -   (add, subtract)
+Same level: left to right.`},
+    {t:"c", code:`int x = 4 + 6 / 2;
+// first 6 / 2 = 3
+// then 4 + 3 = 7
+// so x = 7`},
+    {t:"h", text:"Type Casting · 类型转换"},
+    {t:"p", text:"To turn a decimal into an integer, use `(int)` to **chop off the decimal part** (not round)."},
+    {t:"c", code:`(int) 3.9    → 3     // chops off .9
+(int) -2.7   → -2    // also chops, not round
+(double) 7   → 7.0   // integer → decimal`},
+    {t:"li", items:["Variable = a named, typed box","int, double, boolean, char, String","7 / 2 = 3 (truncates), 7.0 / 2 = 3.5","% is remainder, (int) chops decimals","Order: parentheses → * / % → + -"]},
+  ],
+  questions: [
+    {kind:"trace", q:"What is the value of x after `int x = 7 / 2;`?", options:["3","3.5","4","2"], answer:0, explain:"Integer division truncates: 7/2 = 3.（整数除法截断为 3。）"},
+    {kind:"trace", q:"What is the value of d after `double d = 7 / 2;`?", options:["3.5","3.0","4","Compile error"], answer:1, explain:"7/2 is computed as integer 3 first, then widened to 3.0 when assigned.（先按整数算 7/2=3，再变 3.0。）"},
+    {kind:"trace", q:"What is the value of d after `double d = (double) 7 / 2;`?", options:["3.0","3.5","4","2.5"], answer:1, explain:"7 is cast to 7.0 before division, so 7.0/2 = 3.5.（先转 7.0 再除得 3.5。）"},
+    {kind:"trace", q:"What is the value of x after `int x = 4 + 6 / 2;`?", options:["5","7","8","2"], answer:1, explain:"6/2=3 first, then 4+3=7.（先除后加。）"},
+    {kind:"trace", q:"What is the value of x after `int x = 13 % 5;`?", options:["2","3","2.6","0"], answer:1, explain:"13 divided by 5 leaves remainder 3.（13÷5 余 3。）"},
+    {kind:"trace", q:"What is the value of y after `int y = (int) 3.7;`?", options:["3","4","3.7","Compile error"], answer:0, explain:"(int) truncates the decimal, giving 3 (not rounded).（(int) 截断得 3。）"},
+    {kind:"trace", q:"What is the value of x after `int x = 5; x = x + 2; x += 3;`?", options:["10","8","7","5"], answer:0, explain:"x goes 5 → 7 → 10; `x += 3` means `x = x + 3`.（5→7→10。）"},
+    {kind:"mcq", q:"Which is a valid double declaration?", options:["double x = 5;","int x = 3.5;","double x = 2.0 / 0;","double = 3.14;"], answer:0, explain:"int widens to double automatically, so `double x = 5` is valid (5.0). `int x = 3.5` is a compile error.（int 可自动提升为 double。）"},
+    {kind:"mcq", q:"Which expression has type double?", options:["5 + 3","7 / 2","2 * 3","2.0 + 3"], answer:3, explain:"If one operand is double, the result is double: 2.0 + 3 = 5.0.（有 double 参与就是 double。）"},
+    {kind:"trace", q:"What is the value of b after `int n = 8; boolean b = (n % 2 == 0);`?", options:["true","false","0","Compile error"], answer:0, explain:"8 % 2 = 0, and 0 == 0 is true.（8%2=0，0==0 为 true。）"},
+  ],
+});
+
+UNITS.push({
+  id: 2, title: "Using Objects", cn: "使用对象", icon: "🧵",
+  objective: "Master String, Math, wrapper classes, and null · 掌握 String、Math、包装类与 null",
+  lesson: [
+    {t:"h", text:"Strings · String 字符串"},
+    {t:"p", text:"`String` is an **object** (对象, a reference type), so its methods need parentheses, like `s.length()`. A String is immutable — any operation returns a NEW string."},
+    {t:"h", text:"Essential String Methods · String 常用方法"},
+    {t:"c", code:`String s = "computer";
+s.length()                 → 8
+s.substring(1, 4)          → "omp"   // [1, 4): include 1, exclude 4
+s.substring(4)             → "uter"  // from 4 to the end
+s.indexOf("p")             → 2       // first occurrence; -1 if not found
+s.charAt(0)                → 'c'
+s.equals("computer")       → true    // compares content
+s.compareTo("dog")         → negative // dictionary order`},
+    {t:"warn", text:"To compare two Strings' content, you MUST use `.equals()`. `==` compares references (memory addresses), which can be false even for equal content — AP's favorite trap.（比较内容必须用 .equals()，== 比较的是引用地址。）"},
+    {t:"h", text:"Indexing Starts at 0 · 索引从 0 开始"},
+    {t:"p", text:"Characters are numbered starting from **0**. `substring(a, b)` takes `[a, b)` — includes a, excludes b — so its length is `b - a`."},
+    {t:"h", text:"Wrapper Classes: Integer / Double · 包装类"},
+    {t:"c", code:`Integer.MAX_VALUE   → 2147483647
+Integer.MIN_VALUE   → -2147483648
+int a = Integer.parseInt("42");  // String → int`},
+    {t:"h", text:"The Math Class · Math 类"},
+    {t:"c", code:`Math.abs(-5)      → 5
+Math.pow(2, 3)    → 8.0
+Math.sqrt(16)     → 4.0
+Math.random()     → a decimal in [0.0, 1.0)
+Math.max(3, 9)    → 9`},
+    {t:"tip", text:"`(int)(Math.random() * n)` gives a random integer from 0 to n-1; `(int)(Math.random() * 6) + 1` gives 1 to 6 (a die)."},
+    {t:"h", text:"The null Value · null 空值"},
+    {t:"p", text:"`null` means \"points to no object\". Calling a method on null throws a `NullPointerException` (a runtime error)."},
+    {t:"li", items:["String is an object: methods have parentheses","Compare content with .equals(), never ==","Indexes start at 0; substring(a,b) is [a,b)","Math.random() returns [0.0, 1.0)"]},
+  ],
+  questions: [
+    {kind:"trace", q:"What is `\"computer\".length()`?", options:["7","8","9","Compile error"], answer:1, explain:"\"computer\" has 8 characters.（computer 有 8 个字符。）"},
+    {kind:"trace", q:"What is `\"hello\".substring(1, 3)`?", options:["he","ell","el","llo"], answer:2, explain:"substring(1,3) takes indexes [1,3), i.e. 'e' and 'l' → \"el\".（取索引 1、2 → \"el\"。）"},
+    {kind:"trace", q:"What is `\"banana\".indexOf(\"na\")`?", options:["2","3","4","-1"], answer:0, explain:"\"na\" first appears at index 2 (b=0,a=1,n=2).（首次出现在索引 2。）"},
+    {kind:"trace", q:"What is `\"hello\".charAt(1)`?", options:["h","e","l","o"], answer:1, explain:"Indexes start at 0: h=0, e=1.（索引从 0 开始，charAt(1)='e'。）"},
+    {kind:"mcq", q:"To check if two Strings have the same content, use?", options:["a == b","a.equals(b)","a = b","a.compareTo(b) == 1"], answer:1, explain:".equals() compares content; == compares references; = assigns.（比较内容用 .equals()。）"},
+    {kind:"trace", q:"What does `\"apple\".compareTo(\"banana\") < 0` evaluate to?", options:["true","false","0","Compile error"], answer:0, explain:"apple comes before banana in dictionary order, so compareTo returns negative, and negative < 0 is true.（apple 字典序在前 → 负数 < 0 为 true。）"},
+    {kind:"trace", q:"What is `Math.pow(2, 3)`?", options:["8","8.0","6","9"], answer:1, explain:"Math.pow(2,3) = 2³ = 8.0 (returns a double).（返回 double 8.0。）"},
+    {kind:"mcq", q:"The range of `(int)(Math.random() * 6) + 1` is?", options:["0 to 6","1 to 6","1 to 7","0 to 5"], answer:1, explain:"Math.random() in [0,1) × 6 → [0,6) → (int) 0~5 → +1 → 1~6.（1~6。）"},
+    {kind:"mcq", q:"Calling `.length()` on a null String causes?", options:["Returns 0","Returns -1","NullPointerException","Compile error"], answer:2, explain:"Calling a method on null throws NullPointerException at runtime.（null 上调用方法抛空指针异常。）"},
+    {kind:"trace", q:"What is the output of comparing two equal strings with `.equals`?", options:["true","false","Compile error","Uncertain"], answer:0, explain:"Two different objects with the same content: equals returns true; == would return false.（内容相同，equals 返回 true。）"},
+  ],
+});
+
+UNITS.push({
+  id: 3, title: "Boolean & if Statements", cn: "布尔与条件语句", icon: "🔀",
+  objective: "Master comparisons, logical operators, and if/else branches · 掌握比较、逻辑运算与 if/else",
+  lesson: [
+    {t:"h", text:"Comparison Operators · 比较运算符"},
+    {t:"c", code:`==  equal        !=  not equal
+>   greater       >=  greater or equal
+<   less          <=  less or equal
+All produce a boolean (true / false)`},
+    {t:"warn", text:"**`==` compares, `=` assigns.** `if (x = 5)` is a compile error because `x = 5` is an int, not a boolean.（== 是比较，= 是赋值。）"},
+    {t:"h", text:"Logical Operators · 逻辑运算符"},
+    {t:"c", code:`&&  AND: true only if BOTH sides are true
+||  OR:  true if EITHER side is true
+!   NOT: !true is false`},
+    {t:"tip", text:"`&&` and `||` **short-circuit** (短路求值): if the left side already decides the result, the right side is not evaluated. So `false && (10/0 > 1)` does NOT crash."},
+    {t:"h", text:"De Morgan's Laws · 德摩根定律"},
+    {t:"c", code:`!(a && b)   equals   !a || !b
+!(a || b)   equals   !a && !b
+!(x > 3)    equals   x <= 3`},
+    {t:"h", text:"if / else if / else · 条件分支"},
+    {t:"c", code:`if (score >= 90) {
+    grade = "A";
+} else if (score >= 80) {
+    grade = "B";
+} else {
+    grade = "C";
+}`},
+    {t:"p", text:"The program checks top to bottom; the **first true branch runs**, and all others are skipped. Wrap bodies in braces `{}` (AP style requires it)."},
+    {t:"warn", text:"An `else` pairs with the **nearest if that has no else**. Indentation can mislead — braces are what matter."},
+    {t:"li", items:["== compares, = assigns","&& all-true, || any-true, ! negates","&&/|| short-circuit","if/else-if runs only the first true branch"]},
+  ],
+  questions: [
+    {kind:"trace", q:"What is x after `int x = 5; if (x > 3) { x = 10; } else { x = 0; }`?", options:["10","0","5","Compile error"], answer:0, explain:"5 > 3 is true, so the if branch runs and x becomes 10.（5>3 为真，x=10。）"},
+    {kind:"trace", q:"What is b after `int n = 7; boolean b = (n % 2 == 1);`?", options:["true","false","1","Compile error"], answer:0, explain:"7 % 2 = 1, and 1 == 1 is true.（7%2=1，1==1 为 true。）"},
+    {kind:"mcq", q:"`!(a && b)` is equivalent to?", options:["!a && !b","!a || !b","a || b","!(a || b)"], answer:1, explain:"De Morgan's law: !(a && b) equals !a || !b.（德摩根定律。）"},
+    {kind:"trace", q:"What is x after `int x = 85; if (x >= 90) x = 1; else if (x >= 80) x = 2; else x = 3;`?", options:["1","2","3","85"], answer:1, explain:"85 fails x>=90 but passes x>=80, so x=2.（85 满足 >=80，x=2。）"},
+    {kind:"trace", q:"What is r after `boolean r = false && (10 / 0 > 1);`?", options:["true","false","An exception","Compile error"], answer:1, explain:"&& short-circuits: left is false so the right is never evaluated — no crash, r = false.（短路求值，右边不执行。）"},
+    {kind:"mcq", q:"Which line causes a compile error?", options:["if (x == 5) {...}","if (x = 5) {...}","if (x != 5) {...}","if (x >= 5) {...}"], answer:1, explain:"`x = 5` is an assignment (an int), not a boolean, so it can't be an if condition.（x=5 是赋值，不是布尔。）"},
+    {kind:"trace", q:"What is x after `int x = 3; if (x > 5) x = 10; x = 20;`?", options:["10","20","3","Compile error"], answer:1, explain:"The if only controls the single statement `x = 10`; since 3>5 is false it's skipped, but `x = 20` always runs.（if 只管一条语句，x=20 总执行。）"},
+    {kind:"mcq", q:"`!(x > 3)` is equivalent to?", options:["x < 3","x <= 3","x >= 3","x > 3"], answer:1, explain:"The negation of x>3 is x<=3 (not greater).（x>3 的否定是 x<=3。）"},
+    {kind:"trace", q:"What is s after `boolean a = true, b = false; boolean s = a || b && !a;`?", options:["true","false","Compile error","Uncertain"], answer:0, explain:"Precedence: ! first, then &&, then ||. `!a`=false, `b && false`=false, `true || false`=true.（优先级 !>&&>||，结果为 true。）"},
+    {kind:"trace", q:"What is grade after `int score = 80; if (score >= 90) grade = \"A\"; else if (score >= 80) grade = \"B\"; else grade = \"C\";`?", options:["\"A\"","\"B\"","\"C\"","Compile error"], answer:1, explain:"80 >= 80 is true (>= includes 80), so grade = \"B\".（80>=80 为真，grade=B。）"},
+  ],
+});
+
+UNITS.push({
+  id: 4, title: "Iteration", cn: "循环", icon: "🔁",
+  objective: "Master for/while/nested loops and loop tracing · 掌握 for/while/嵌套循环与代码追踪",
+  lesson: [
+    {t:"h", text:"for Loops · for 循环"},
+    {t:"c", code:`for (int i = 0; i < 5; i++) {
+    System.out.println(i);  // prints 0 1 2 3 4
+}`},
+    {t:"p", text:"A for loop has three parts: **initialization** (`int i=0`), **condition** (`i<5`, continue while true), and **update** (`i++`, runs after each iteration). The body runs for 0,1,2,3,4 — five times."},
+    {t:"demo", type:"loop"},
+    {t:"h", text:"while Loops · while 循环"},
+    {t:"c", code:`int i = 0;
+while (i < 5) {
+    System.out.println(i);
+    i++;
+}`},
+    {t:"warn", text:"Don't forget to update the variable in a while loop (like `i++`), or it becomes an infinite loop. AP often asks \"how many times does this loop run?\""},
+    {t:"h", text:"Nested Loops · 嵌套循环"},
+    {t:"c", code:`for (int i = 0; i < 3; i++) {      // outer
+    for (int j = 0; j < 2; j++) {  // inner
+        count++;
+    }
+}
+// count = 3 × 2 = 6`},
+    {t:"tip", text:"Total iterations of nested loops = outer × inner. To trace, draw a table: each outer step runs the inner loop completely."},
+    {t:"h", text:"Out of Bounds & Off-by-One · 越界错误"},
+    {t:"c", code:`int[] a = new int[5];   // valid indexes 0..4
+for (int i = 0; i <= a.length; i++) {  // ❌ wrong!
+    a[i] = i;   // i=5 is out of bounds → ArrayIndexOutOfBoundsException
+}`},
+    {t:"warn", text:"For an array of length n, valid indexes are 0 to n-1. Writing `i <= a.length` accesses a[5] and throws an exception."},
+    {t:"h", text:"break & continue · break 与 continue"},
+    {t:"p", text:"`break` exits the whole loop immediately; `continue` skips the rest of the current iteration and moves to the next one."},
+    {t:"li", items:["for: initialization, condition, update","while: don't forget to update, or it loops forever","Nested loops: total = outer × inner","Array indexes are 0..n-1; `i <= length` is out of bounds"]},
+  ],
+  questions: [
+    {kind:"trace", q:"What is s after `int s = 0; for (int i = 1; i <= 5; i++) { s += i; }`?", options:["15","10","14","20"], answer:0, explain:"1+2+3+4+5 = 15.（1~5 求和=15。）"},
+    {kind:"trace", q:"How many times does the body run in `for (int i = 0; i < 5; i++) { }`?", options:["4","5","6","Infinite"], answer:1, explain:"i takes 0,1,2,3,4 — five times; at i=5 the condition fails.（5 次。）"},
+    {kind:"trace", q:"How many times does the body run in `for (int i = 5; i >= 0; i--) { }`?", options:["5","6","4","Infinite"], answer:1, explain:"i takes 5,4,3,2,1,0 — six times; at i=-1 it stops.（6 次。）"},
+    {kind:"trace", q:"What is count after two nested loops (outer 3, inner 2)?", options:["5","6","9","3"], answer:1, explain:"3 outer × 2 inner = 6 iterations.（3×2=6。）"},
+    {kind:"trace", q:"What values does `for (int i = 10; i > 0; i -= 3)` print?", options:["10 7 4 1","10 7 4","10 7 4 1 -2","10 7 4 0"], answer:0, explain:"i goes 10, 7, 4, 1; then -2 fails i>0.（10,7,4,1。）"},
+    {kind:"trace", q:"What is x after `int x = 0; int i = 0; while (i < 4) { x += i; i++; }`?", options:["6","10","3","0"], answer:0, explain:"0+1+2+3 = 6.（累加 0+1+2+3=6。）"},
+    {kind:"mcq", q:"For an array a of length 5, which loop goes out of bounds?", options:["for(int i=0;i<a.length;i++)","for(int i=0;i<=a.length;i++)","for(int i=0;i<5;i++)","for(int i=0;i<a.length-1;i++)"], answer:1, explain:"`i <= a.length` lets i reach 5, but valid indexes are 0..4 — a[5] throws an exception.（i<=a.length 会访问 a[5]。）"},
+    {kind:"trace", q:"What is s after `int s = 0; for (int i = 0; i < 10; i += 2) { s += i; }`?", options:["20","30","25","18"], answer:0, explain:"i takes 0,2,4,6,8; sum = 20.（0+2+4+6+8=20。）"},
+    {kind:"trace", q:"What is s after summing only odd numbers 1..10 with continue?", options:["30","25","20","55"], answer:1, explain:"continue skips evens, so 1+3+5+7+9 = 25.（只加奇数=25。）"},
+    {kind:"trace", q:"What happens in `int i = 0; while (i < 5) { System.out.println(i); }`?", options:["Prints 0..4","Infinite loop","Compile error","Prints nothing"], answer:1, explain:"There is no i++ in the body, so i stays 0 and the loop runs forever.（没有 i++，无限循环。）"},
+  ],
+});
+
+UNITS.push({
+  id: 5, title: "Writing Classes", cn: "编写类", icon: "🏗️",
+  objective: "Master classes, constructors, methods, and instance vs static · 掌握类、构造器、方法与实例/静态",
+  lesson: [
+    {t:"h", text:"Structure of a Class · 类的结构"},
+    {t:"c", code:`public class Student {
+    // instance variables (fields)
+    private String name;
+    private int grade;
+
+    // constructor (same name as class, no return type)
+    public Student(String n, int g) {
+        name = n;
+        grade = g;
+    }
+
+    // methods
+    public int getGrade() { return grade; }
+    public void setGrade(int g) { grade = g; }
+}`},
+    {t:"h", text:"Instance vs Local Variables · 实例变量 vs 局部变量"},
+    {t:"p", text:"**Instance variables** (实例变量) are declared in the class (outside methods) and belong to the object. **Local variables** (局部变量) are declared inside a method and vanish when it ends."},
+    {t:"h", text:"Constructors · 构造器"},
+    {t:"p", text:"A constructor's name must match the class name **exactly**, and it has **no return type** (not even `void`). It runs automatically with `new` to initialize fields."},
+    {t:"h", text:"Instance vs Static Methods · 实例方法 vs 静态方法"},
+    {t:"c", code:`public class Demo {
+    private int x = 10;          // instance variable
+    private static int y = 20;   // static variable (belongs to the class)
+
+    public void printX() { System.out.println(x); }      // instance method
+    public static void printY() { System.out.println(y); } // static method
+}`},
+    {t:"warn", text:"A **static method cannot directly access an instance variable** (compile error), because a static method belongs to the class and there may be no object at all — a very common AP question."},
+    {t:"h", text:"The this Keyword · this 关键字"},
+    {t:"p", text:"`this` means \"the current object\". When a parameter shadows a field, use `this.name` to refer to the field: `public void setName(String name) { this.name = name; }`."},
+    {t:"h", text:"Method Signatures & Overloading · 方法签名与重载"},
+    {t:"p", text:"A method signature is **method name + parameter type list**. Same name with different parameters is **overloading** (重载); the compiler picks by arguments."},
+    {t:"li", items:["Constructor name = class name, no return type","Instance variables belong to the object; local to the method","Static methods can't directly access instance variables","this = the current object; overloading = same name, different params"]},
+  ],
+  questions: [
+    {kind:"mcq", q:"Which is a valid constructor for `public class Car`?", options:["public void Car() { }","public Car() { }","public int Car() { }","static Car() { }"], answer:1, explain:"Constructor name = class name, and no return type (void/int are not allowed, nor static).（构造器名=类名，无返回类型。）"},
+    {kind:"trace", q:"What is printed after calling add() twice on a Counter starting at 0?", options:["0","1","2","3"], answer:2, explain:"The constructor sets c=0, then two add() calls make c=2.（构造器设 0，两次 add 后为 2。）"},
+    {kind:"mcq", q:"What can a static method do?", options:["Directly access an instance variable","Call other static methods","Use this","Only run if an object exists"], answer:1, explain:"Static methods belong to the class: they can access static members and call static methods, but not instance variables or `this`.（静态方法可调用其他静态方法。）"},
+    {kind:"trace", q:"What is printed by `new T().get() + new T(9).get()` (constructors set v=5 and v=x)?", options:["14","10","18","Compile error"], answer:0, explain:"a uses the no-arg constructor (v=5), b uses the parameterized one (v=9): 5+9=14.（5+9=14。）"},
+    {kind:"mcq", q:"A `private` field means?", options:["Any class can access it","Only the same class can directly access it","Only subclasses can","It can't be assigned"], answer:1, explain:"private encapsulation: only the class itself can access it directly; others use public getters/setters.（private 只能本类直接访问。）"},
+    {kind:"trace", q:"What is printed by `p.set(7); System.out.println(p.get());` where set uses `this.n = n`?", options:["0","7","Compile error","null"], answer:1, explain:"`this.n = n` puts the parameter 7 into the field; get() returns 7.（this.n=n 把 7 存入字段。）"},
+    {kind:"mcq", q:"Method overloading depends on?", options:["Same name, different parameter lists","Different return types","Different method names","Different parameter names"], answer:1, explain:"Overloading = same name with a different parameter list (types/count). Return type alone does not matter.（重载只看参数列表。）"},
+    {kind:"mcq", q:"The keyword to create an object is?", options:["create","new","make","class"], answer:1, explain:"Use `new Constructor()` to create an object, e.g. `new Student(\"Alex\", 11)`.（用 new 创建对象。）"},
+    {kind:"trace", q:"What is printed when a local variable `int v = 8` shadows the field `v = 3` inside f()?", options:["3","8","0","Compile error"], answer:1, explain:"The local variable v=8 shadows the field, so println prints the local 8.（局部变量遮蔽字段，输出 8。）"},
+    {kind:"mcq", q:"Which is the conventional getter naming?", options:["public int getValue()","public void getValue()","public int value()","public int GetValue()"], answer:0, explain:"Getters are `get` + Capitalized name, returning the field type: getValue().（getter 用 get + 大写开头。）"},
+  ],
+});
+
+UNITS.push({
+  id: 6, title: "Array", cn: "数组", icon: "📦",
+  objective: "Master 1D array creation, traversal, and common algorithms · 掌握一维数组的创建、遍历与算法",
+  lesson: [
+    {t:"h", text:"Creating Arrays · 创建数组"},
+    {t:"c", code:`int[] a = new int[5];        // length 5, indexes 0..4
+int[] b = {2, 4, 6, 8};     // direct initialization
+String[] names = new String[3];`},
+    {t:"p", text:"An array's length is fixed once created. Get it with `a.length` — note: **no parentheses**, unlike String's `length()`."},
+    {t:"h", text:"Default Values · 默认值"},
+    {t:"c", code:`int[]     → each element defaults to 0
+double[]  → defaults to 0.0
+boolean[] → defaults to false
+String[]  → defaults to null (String is an object)`},
+    {t:"h", text:"Traversing Arrays · 遍历数组"},
+    {t:"c", code:`for (int i = 0; i < a.length; i++) {   // index traversal
+    sum += a[i];
+}
+for (int x : a) {                    // enhanced for
+    sum += x;
+}`},
+    {t:"warn", text:"The enhanced for loop **cannot modify** elements (x is a copy) and can't access the index. Use a regular for loop when you need to change values or know the index."},
+    {t:"h", text:"Classic Array Algorithms · 经典算法"},
+    {t:"c", code:`// sum
+int sum = 0;
+for (int x : a) sum += x;
+
+// find the maximum
+int max = a[0];
+for (int i = 1; i < a.length; i++)
+    if (a[i] > max) max = a[i];
+
+// count elements matching a condition
+int count = 0;
+for (int x : a) if (x > 0) count++;`},
+    {t:"h", text:"Arrays are Reference Types · 数组是引用类型"},
+    {t:"p", text:"`int[] b = a;` does NOT copy the array — it makes b point to the **same array** as a. Changing b changes a too. To copy, loop or use `clone()`."},
+    {t:"li", items:["Length: a.length (no parens); String uses length()","Indexes 0..n-1; out of bounds throws an exception","Enhanced for reads only, can't modify","Assigning an array shares the reference, not a copy"]},
+  ],
+  questions: [
+    {kind:"trace", q:"What is `a[0]` for `int[] a = new int[4];`?", options:["null","0","Compile error","Random"], answer:1, explain:"int array elements default to 0.（int 数组默认值是 0。）"},
+    {kind:"trace", q:"What is `a.length` for `int[] a = {2, 4, 6, 8};`?", options:["3","4","5","Compile error"], answer:1, explain:"The array has 4 elements, so a.length = 4 (no parentheses).（4 个元素。）"},
+    {kind:"trace", q:"What is `a[1]` for `int[] a = {1, 2, 3};`?", options:["1","2","3","Compile error"], answer:1, explain:"Indexes start at 0, so a[1] is the second element, 2.（索引从 0 开始，a[1]=2。）"},
+    {kind:"trace", q:"What happens with `int[] a = new int[3]; a[3] = 5;`?", options:["Runs fine","Compile error","ArrayIndexOutOfBoundsException","a[3] becomes 0"], answer:2, explain:"Valid indexes are 0..2, so a[3] is out of bounds at runtime.（访问 a[3] 越界。）"},
+    {kind:"trace", q:"What is sum after summing {1,2,3,4} with an enhanced for?", options:["10","9","8","4"], answer:0, explain:"1+2+3+4 = 10.（求和=10。）"},
+    {kind:"trace", q:"What is max after finding the max of {3,7,2,9,5}?", options:["3","5","7","9"], answer:3, explain:"Comparing one by one, 9 is the largest.（最大是 9。）"},
+    {kind:"trace", q:"After `int[] a = {1,2,3}; int[] b = a; b[0] = 9;`, what is a[0]?", options:["1","9","3","0"], answer:1, explain:"b = a makes both point to the same array, so b[0]=9 also changes a[0].（共享引用，a[0] 也变 9。）"},
+    {kind:"mcq", q:"To copy an array into an independent one, use?", options:["int[] b = a;","int[] b = a.clone();","int[] b = &a;","int b = a;"], answer:1, explain:"clone() makes a separate copy; b = a only shares the reference.（clone() 创建独立副本。）"},
+    {kind:"trace", q:"How many positive numbers are in {1,-2,3,-4,5}?", options:["2","3","5","4"], answer:1, explain:"Positives are 1, 3, 5 — three of them.（正数有 3 个。）"},
+    {kind:"mcq", q:"How do you get the length of an `int[] a`?", options:["a.length","a.length()","a.size()","a.size"], answer:0, explain:"Arrays use a.length (no parens); String uses length(); ArrayList uses size().（数组用 a.length。）"},
+  ],
+});
+
+UNITS.push({
+  id: 7, title: "ArrayList", cn: "动态数组", icon: "📋",
+  objective: "Master ArrayList add/get/set/remove and traversal · 掌握 ArrayList 的增删改查与遍历",
+  lesson: [
+    {t:"h", text:"Creating an ArrayList · 创建 ArrayList"},
+    {t:"c", code:`import java.util.ArrayList;
+ArrayList<Integer> list = new ArrayList<>();
+ArrayList<String> words = new ArrayList<>();`},
+    {t:"warn", text:"The angle brackets **cannot hold a primitive type**: `ArrayList<int>` is wrong — you must use the wrapper `ArrayList<Integer>`. The right-hand `<>` (diamond) may omit the type."},
+    {t:"h", text:"Essential ArrayList Methods · 常用方法"},
+    {t:"c", code:`list.add(x)        add to the end
+list.add(i, x)     insert at index i (later elements shift right)
+list.get(i)        get the element at i
+list.set(i, x)     replace the element at i
+list.remove(i)     remove at i (later elements shift left)
+list.size()        number of elements (has parentheses)`},
+    {t:"h", text:"The remove() Gotcha · remove 的坑"},
+    {t:"p", text:"`remove` is overloaded: `remove(int index)` removes by **index**, `remove(Object o)` removes by **value**. For `ArrayList<Integer>`, `remove(1)` removes **index 1**, not the value 1."},
+    {t:"h", text:"Traversing an ArrayList · 遍历 ArrayList"},
+    {t:"c", code:`for (int i = 0; i < list.size(); i++) {
+    System.out.println(list.get(i));
+}
+for (String s : words) {          // enhanced for also works
+    System.out.println(s);
+}`},
+    {t:"warn", text:"When removing, indexes shift left. Removing while iterating forward can skip elements — if you must filter, iterate backward or collect first."},
+    {t:"li", items:["ArrayList resizes; use size() (with parens)","Generic uses wrapper Integer, not int","get/set access; add inserts; remove deletes","remove(1) on an Integer list removes index 1, not value 1"]},
+  ],
+  questions: [
+    {kind:"trace", q:"What is `l.size()` after adding 10 and 20?", options:["1","2","20","Compile error"], answer:1, explain:"Two elements added, so size() returns 2.（加了 2 个元素。）"},
+    {kind:"trace", q:"What is `l.get(1)` after adding \"a\",\"b\",\"c\"?", options:["a","b","c","Compile error"], answer:1, explain:"Indexes start at 0, so get(1) is the second element \"b\".（get(1) 取第二个。）"},
+    {kind:"trace", q:"What is l after `add(5); add(10); add(15); remove(1);`?", options:["[5, 15]","[10, 15]","[5, 10]","[15]"], answer:0, explain:"remove(1) removes index 1 (value 10), leaving [5, 15].（按索引删 10，剩 [5,15]。）"},
+    {kind:"trace", q:"What is l after `add(5); add(10); add(15); set(1, 99);`?", options:["[5, 99, 15]","[5, 10, 15, 99]","[99, 5, 15]","[5, 99]"], answer:0, explain:"set(1, 99) replaces index 1 (10) with 99; length unchanged.（替换索引 1 为 99。）"},
+    {kind:"mcq", q:"Which declaration is wrong?", options:["ArrayList<Integer> a = new ArrayList<>();","ArrayList<String> b = new ArrayList<>();","ArrayList<int> c = new ArrayList<>();","ArrayList<Double> d = new ArrayList<>();"], answer:2, explain:"Generics can't use a primitive; int must be the wrapper Integer.（泛型不能用 int。）"},
+    {kind:"trace", q:"What is printed by a forward loop over [\"x\",\"y\",\"z\"]?", options:["xyz","zyx","xy","Compile error"], answer:0, explain:"Forward traversal prints x, y, z in order.（正向遍历输出 xyz。）"},
+    {kind:"mcq", q:"How do you get the size of an ArrayList?", options:["l.length","l.length()","l.size","l.size()"], answer:3, explain:"ArrayList uses size() (parens); array uses length; String uses length().（ArrayList 用 size()。）"},
+    {kind:"trace", q:"What is the sum of [2,4,6] with an enhanced for?", options:["12","10","6","Compile error"], answer:0, explain:"2+4+6 = 12.（求和=12。）"},
+    {kind:"mcq", q:"To add an element to the end of an ArrayList, use?", options:["l.add(x)","l.set(x)","l.insert(x)","l.append(x)"], answer:0, explain:"add(x) appends; set replaces; insert/append don't exist.（add 加到末尾。）"},
+    {kind:"trace", q:"What is l after `add(1); add(2); add(3); add(1, 10);`?", options:["[1, 10, 2, 3]","[10, 1, 2, 3]","[1, 2, 10, 3]","[1, 2, 3, 10]"], answer:0, explain:"add(1, 10) inserts 10 at index 1, shifting the rest right.（在索引 1 插入 10。）"},
+  ],
+});
+
+UNITS.push({
+  id: 8, title: "2D Array", cn: "二维数组", icon: "🧮",
+  objective: "Master 2D array row/column access and nested traversal · 掌握二维数组的行列访问与嵌套遍历",
+  lesson: [
+    {t:"h", text:"Creating 2D Arrays · 创建二维数组"},
+    {t:"c", code:`int[][] grid = new int[3][4];   // 3 rows, 4 columns
+int[][] m = { {1,2}, {3,4}, {5,6} };  // direct init`},
+    {t:"p", text:"A 2D array is an \"array of arrays\". `grid.length` is the **number of rows** (行数); `grid[0].length` is the **number of columns** (列数, the length of row 0)."},
+    {t:"h", text:"Accessing Elements · 访问元素"},
+    {t:"c", code:`grid[0][0]   // first row, first column
+grid[2][3]   // third row, fourth column
+grid[r][c]   // row r, column c (counting from 0)`},
+    {t:"h", text:"Traversing 2D Arrays (Row-Major) · 遍历二维数组"},
+    {t:"c", code:`for (int r = 0; r < grid.length; r++) {
+    for (int c = 0; c < grid[r].length; c++) {
+        sum += grid[r][c];
+    }
+}`},
+    {t:"tip", text:"AP 2D traversal is almost always **row-major** (行优先): outer loop over rows, inner over columns, left to right. Total elements = rows × columns."},
+    {t:"h", text:"Common Operations · 常见操作"},
+    {t:"c", code:`int rows = grid.length;       // number of rows
+int cols = grid[0].length;    // number of columns
+int total = rows * cols;      // total elements`},
+    {t:"li", items:["grid.length = rows; grid[0].length = columns","Access with grid[r][c], both from 0","Traverse: outer = rows, inner = columns","Total elements = rows × columns"]},
+  ],
+  questions: [
+    {kind:"trace", q:"What is `g.length` for `int[][] g = new int[3][4];`?", options:["3","4","12","7"], answer:0, explain:"g.length is the number of rows = 3.（g.length 是行数=3。）"},
+    {kind:"trace", q:"What is `g[0].length` for `int[][] g = new int[3][4];`?", options:["3","4","12","0"], answer:1, explain:"g[0].length is the number of columns in row 0 = 4.（列数=4。）"},
+    {kind:"trace", q:"What is `g[2][1]` for `g = {{1,2,3},{4,5,6},{7,8,9}}`?", options:["8","5","6","2"], answer:0, explain:"g[2][1] is row 2, column 1 = 8.（第 2 行第 1 列=8。）"},
+    {kind:"trace", q:"How many elements does a nested loop visit in a 3×4 array?", options:["7","12","3","4"], answer:1, explain:"3 rows × 4 columns = 12 elements.（3×4=12。）"},
+    {kind:"trace", q:"What is the sum of `{{1,2},{3,4}}`?", options:["10","8","6","4"], answer:0, explain:"1+2+3+4 = 10.（求和=10。）"},
+    {kind:"trace", q:"What is `g.length * g[0].length` for `g = {{1,2,3},{4,5,6}}`?", options:["5","6","9","12"], answer:1, explain:"2 rows × 3 columns = 6 elements.（2×3=6。）"},
+    {kind:"mcq", q:"The default value of elements in `int[][] g = new int[3][4]` is?", options:["null","0","false","Random"], answer:1, explain:"int 2D array elements also default to 0.（int 二维数组默认也是 0。）"},
+    {kind:"mcq", q:"To iterate over every row of a 2D array, the outer condition should be?", options:["r < g.length","r < g[0].length","r <= g.length","r < g[r].length"], answer:0, explain:"The outer loop handles rows, whose count is g.length, so `r < g.length`.（外层条件 r < g.length。）"},
+    {kind:"trace", q:"What is `g[1][2]` for `g = {{1,2,3},{4,5,6}}`?", options:["5","6","3","Compile error"], answer:1, explain:"g[1] is {4,5,6}, so g[1][2] is the third element 6.（g[1][2]=6。）"},
+    {kind:"trace", q:"What is the sum of `{{2,4},{6,8},{10,12}}` with enhanced fors?", options:["42","36","30","24"], answer:0, explain:"2+4+6+8+10+12 = 42.（求和=42。）"},
+  ],
+});
+
+UNITS.push({
+  id: 9, title: "Inheritance", cn: "继承与多态", icon: "🧬",
+  objective: "Master inheritance, method overriding, and polymorphism · 掌握继承、方法重写与多态",
+  lesson: [
+    {t:"h", text:"Inheritance (extends) · 继承"},
+    {t:"c", code:`class Animal {
+    public void eat() { System.out.println("eat"); }
+}
+class Dog extends Animal {
+    public void bark() { System.out.println("woof"); }
+}`},
+    {t:"p", text:"`Dog extends Animal` means Dog **inherits** (继承) Animal. Dog automatically has Animal's methods and fields, and can add its own. The parent is the **superclass** (父类), the child the **subclass** (子类)."},
+    {t:"h", text:"The super Keyword · super 关键字"},
+    {t:"c", code:`super(x);       // call the superclass constructor (must be first line)
+super.method(); // call a superclass method`},
+    {t:"warn", text:"A subclass constructor automatically calls the superclass's no-arg constructor first; if the superclass has no no-arg constructor, you must write `super(参数)` explicitly, and it must be the **first line**."},
+    {t:"h", text:"Method Overriding · 方法重写"},
+    {t:"c", code:`class Dog extends Animal {
+    @Override
+    public void eat() {          // signature must match exactly
+        System.out.println("dog eats");
+    }
+}`},
+    {t:"p", text:"A subclass method with the **same signature** as a superclass method **overrides** (重写) it. At runtime, whichever class the actual object is, that class's method runs — **dynamic dispatch** (动态分派)."},
+    {t:"h", text:"Polymorphism · 多态"},
+    {t:"c", code:`Animal a = new Dog();   // superclass reference → subclass object
+a.eat();                 // calls Dog's eat (override applies)`},
+    {t:"tip", text:"The variable type decides **which methods you can call** (compile time); the object type decides **which method actually runs** (runtime). A superclass reference can only call methods declared in the superclass."},
+    {t:"h", text:"instanceof & Object · instanceof 与 Object"},
+    {t:"c", code:`if (a instanceof Dog) { ((Dog) a).bark(); }  // check actual type
+// Every class inherits Object, with toString() and equals()`},
+    {t:"li", items:["Subclass uses extends, inherits members","super() calls the parent constructor, must be first","Overriding requires the exact same signature","A parent reference to a child object runs the child's overridden method"]},
+  ],
+  questions: [
+    {kind:"mcq", q:"In `class Dog extends Animal`, who is the superclass?", options:["Dog","Animal","Both","Neither"], answer:1, explain:"The class after extends is the superclass; Dog is the subclass.（extends 后面是父类。）"},
+    {kind:"mcq", q:"To call the superclass constructor, use?", options:["super()","this()","parent()","base()"], answer:0, explain:"`super(参数)` calls the superclass constructor, and must be the first line.（super() 调父类构造器。）"},
+    {kind:"trace", q:"What is printed by `A x = new B(); x.f();` where both define f() returning \"A\"/\"B\"?", options:["A","B","Compile error","null"], answer:1, explain:"Polymorphism: the actual object is B, so B's overridden f() runs, printing B.（实际对象是 B，调用 B 的方法。）"},
+    {kind:"mcq", q:"Method overriding requires?", options:["Same name, different parameters","The exact same signature","A different return type","Different parameter names"], answer:1, explain:"Overriding requires the signature (name + parameter types) to match exactly.（重写要求签名完全一致。）"},
+    {kind:"trace", q:"What is printed by `A x = new B(); x.m();` where A has m() but B adds n()?", options:["A","B","AB","Compile error"], answer:0, explain:"x is an A reference, so it can call A's m(); B's n() isn't declared in A, so x can't call it.（父类引用只能调父类声明的方法。）"},
+    {kind:"trace", q:"What is printed by `System.out.println(a)` where A overrides toString() to return \"A!\"?", options:["A@hash","A!","Compile error","null"], answer:1, explain:"Overriding toString() makes println call it, printing \"A!\".（重写 toString 后 println 调用它。）"},
+    {kind:"mcq", q:"To check an object's actual type, use?", options:["instanceof","typeof","getType","classof"], answer:0, explain:"`x instanceof Dog` checks whether x is a Dog, returning a boolean.（instanceof 判断实际类型。）"},
+    {kind:"mcq", q:"A subclass constructor, by default, calls?", options:["The superclass no-arg constructor","Nothing","Its own other constructor","Throws an exception"], answer:0, explain:"If no super is written, the subclass automatically calls the superclass no-arg constructor.（默认调父类无参构造器。）"},
+    {kind:"trace", q:"What is printed by `new B();` where A's constructor prints \"A\" and B's prints \"B\"?", options:["B","A","AB","BA"], answer:2, explain:"Creating B runs the parent constructor first (A), then B's (B) → \"AB\".（先父后子，输出 AB。）"},
+    {kind:"mcq", q:"The common superclass of all classes is?", options:["Class","Object","Root","Base"], answer:1, explain:"In Java, every class directly or indirectly inherits from Object.（所有类的共同父类是 Object。）"},
+  ],
+});
+
+UNITS.push({
+  id: 10, title: "Recursion", cn: "递归", icon: "🌀",
+  objective: "Master the two elements of recursion and code tracing · 掌握递归的两个要素与代码追踪",
+  lesson: [
+    {t:"h", text:"What is Recursion? · 什么是递归"},
+    {t:"p", text:"**Recursion** (递归) is a method calling itself. Every recursion needs two parts: ① a **base case** (基本情况, the stop condition), and ② a **recursive call** that moves one step closer to it."},
+    {t:"c", code:`public int fact(int n) {
+    if (n <= 1) return 1;        // ① base case
+    return n * fact(n - 1);     // ② recursive call, n gets smaller
+}
+fact(3) = 3 * fact(2) = 3 * 2 * fact(1) = 3 * 2 * 1 = 6`},
+    {t:"warn", text:"No base case (or never reaching it) causes **infinite recursion** and a `StackOverflowError`. When tracing, first find \"when does it stop?\"."},
+    {t:"h", text:"Tracing Recursion · 递归追踪技巧"},
+    {t:"p", text:"Expand from the outside in, reaching the base case, then compute back out. Example: `mystery(3)` → `3 + mystery(2)` → `3 + 2 + mystery(1)` → base case → compute back."},
+    {t:"c", code:`public int mystery(int n) {
+    if (n == 0) return 0;              // base case
+    return n + mystery(n - 1);
+}
+mystery(3) = 3 + 2 + 1 + 0 = 6`},
+    {t:"h", text:"AP Recursion Algorithms · 递归算法"},
+    {t:"p", text:"AP CSA expects you to understand the recursive ideas behind **merge sort** (归并排序, keep splitting the array in half and merge) and **binary search** (二分查找, halve the search range each time)."},
+    {t:"li", items:["Recursion = base case + recursive call","First find the base case (stop condition)","Each recursive call must move toward the base case","Infinite recursion throws StackOverflowError"]},
+  ],
+  questions: [
+    {kind:"trace", q:"What is `mystery(3)` for a method returning `n + mystery(n-1)` with base `n==0 → 0`?", options:["6","3","0","10"], answer:0, explain:"3 + 2 + 1 + 0 = 6.（3+2+1+0=6。）"},
+    {kind:"trace", q:"What is `fact(4)` for factorial?", options:["24","12","4","1"], answer:0, explain:"4 × 3 × 2 × 1 = 24.（4!=24。）"},
+    {kind:"mcq", q:"The base case's role in recursion is to?", options:["Make it faster","Stop the recursion","Add stack space","Avoid compile errors"], answer:1, explain:"The base case is the stop condition that prevents infinite recursion.（base case 是停止条件。）"},
+    {kind:"trace", q:"What is `f(5)` for `n + f(n-2)` with base `n==1 → 1`?", options:["9","6","15","1"], answer:0, explain:"f(5)=5+f(3)=5+3+f(1)=5+3+1=9.（5+3+1=9。）"},
+    {kind:"trace", q:"What is printed by a method that prints n then recurses on n-1, called p(3)?", options:["3 2 1","1 2 3","3 2 1 0","1 2 3 0"], answer:0, explain:"Print before recursing: 3 2 1, stopping at n=0.（先打印再递归：3 2 1。）"},
+    {kind:"mcq", q:"Recursion without a correct base case causes?", options:["A compile error","StackOverflowError","null","Automatic stop"], answer:1, explain:"Infinite recursion overflows the call stack, throwing StackOverflowError at runtime.（无限递归抛 StackOverflowError。）"},
+    {kind:"trace", q:"What is `f(4)` for Fibonacci `f(n-1)+f(n-2)` with f(0)=0, f(1)=1?", options:["3","4","5","2"], answer:0, explain:"Fibonacci: f(4)=f(3)+f(2)=2+1=3 (f(3)=2, f(2)=1).（斐波那契 f(4)=3。）"},
+    {kind:"trace", q:"What is `c(123)` for `1 + c(n/10)` with base `n<10 → 1`?", options:["1","2","3","4"], answer:2, explain:"c(123)=1+c(12)=1+1+c(1)=3, i.e. the number of digits.（数字位数=3。）"},
+    {kind:"mcq", q:"Each step of binary search halves the?", options:["Search range","Result","Array size permanently","Index"], answer:0, explain:"Binary search halves the search range each comparison, so it is O(log n).（二分查找每次减半范围。）"},
+    {kind:"trace", q:"What is `f(6)` for `2 + f(n-2)` with base `n<=0 → 0`?", options:["6","4","8","3"], answer:0, explain:"f(6)=2+f(4)=2+2+f(2)=2+2+2+f(0)=6.（2+2+2+0=6。）"},
+  ],
+});
+
+const FRQS = [];
+FRQS.push({
+  id: 1, icon: "🔢", title: "FRQ 1 · Arrays & Loops", topic: "Methods & control structures (array traversal)",
+  prompt: "Implement the class `ArrayPractice` with three public static methods:\n\n(a) `countNegative(int[] data)` returns the number of NEGATIVE values.\n\n(b) `allPositive(int[] data)` returns true if all elements are POSITIVE (> 0), otherwise false.\n\n(c) `getPositive(int[] data)` returns a NEW array containing only the positive values, in order. If none, return a length-0 array.\n\nNote: 0 is neither positive nor negative.",
+  points: [
+    "countNegative: traverse and count `x < 0`",
+    "allPositive: return false as soon as `x <= 0`; true only if all pass",
+    "getPositive: count positives first, create an array of that length",
+    "getPositive: second pass fills the array in order, incrementing an index",
+    "Edge case: empty array / no positives returns a length-0 array",
+    "Style: correct signatures, clean indentation, good naming",
+  ],
+  answerText: "Count positives first to size the array, then use a separate index to fill it. In allPositive, return false early on the first violation — the classic \"early exit\" pattern.",
+  answer: "public class ArrayPractice {\n    // (a)\n    public static int countNegative(int[] data) {\n        int count = 0;\n        for (int x : data) {\n            if (x < 0) count++;\n        }\n        return count;\n    }\n\n    // (b)\n    public static boolean allPositive(int[] data) {\n        for (int x : data) {\n            if (x <= 0) return false;\n        }\n        return true;\n    }\n\n    // (c)\n    public static int[] getPositive(int[] data) {\n        int count = 0;\n        for (int x : data) if (x > 0) count++;\n        int[] result = new int[count];\n        int index = 0;\n        for (int x : data) {\n            if (x > 0) {\n                result[index] = x;\n                index++;\n            }\n        }\n        return result;\n    }\n}",
+});
+
+FRQS.push({
+  id: 2, icon: "🏗️", title: "FRQ 2 · Writing a Student Class", topic: "Classes & objects (fields, constructor, methods)",
+  prompt: "Implement a `Student` class:\n\n(a) private fields `name` (String) and `scores` (ArrayList<Double>);\n\n(b) a constructor `Student(String n)` that sets name and initializes scores to an empty ArrayList;\n\n(c) `addScore(double s)` that adds s to scores;\n\n(d) `getAverage()` returning the average (double); 0.0 if empty;\n\n(e) `getHighest()` returning the highest score; 0.0 if empty.\n\nAll methods public.",
+  points: [
+    "Declare private fields name (String) and scores (ArrayList<Double>), importing ArrayList",
+    "Constructor: assign name; initialize scores with new ArrayList<Double>() (not null)",
+    "addScore: call add to append",
+    "getAverage: sum then divide by size(); return 0.0 if empty",
+    "getHighest: find the max; return 0.0 if empty",
+    "Use size()/get() (not array length)",
+  ],
+  answerText: "Key detail: the constructor must do `new ArrayList<Double>()`, otherwise scores is null and calling add throws NullPointerException. Keep the average as double arithmetic.",
+  answer: "import java.util.ArrayList;\n\npublic class Student {\n    private String name;\n    private ArrayList<Double> scores;\n\n    public Student(String n) {\n        name = n;\n        scores = new ArrayList<Double>();\n    }\n\n    public void addScore(double s) {\n        scores.add(s);\n    }\n\n    public double getAverage() {\n        if (scores.size() == 0) return 0.0;\n        double sum = 0;\n        for (double s : scores) sum += s;\n        return sum / scores.size();\n    }\n\n    public double getHighest() {\n        if (scores.size() == 0) return 0.0;\n        double max = scores.get(0);\n        for (double s : scores) if (s > max) max = s;\n        return max;\n    }\n}",
+});
+
+FRQS.push({
+  id: 3, icon: "📋", title: "FRQ 3 · ArrayList Processing", topic: "ArrayList (removal & traversal, index shifting)",
+  prompt: "Implement the static method `removeShort(ArrayList<String> words, int minLen)`: remove all strings whose length is less than minLen, and return the number removed. The relative order of the remaining strings must stay the same.\n\nHint: forward removal shifts indexes and can skip elements — think about how to avoid that.",
+  points: [
+    "Check length() < minLen",
+    "Call remove to delete the element",
+    "Handle indexes: iterate backward, or step back after each removal, to avoid skipping",
+    "Count and return the number removed",
+    "Edge case: nothing to remove returns 0 without error",
+  ],
+  answerText: "The safest approach is to iterate backward: `for (int i = words.size()-1; i >= 0; i--)`. Removing an element then doesn't affect earlier indexes, so nothing is skipped. Forward removal needs `i--` after each delete.",
+  answer: "public static int removeShort(ArrayList<String> words, int minLen) {\n    int removed = 0;\n    for (int i = words.size() - 1; i >= 0; i--) {\n        if (words.get(i).length() < minLen) {\n            words.remove(i);\n            removed++;\n        }\n    }\n    return removed;\n}",
+});
+
+FRQS.push({
+  id: 4, icon: "🧮", title: "FRQ 4 · 2D Array", topic: "2D arrays (row traversal, finding max)",
+  prompt: "Implement the static method `maxRowSum(int[][] grid)`: return the largest ROW sum in the 2D array. Assume grid has at least one row, and each row has at least one element.\n\nExample: for {{1,2,3},{4,5,6}}, row sums are 6 and 15, so return 15.",
+  points: [
+    "Traverse rows with grid.length and columns with grid[r].length",
+    "Compute each row's sum correctly",
+    "Compare and record the maximum row sum",
+    "Return the maximum (handle negatives correctly)",
+    "Clear structure and correct loop bounds",
+  ],
+  answerText: "For each row, compute its sum, then compare with the running max. If all elements could be negative, initialize max to the first row's sum or Integer.MIN_VALUE.",
+  answer: "public static int maxRowSum(int[][] grid) {\n    int max = Integer.MIN_VALUE;\n    for (int r = 0; r < grid.length; r++) {\n        int sum = 0;\n        for (int c = 0; c < grid[r].length; c++) {\n            sum += grid[r][c];\n        }\n        if (sum > max) max = sum;\n    }\n    return max;\n}",
+});
+
+const CHEATSHEET = [
+  {t:"h", text:"1. Primitive Data Types · 基本数据类型"},
+  {t:"p", text:"AP CSA tests three primitive types plus two reference types. Memorize their ranges and defaults:"},
+  {t:"c", code:"int     integer     e.g. int x = 10;      // about ±2.1 billion\n" +
+                 "double  decimal     e.g. double d = 3.14; // has a decimal\n" +
+                 "boolean true/false  e.g. boolean b = true;\n" +
+                 "char    one char    e.g. char c = 'A';    // single quotes\n" +
+                 "String  text        e.g. String s = \"hi\";  // double quotes, an object"},
+  {t:"tip", text:"`int / int` drops the decimal: `7 / 2` is `3`; `7.0 / 2` is `3.5`. This is tested almost every year."},
+  {t:"h", text:"2. Operators & Casting · 运算与类型转换"},
+  {t:"c", code:"Integer division:  7 / 2  → 3   (truncates, not rounds)\n" +
+               "Remainder:         7 % 2  → 1\n" +
+               "Increment:         x++  x--  ++x  --x\n" +
+               "Cast:             (int) 3.9 → 3    (chops the decimal)\n" +
+               "Widening:         2 + 3.5 → 5.5  (int → double automatically)"},
+  {t:"h", text:"3. Essential String Methods · String 常用方法"},
+  {t:"c", code:"s.length()                    length (note the parentheses)\n" +
+               "s.substring(a, b)             [a, b); b optional\n" +
+               "s.indexOf(str)                first index; -1 if not found\n" +
+               "s.charAt(i)                   char at i\n" +
+               "s.equals(other)               compare content (not ==)\n" +
+               "s.compareTo(other)            dictionary order; 0 if equal\n" +
+               "s.toUpperCase()/toLowerCase()  case conversion"},
+  {t:"warn", text:"Compare String content with `.equals()`. `==` compares references — AP's favorite trap."},
+  {t:"h", text:"4. Math Class Methods · Math 类常用方法"},
+  {t:"c", code:"Math.abs(x)     absolute value   Math.abs(-3)  → 3\n" +
+               "Math.pow(a,b)  a to the b       Math.pow(2,3) → 8.0\n" +
+               "Math.sqrt(x)   square root      Math.sqrt(9)  → 3.0\n" +
+               "Math.random()  decimal in [0.0, 1.0)\n" +
+               "Math.max/min(a,b)  larger / smaller"},
+  {t:"h", text:"5. Arrays vs ArrayList · 数组与 ArrayList 对比"},
+  {t:"c", code:"Array (fixed):  int[] a = new int[5];  a[0]=1;  a.length (no parens)\n" +
+               "ArrayList (resizable): ArrayList<Integer> list = new ArrayList<>();\n" +
+               "  list.add(x)      append\n" +
+               "  list.get(i)      element at i\n" +
+               "  list.set(i, x)   replace at i\n" +
+               "  list.size()      length (with parens)\n" +
+               "  list.remove(i)   remove at i (shifts left)"},
+  {t:"h", text:"6. Classic Algorithms · 经典算法套路"},
+  {t:"c", code:"// sum\nint sum = 0;\nfor (int i = 0; i < a.length; i++) { sum += a[i]; }\n\n// max\nint max = a[0];\nfor (int i = 1; i < a.length; i++) { if (a[i] > max) max = a[i]; }\n\n// count matching a condition\nint count = 0;\nfor (int x : a) { if (x > 0) count++; }\n\n// reverse a string\nString r = \"\";\nfor (int i = s.length()-1; i >= 0; i--) { r += s.charAt(i); }"},
+  {t:"h", text:"7. Inheritance & Polymorphism · 继承与多态"},
+  {t:"c", code:"class Dog extends Animal { ... }   // Dog inherits Animal\n" +
+               "super.method()   call parent method;  super(参数) call parent constructor\n" +
+               "@Override        override parent method (signature must match)\n" +
+               "Animal a = new Dog();  // parent ref → child object (polymorphism)\n" +
+               "a instanceof Dog        // check actual type"},
+  {t:"h", text:"8. Recursion Template · 递归模板"},
+  {t:"c", code:"public int fact(int n) {\n" +
+               "  if (n <= 1) return 1;       // ① base case\n" +
+               "  return n * fact(n - 1);    // ② recursive call (toward base)\n" +
+               "}"},
+  {t:"tip", text:"For recursion, watch only two things: the **base case** (when it stops) and **how each call approaches it**."},
+];
+
+const REALEXAM = [
+  {topic:"Loop", q:"What does `for (int i = 0; i < 4; i++) { System.out.print(i * 2 + \" \"); }` print?", code:`for (int i = 0; i < 4; i++) {
+    System.out.print(i * 2 + " ");
+}`, options:["0 2 4 6 ","0 2 4 6 8 ","2 4 6 8 ","0 1 2 3 "], answer:0, explain:"i takes 0,1,2,3 → prints 0,2,4,6, each with a trailing space.（0 2 4 6。）"},
+  {topic:"String", q:"What does `s.substring(0, 4) + s.length()` print for s = \"programming\"?", code:`String s = "programming";
+System.out.println(s.substring(0, 4) + s.length());`, options:["prog11","prog12","programming11","prog4"], answer:0, explain:"substring(0,4)=\"prog\", length()=11 → \"prog11\".（prog+11=prog11。）"},
+  {topic:"Array", q:"What is sum after `for (int i = 1; i < arr.length; i += 2) sum += arr[i];` for {3,1,4,1,5}?", code:`int[] arr = {3, 1, 4, 1, 5};
+int sum = 0;
+for (int i = 1; i < arr.length; i += 2) sum += arr[i];`, options:["2","6","9","14"], answer:0, explain:"i takes 1 and 3 → sum = arr[1]+arr[3] = 1+1 = 2.（1+1=2。）"},
+  {topic:"ArrayList", q:"What is printed after `list.add(1); list.add(2); list.add(3); list.add(1, 4);`?", code:`ArrayList<Integer> list = new ArrayList<>();
+list.add(1); list.add(2); list.add(3);
+list.add(1, 4);
+System.out.println(list);`, options:["[1, 4, 2, 3]","[4, 1, 2, 3]","[1, 2, 4, 3]","[1, 2, 3, 4]"], answer:0, explain:"add(1,4) inserts 4 at index 1, shifting the rest right → [1, 4, 2, 3].（在索引 1 插入 4。）"},
+  {topic:"Method", q:"What is `mystery(5, 9)` for a method returning a if a>b else b?", code:`public int mystery(int a, int b) {
+    if (a > b) return a;
+    return b;
+}`, options:["5","9","14","Compile error"], answer:1, explain:"5 is not > 9, so it returns b = 9.（返回 9。）"},
+  {topic:"Loop", q:"What is count after two nested loops where the inner runs from i to 2?", code:`int count = 0;
+for (int i = 0; i < 3; i++)
+    for (int j = i; j < 3; j++)
+        count++;`, options:["3","6","9","12"], answer:1, explain:"Inner runs 3, 2, then 1 times → 3+2+1 = 6.（3+2+1=6。）"},
+  {topic:"Recursion", q:"What is `f(4)` for `n + f(n-1)` with base `n<=1 → 1`?", code:`public int f(int n) {
+    if (n <= 1) return 1;
+    return f(n - 1) + n;
+}`, options:["10","8","4","1"], answer:0, explain:"f(4)=f(3)+4=...=1+2+3+4=10.（1+2+3+4=10。）"},
+  {topic:"2D Array", q:"What is `m[1][2] + m[2][0]` for m = {{1,2,3},{4,5,6},{7,8,9}}?", code:`int[][] m = {{1,2,3},{4,5,6},{7,8,9}};
+System.out.println(m[1][2] + m[2][0]);`, options:["13","11","15","9"], answer:0, explain:"m[1][2]=6, m[2][0]=7 → 6+7=13.（6+7=13。）"},
+  {topic:"Boolean", q:"What does `!(true && false) || (true || false)` print?", code:`System.out.println(!(true && false) || (true || false));`, options:["true","false","Compile error","Uncertain"], answer:0, explain:"true&&false=false, !false=true; true||false=true → true||true=true.（true。）"},
+  {topic:"Inheritance", q:"What is printed by `A x = new B(); x.val();` where both override val()?", code:`class A { public int val() { return 1; } }
+class B extends A { public int val() { return 2; } }
+A x = new B();
+System.out.println(x.val());`, options:["1","2","Compile error","0"], answer:1, explain:"Polymorphism: the actual object is B, so B's val() runs, printing 2.（调用 B 的 val()。）"},
+  {topic:"String", q:"What is `a.equals(b)` for a=\"abc\" and b=\"ab\"+\"c\"?", code:`String a = "abc";
+String b = "ab" + "c";
+System.out.println(a.equals(b));`, options:["true","false","Compile error","Uncertain"], answer:0, explain:"\"ab\"+\"c\" is \"abc\" at compile time; equals compares content → true.（内容相同，equals 返回 true。）"},
+  {topic:"Loop", q:"What is x after summing only even i in 0..9?", code:`int x = 0;
+for (int i = 0; i < 10; i++) {
+    if (i % 2 == 0) x += i;
+}`, options:["20","25","30","45"], answer:0, explain:"Even numbers 0+2+4+6+8 = 20.（0+2+4+6+8=20。）"},
+  {topic:"String", q:"What is `s.charAt(s.length() - 1)` for s=\"computer\"?", code:`String s = "computer";
+System.out.println(s.charAt(s.length() - 1));`, options:["r","c","t","e"], answer:0, explain:"length()=8, index 7 is the last char 'r'.（最后一个字符是 r。）"},
+  {topic:"Casting", q:"What is `(int) 7.9`?", code:`System.out.println((int) 7.9);`, options:["7","8","7.9","Compile error"], answer:0, explain:"(int) truncates the decimal, giving 7 (not rounded).（(int) 截断得 7。）"},
+  {topic:"ArrayList", q:"What is l after `add(\"a\"); add(\"b\"); add(\"c\"); remove(1);`?", code:`ArrayList<String> l = new ArrayList<>();
+l.add("a"); l.add("b"); l.add("c");
+l.remove(1);
+System.out.println(l);`, options:["[a, c]","[b, c]","[a, b]","[c]"], answer:0, explain:"remove(1) removes \"b\" (index 1), leaving [a, c].（删索引 1 的 \"b\"。）"},
+  {topic:"Recursion", q:"What is `g(5)` for Fibonacci `g(n-1)+g(n-2)` with g(0)=0, g(1)=1?", code:`public int g(int n) {
+    if (n == 0) return 0;
+    if (n == 1) return 1;
+    return g(n - 1) + g(n - 2);
+}`, options:["5","8","3","13"], answer:0, explain:"Fibonacci: g(2)=1, g(3)=2, g(4)=3, g(5)=5.（斐波那契 g(5)=5。）"},
+  {topic:"Boolean", q:"What is x after `int x=5; if(x>10) x=1; else if(x>2) x=2; else x=3;`?", code:`int x = 5;
+if (x > 10) x = 1;
+else if (x > 2) x = 2;
+else x = 3;`, options:["1","2","3","5"], answer:1, explain:"5 fails x>10 but passes x>2, so x=2.（满足 >2，x=2。）"},
+  {topic:"Loop", q:"What is count after `for (int i = 5; i > 0; i--) count++;`?", code:`int count = 0;
+for (int i = 5; i > 0; i--) count++;`, options:["4","5","6","0"], answer:1, explain:"i takes 5,4,3,2,1 — five iterations.（5 次。）"},
+  {topic:"2D Array", q:"What is `g.length` for `int[][] g = new int[4][5];`?", code:`int[][] g = new int[4][5];
+System.out.println(g.length);`, options:["4","5","20","9"], answer:0, explain:"g.length is the number of rows = 4.（行数=4。）"},
+  {topic:"String", q:"What is `\"hello\".indexOf(\"l\")`?", code:`System.out.println("hello".indexOf("l"));`, options:["1","2","3","-1"], answer:1, explain:"\"l\" first appears at index 2 (h=0, e=1, l=2).（首次出现在索引 2。）"},
+];
+
+const LEVEL_TITLES = ["新手","学徒","入门者","进阶者","熟练者","高手","达人","大师","宗师","传奇","代码侠","算法猎手","Java 领主","编译王者","AP 满分战神"];
+const BADGES = [
+  {id:"first_xp", ico:"🎉", name:"初次得分", desc:"第一次获得积分"},
+  {id:"unit1",     ico:"🧱", name:"奠基者", desc:"完成第一个单元"},
+  {id:"unit3",     ico:"🌱", name:"渐入佳境", desc:"完成 3 个单元"},
+  {id:"five",      ico:"🚀", name:"过半啦", desc:"完成 5 个单元"},
+  {id:"unit8",     ico:"⚡", name:"冲刺阶段", desc:"完成 8 个单元"},
+  {id:"all",       ico:"👑", name:"全通关", desc:"完成全部单元"},
+  {id:"perfect",   ico:"💯", name:"满分", desc:"某单元一次全对"},
+  {id:"exam60",    ico:"🥉", name:"模考及格", desc:"模拟考正确率 ≥ 60%"},
+  {id:"exam80",    ico:"🏆", name:"模考 80+", desc:"模拟考正确率 ≥ 80%"},
+  {id:"exam90",    ico:"🥇", name:"模考 90+", desc:"模拟考正确率 ≥ 90%"},
+  {id:"exam100",   ico:"💎", name:"模考满分", desc:"模拟考正确率 100%"},
+  {id:"streak3",   ico:"🔥", name:"连续 3 天", desc:"连续学习 3 天"},
+  {id:"streak7",   ico:"📅", name:"坚持 7 天", desc:"连续学习 7 天"},
+  {id:"streak14",  ico:"📆", name:"坚持 14 天", desc:"连续学习 14 天"},
+  {id:"streak30",  ico:"🗓️", name:"坚持 30 天", desc:"连续学习 30 天"},
+  {id:"xp100",     ico:"⭐", name:"百炼成钢", desc:"累计 100 XP"},
+  {id:"xp500",     ico:"🌟", name:"五百积分", desc:"累计 500 XP"},
+  {id:"xp1000",    ico:"💫", name:"千分大佬", desc:"累计 1000 XP"},
+  {id:"xp3000",    ico:"☄️", name:"三千传说", desc:"累计 3000 XP"},
+  {id:"first_frq", ico:"📝", name:"首道 FRQ", desc:"完成第一道 FRQ"},
+  {id:"first_real",ico:"🎯", name:"真题首练", desc:"完成一次真题演练"},
+  {id:"level5",    ico:"⭐", name:"五级达成", desc:"等级达到 5 级"},
+  {id:"level10",   ico:"🌟", name:"十级宗师", desc:"等级达到 10 级"},
+];
+</script>
+
+<script>
+/* ============================================================
+   应用逻辑
+   ============================================================ */
+const KEY = "apcsa_v1";
+const $  = (s, el=document) => el.querySelector(s);
+const $$ = (s, el=document) => [...el.querySelectorAll(s)];
+
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function inline(s){ return esc(s).replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>"); }
+function hl(code){
+  const re = /(\/\/[^\n]*)|(&quot;(?:[^&]|&(?!quot;))*?&quot;)|(&#39;[^&]*?&#39;)|\b(public|private|protected|static|final|void|int|double|boolean|char|String|byte|short|long|float|class|interface|extends|implements|new|return|if|else|for|while|do|switch|case|break|continue|this|super|true|false|null|import|package|instanceof)\b|\b(\d+(?:\.\d+)?)\b/g;
+  return esc(code).replace(re, (m, cm, st, ch, kw, num) => {
+    if (cm) return '<span class="cm">'+cm+'</span>';
+    if (st) return '<span class="st">'+st+'</span>';
+    if (ch) return '<span class="st">'+ch+'</span>';
+    if (kw) return '<span class="kw">'+kw+'</span>';
+    if (num) return '<span class="num">'+num+'</span>';
+    return m;
+  });
+}
+function renderBlocks(blocks){
+  return blocks.map(b => {
+    if (b.t === "h") return "<h3>"+inline(b.text)+"</h3>";
+    if (b.t === "p") return "<p class='body'>"+inline(b.text)+"</p>";
+    if (b.t === "c") return "<div class='block-code'>"+hl(b.code)+"</div>";
+    if (b.t === "tip") return "<div class='callout tip'><span class='ico'>💡</span><div>"+inline(b.text)+"</div></div>";
+    if (b.t === "warn") return "<div class='callout warn'><span class='ico'>⚠️</span><div>"+inline(b.text)+"</div></div>";
+    if (b.t === "err") return "<div class='callout err'><span class='ico'>❌</span><div>"+inline(b.text)+"</div></div>";
+    if (b.t === "li") return "<ul class='li'>"+b.items.map(x=>"<li>"+inline(x)+"</li>").join("")+"</ul>";
+    if (b.t === "table") return "<div class='table-wrap'><table>"+b.rows.map((r,i)=> "<tr>"+r.map((c,j)=> (i===0?"<th>":"<td>")+inline(c)+(i===0?"</th>":"</td>")).join("")+"</tr>").join("")+"</table></div>";
+    if (b.t === "demo") return renderDemo(b.type);
+    if (b.t === "video") return renderVideo(b);
+    return "";
+  }).join("");
+}
+
+/* ---------- 状态 ---------- */
+function todayStr(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function defaultState(){ return {xp:0, lastDay:todayStr(), streak:1, badges:[], lessonsRead:{}, q:{}, quizDone:{}, frqDone:{}, examBest:null, examAttempts:0}; }
+let state;
+try{ state = JSON.parse(localStorage.getItem(KEY)) || defaultState(); }catch(e){ state = defaultState(); }
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+function todayStr2(){ return state.lastDay; }
+function updateStreak(){
+  const t = todayStr();
+  if (state.lastDay === t) return;
+  const y = new Date(Date.now()-86400000);
+  const ystr = y.getFullYear()+"-"+String(y.getMonth()+1).padStart(2,"0")+"-"+String(y.getDate()).padStart(2,"0");
+  state.streak = (state.lastDay === ystr) ? state.streak+1 : 1;
+  state.lastDay = t;
+}
+function level(){ return Math.min(15, Math.floor(state.xp/150)+1); }
+function levelTitle(){ return LEVEL_TITLES[Math.min(LEVEL_TITLES.length-1, level()-1)]; }
+function gid(uid, qi){ return uid+":"+qi; }
+
+/* ---------- 积分与徽章 ---------- */
+function addXP(n){
+  if(n<=0) return;
+  const before = level();
+  state.xp += n;
+  const after = level();
+  if(after > before){ toast("🎉 升级！现在是 Lv."+after+" "+levelTitle()); }
+}
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove("show"), 2600); }
+function checkBadges(){
+  const earned = new Set(state.badges);
+  const doneUnits = UNITS.filter(u=>state.quizDone[u.id]).length;
+  const perfect = UNITS.some(u=> state.quizDone[u.id] && u.questions.every((q,i)=> state.q[gid(u.id,i)] && state.q[gid(u.id,i)].ft === true));
+  const frqCount = Object.keys(state.frqDone || {}).length;
+  const realCount = state.realDone || 0;
+  const exam = state.examBest;
+  const lv = level();
+
+  const conds = [
+    ["first_xp", state.xp >= 10],
+    ["unit1", doneUnits >= 1],
+    ["unit3", doneUnits >= 3],
+    ["five", doneUnits >= 5],
+    ["unit8", doneUnits >= 8],
+    ["all", doneUnits >= UNITS.length && UNITS.length > 0],
+    ["perfect", perfect],
+    ["exam60", exam !== null && exam >= 60],
+    ["exam80", exam !== null && exam >= 80],
+    ["exam90", exam !== null && exam >= 90],
+    ["exam100", exam !== null && exam >= 100],
+    ["streak3", state.streak >= 3],
+    ["streak7", state.streak >= 7],
+    ["streak14", state.streak >= 14],
+    ["streak30", state.streak >= 30],
+    ["xp100", state.xp >= 100],
+    ["xp500", state.xp >= 500],
+    ["xp1000", state.xp >= 1000],
+    ["xp3000", state.xp >= 3000],
+    ["first_frq", frqCount >= 1],
+    ["first_real", realCount >= 1],
+    ["level5", lv >= 5],
+    ["level10", lv >= 10],
+  ];
+  const newOnes = [];
+  conds.forEach(([id, ok])=>{
+    if(ok && !earned.has(id)){ state.badges.push(id); newOnes.push(id); }
+  });
+  if(newOnes.length){
+    save();
+    const names = newOnes.map(id => BADGES.find(b=>b.id===id).name).join("、");
+    toast("🏅 获得徽章：" + names);
+  }
+}
+
+/* ---------- 题目统计 ---------- */
+function qStatus(uid, qi){ return state.q[gid(uid,qi)] || null; }
+function unitStats(unit){
+  let correct=0, attempted=0, firstTryRight=0;
+  unit.questions.forEach((q,i)=>{
+    const s = qStatus(unit.id, i);
+    if(s){ attempted++; if(s.correct) correct++; if(s.ft) firstTryRight++; }
+  });
+  return {correct, attempted, total:unit.questions.length, firstTryRight};
+}
+function overallStats(){
+  let correct=0, total=0;
+  UNITS.forEach(u=>{ const s=unitStats(u); correct+=s.correct; total+=s.total; });
+  return total ? Math.round(correct/total*100) : 0;
+}
+function flattenAll(){
+  const arr=[];
+  UNITS.forEach(u=> u.questions.forEach((q,i)=> arr.push({q, uid:u.id, qi:i, unit:u})));
+  return arr;
+}
+
+/* ---------- 视图状态 ---------- */
+let view = {name:"home"};
+let quizSession = null;   // {uid, idx, order, locked}
+let examSession = null;
+let realSession = null;
+
+function nav(){
+  const sb = $("#sidebar");
+  let html = '<button class="nav-btn" data-go="home">🏠 首页</button>';
+  html += '<div class="nav-group">学习单元</div>';
+  UNITS.forEach(u=>{
+    const st = unitStats(u);
+    const done = state.quizDone[u.id];
+    html += '<button class="nav-btn'+(view.name==="unit"&&view.uid===u.id?" active":"")+(done?" done":"")+'" data-go="unit" data-uid="'+u.id+'">'+
+      '<span class="dot"></span><span>'+u.icon+' '+u.cn+'</span></button>';
+  });
+  html += '<div class="nav-group">综合</div>';
+  html += '<button class="nav-btn'+(view.name==="frq"?" active":"")+'" data-go="frq">📝 FRQ 练习</button>';
+  html += '<button class="nav-btn'+(view.name==="awards"?" active":"")+'" data-go="awards">🏆 成就馆</button>';
+  html += '<button class="nav-btn'+(view.name==="real"?" active":"")+'" data-go="real">🎯 真题演练</button>';
+  html += '<button class="nav-btn'+(view.name==="exam"?" active":"")+'" data-go="exam">🎯 模拟考试</button>';
+  html += '<button class="nav-btn'+(view.name==="cheat"?" active":"")+'" data-go="cheat">📋 速查表</button>';
+  sb.innerHTML = html;
+}
+function refreshHeader(){
+  $("#stat-level").textContent = "Lv."+level()+" "+levelTitle();
+  $("#stat-xp").textContent = state.xp+" XP";
+  $("#stat-streak").textContent = "🔥 "+state.streak+" 天";
+  $("#stat-pct").textContent = overallStats()+"% 掌握";
+}
+function go(name, params={}){
+  view = {name, ...params};
+  if(name==="unit"){ quizSession=null; }
+  examSession = null;
+  realSession = null;
+  nav(); render(); window.scrollTo({top:0, behavior:"smooth"});
+}
+function render(){ refreshHeader(); const m=$("#main");
+  if(view.name==="home") m.innerHTML = homeHTML();
+  else if(view.name==="unit") m.innerHTML = unitHTML();
+  else if(view.name==="quiz") m.innerHTML = quizHTML();
+  else if(view.name==="frq") m.innerHTML = frqHTML();
+  else if(view.name==="awards") m.innerHTML = awardsHTML();
+  else if(view.name==="real") m.innerHTML = realHTML();
+  else if(view.name==="exam") m.innerHTML = examHTML();
+  else if(view.name==="cheat") m.innerHTML = cheatHTML();
+  else if(view.name==="unitresult") m.innerHTML = resultHTML();
+}
+
+/* ================= 首页 ================= */
+function homeHTML(){
+  const done = UNITS.filter(u=>state.quizDone[u.id]).length;
+  const s = overallStats();
+  let cards = UNITS.map(u=>{
+    const st = unitStats(u);
+    const pct = st.total? Math.round(st.correct/st.total*100):0;
+    return '<div class="unit-card" data-go="unit" data-uid="'+u.id+'">'+
+      '<span class="bar"><i style="width:'+pct+'%"></i></span>'+
+      '<div class="icon">'+u.icon+'</div><h3>'+u.cn+'</h3>'+
+      '<div class="cn">'+u.title+'</div><div class="pct">'+st.correct+'/'+st.total+' 题 · '+pct+'%</div></div>';
+  }).join("");
+  const earned = BADGES.filter(b=>state.badges.includes(b.id));
+  const badgesHTML = BADGES.map(b=>{
+    const e = state.badges.includes(b.id);
+    return '<div class="badge'+(e?" earned":"")+'"><span class="b-ico">'+b.ico+'</span><b>'+b.name+'</b><span class="muted">'+b.desc+'</span></div>';
+  }).join("");
+
+  return ''+
+  '<div class="hero"><h1>你好！一起拿下 AP CSA 👋</h1>'+
+  '<p>这套课程按 <b>College Board 官方大纲的 10 个单元</b> 编排，从最基础的变量讲起。每个单元先学知识点，再做即时反馈的练习题；全部学完后去做 FRQ 和模拟考试。</p>'+
+  '<div class="row"><button class="btn" data-go="unit" data-uid="'+(UNITS[0]?UNITS[0].id:1)+'">🚀 开始学习</button>'+
+  '<button class="btn ghost" data-go="random">🎲 随机练习一题</button></div></div>'+
+  '<div class="card"><div class="spread"><h2 style="margin:0">📚 课程单元</h2><span class="muted">已完成 '+done+' / '+UNITS.length+'</span></div>'+
+  '<div class="pbar" style="margin:14px 0"><i style="width:'+s+'%"></i></div>'+
+  '<div class="unit-grid">'+cards+'</div></div>'+
+  '<div class="card"><h2 style="margin-top:0">🏅 我的徽章</h2><div class="badges">'+badgesHTML+'</div></div>'+
+  '<div class="card"><h2 style="margin-top:0">💾 进度备份</h2>'+
+  '<p class="sub">学习进度会自动保存在<b>当前这个浏览器</b>里，不用手动保存。但换设备、换浏览器或清理缓存前，建议先导出备份；到新设备再导入即可恢复。</p>'+
+  '<div class="row" style="margin-top:10px">'+
+  '<button class="btn" data-export>⬇️ 导出备份文件</button>'+
+  '<button class="btn ghost" data-import>⬆️ 导入备份文件</button>'+
+  '<input type="file" id="importFile" accept=".json,application/json" style="display:none">'+
+  '</div></div>';
+}
+
+/* ================= 单元 ================= */
+function unitHTML(){
+  const u = UNITS.find(x=>x.id===view.uid) || UNITS[0];
+  const st = unitStats(u);
+  const pct = st.total? Math.round(st.correct/st.total*100):0;
+  const tab = view.tab || "lesson";
+  const lessonRead = state.lessonsRead[u.id];
+  const done = state.quizDone[u.id];
+  return ''+
+  '<div class="card"><div class="spread"><div><h1 style="margin:0">'+u.icon+' '+u.title+'</h1>'+
+  '<div class="sub">'+u.cn+' · 目标：'+inline(u.objective||"")+'</div></div>'+
+  '<div style="min-width:180px"><div class="row" style="justify-content:flex-end;margin-bottom:6px"><span class="muted" style="font-size:13px">掌握度 '+pct+'%</span></div>'+
+  '<div class="pbar"><i style="width:'+pct+'%"></i></div></div></div>'+
+  '<div class="tabs" style="margin-top:16px"><button class="tab'+(tab==="lesson"?" active":"")+'" data-tab="lesson">📖 学习知识点</button>'+
+  '<button class="tab'+(tab==="quiz"?" active":"")+'" data-tab="quiz">✏️ 练习题 ('+st.correct+'/'+st.total+')</button></div></div>'+
+  (tab==="lesson" ? lessonHTML(u, lessonRead) : quizHTML(u, 0));
+}
+function lessonHTML(u, read){
+  const blocks = renderBlocks(u.lesson);
+  return '<div class="card">'+blocks+
+  '<div style="margin-top:20px" class="spread">'+
+  '<button class="btn" data-tab="quiz">✏️ 去做练习 →</button>'+
+  '<button class="btn ghost" data-markread="'+u.id+'">'+(read?"✅ 已学完":"📌 标记为已学完")+'</button>'+
+  '</div></div>';
+}
+
+/* ================= 练习 ================= */
+function startQuiz(uid){
+  const u = UNITS.find(x=>x.id===uid);
+  quizSession = {uid, idx:0, order:u.questions.map((_,i)=>i)};
+}
+function quizHTML(u, idx){
+  if(!u) return "";
+  if(!quizSession){ startQuiz(u.id); }
+  const s = quizSession;
+  const qi = s.order[s.idx];
+  const q = u.questions[qi];
+  const st = qStatus(u.id, qi);
+  const answered = !!st;
+  const total = s.order.length;
+  let opts = "";
+  if(q.options){
+    opts = '<div class="options">'+q.options.map((o,i)=>{
+      let cls="opt"; let ltr="ABCD"[i];
+      if(answered){
+        cls += " disabled";
+        if(i===q.answer) cls += " correct";
+        else if(i===st.picked) cls += " wrong";
+      }
+      return '<button class="'+cls+'" data-opt="'+i+'"><span class="ltr">'+ltr+'.</span><span>'+inline(o)+'</span></button>';
+    }).join("")+'</div>';
+  }
+  const explain = answered ? '<div class="explain '+(st.correct?"good":"bad")+'"><b>'+(st.correct?"✅ 回答正确！":"❌ 回答错误")+'</b>'+inline(q.explain)+'</div>' : "";
+  const nextBtn = answered ? '<button class="btn" data-next>'+(s.idx < total-1 ? "下一题 →" : "查看结果 🎉")+'</button>' : "";
+  return ''+
+  '<div class="card"><div class="spread" style="margin-bottom:10px">'+
+  '<span class="q-meta">第 '+(s.idx+1)+' / '+total+' 题 · '+(q.kind==="trace"?"🔍 代码追踪":"🧩 概念题")+'</span>'+
+  '<span class="muted" style="font-size:13px">已掌握 '+unitStats(u).correct+'/'+total+'</span></div>'+
+  '<div class="q-text">'+inline(q.q)+'</div>'+
+  (q.code ? '<div class="block-code">'+hl(q.code)+'</div>' : "")+
+  opts + explain +
+  '<div style="margin-top:16px" class="row">'+nextBtn+
+  '<button class="btn ghost sm" data-tab="lesson">← 返回知识点</button></div></div>';
+}
+function answerQuestion(opt){
+  const u = UNITS.find(x=>x.id===quizSession.uid);
+  const qi = quizSession.order[quizSession.idx];
+  const q = u.questions[qi];
+  const key = gid(u.id, qi);
+  const prev = state.q[key];
+  const correct = opt === q.answer;
+  const firstTime = !prev;
+  const wasWrong = prev && !prev.correct;
+
+  if(firstTime){
+    if(correct){ addXP(10); state.q[key]={correct:true, ft:true, picked:opt}; toast("+10 XP 🎉"); }
+    else{ state.q[key]={correct:false, ft:false, picked:opt}; toast("再想想，看看解析吧 💪"); }
+  } else if(wasWrong && correct){
+    addXP(4); state.q[key]={correct:true, ft:prev.ft, picked:opt}; toast("+4 XP 改正成功 ✅");
+  } else if(wasWrong && !correct){
+    state.q[key]={correct:false, ft:false, picked:opt};
+  } else {
+    state.q[key].picked = opt; // 已正确，随意重看
+  }
+  save(); render();
+}
+function nextQuestion(){
+  const u = UNITS.find(x=>x.id===quizSession.uid);
+  const total = quizSession.order.length;
+  if(quizSession.idx < total-1){ quizSession.idx++; render(); return; }
+  const st = unitStats(u);
+  const allCorrect = st.correct === total;
+  const perfect = st.firstTryRight === total;
+  if(!state.quizDone[u.id]){
+    state.quizDone[u.id] = true;
+    addXP(20);
+    if(allCorrect){ toast("🎊 完成本单元！+20 XP"); if(perfect) confetti(); }
+    else { toast("📦 完成本单元（可随时回来补错题）+20 XP"); }
+    save(); checkBadges();
+  }
+  quizSession = null;
+  view = {name:"unitresult", uid:u.id};
+  nav(); render();
+}
+function resultHTML(){
+  const u = UNITS.find(x=>x.id===view.uid);
+  const st = unitStats(u);
+  const pct = Math.round(st.correct/st.total*100);
+  const perfect = st.firstTryRight === st.total;
+  const nextU = UNITS.find(x=>x.id===u.id+1);
+  return '<div class="card" style="border-color:'+(pct>=80?'var(--good)':'var(--warn)')+'">'+
+  '<h1 style="margin:0">'+u.icon+' '+u.cn+' · 单元完成</h1>'+
+  '<p class="sub">答对 '+st.correct+' / '+st.total+' 题，正确率 <b style="font-size:22px">'+pct+'%</b>'+(perfect?" · 一次全对 💯":"")+'</p>'+
+  '<div class="pbar'+(pct>=80?" good":"")+'" style="margin:14px 0"><i style="width:'+pct+'%"></i></div>'+
+  '<p class="body">'+(pct>=80 ? "太棒了！继续下一个单元，或去挑战模拟考试。" : "错题是进步最快的路——点“再做一次”把错题搞懂，就能冲高分。")+'</p>'+
+  '<div class="row"><button class="btn" data-retry="'+u.id+'">🔁 再做一次</button>'+
+  '<button class="btn ghost" data-go="unit" data-uid="'+u.id+'">📖 复习知识点</button>'+
+  (nextU ? '<button class="btn" data-go="unit" data-uid="'+nextU.id+'">下一个单元 →</button>' : '<button class="btn" data-go="exam">🎯 去模考</button>')+
+  '</div></div>';
+}
+
+/* ================= FRQ ================= */
+function frqHTML(){
+  if(view.id != null) return frqDetailHTML();
+  const list = FRQS.map((f,i)=>{
+    const done = state.frqDone[f.id];
+    return '<div class="unit-card" data-go="frq" data-fid="'+f.id+'"><div class="icon">'+f.icon+'</div>'+
+    '<h3>'+f.title+'</h3><div class="cn">'+f.topic+'</div><div class="pct">'+(done?"✅ 已完成":"📌 未开始")+'</div></div>';
+  }).join("");
+  return '<div class="card"><h1>📝 FRQ 主观题练习</h1>'+
+  '<p class="sub">AP CSA 第二部分是 4 道编程大题（90 分钟）。这里按真实考试风格，给你题目 + 官方式评分标准，写完对照打分。</p>'+
+  '<div class="callout tip"><span class="ico">💡</span><div>建议：先在纸上/编译器里写完代码，再点“显示参考答案”对照。评分要点是阅卷老师真正给分的地方，一定要逐条自查。</div></div></div>'+
+  '<div class="unit-grid">'+list+'</div>';
+}
+function frqDetailHTML(){
+  const f = FRQS.find(x=>x.id===view.id) || FRQS[0];
+  const done = state.frqDone[f.id];
+  const rubric = f.points.map(p=>'<li>'+inline(p)+'</li>').join("");
+  return '<div class="card"><div class="spread"><h1 style="margin:0">'+f.icon+' '+f.title+'</h1>'+
+  '<button class="btn ghost sm" data-go="frq">← 返回列表</button></div>'+
+  '<div class="sub">'+f.topic+'</div>'+
+  '<h2>题目</h2><p class="body">'+inline(f.prompt)+'</p>'+
+  (f.code ? '<div class="block-code">'+hl(f.code)+'</div>' : "")+
+  '<h2>我的草稿</h2><textarea placeholder="在这里写你的答案（不会自动保存，建议写完后复制到别处）"></textarea>'+
+  '<div class="row"><button class="btn" data-reveal="answer">👀 显示参考答案</button>'+
+  '<button class="btn ghost" data-reveal="rubric">📊 显示评分标准</button>'+
+  (done?'<span class="btn sm" style="background:var(--good)">✅ 已完成</span>':'<button class="btn sm" data-frqdone="'+f.id+'">✅ 标记完成</button>')+
+  '</div><div id="frq-reveal"></div></div>';
+}
+function revealFRQ(which){
+  const f = FRQS.find(x=>x.id===view.id);
+  const box = $("#frq-reveal");
+  if(which==="answer"){
+    box.innerHTML = '<h2>参考答案</h2>'+(f.answerText?'<p class="body">'+inline(f.answerText)+'</p>':"")+'<div class="block-code">'+hl(f.answer)+'</div>';
+  } else {
+    box.innerHTML = '<div class="rubric"><b>📊 评分要点（每点对应阅卷给分）</b><ul class="li">'+f.points.map(p=>'<li>'+inline(p)+'</li>').join("")+'</ul></div>';
+  }
+}
+
+/* ================= 模拟考试 ================= */
+function examHTML(){
+  if(!examSession) return examIntroHTML();
+  if(view.finished) return examResultHTML();
+  const s = examSession;
+  const item = s.items[s.idx];
+  const answered = s.picked[s.idx] !== undefined;
+  return '<div class="card"><div class="spread" style="margin-bottom:10px">'+
+  '<span class="q-meta">模考第 '+(s.idx+1)+' / '+s.items.length+' 题</span>'+
+  '<span class="muted" style="font-size:13px">⏱️ '+examClock()+'</span></div>'+
+  '<div class="q-text">'+inline(item.q.q)+'</div>'+
+  (item.q.code?'<div class="block-code">'+hl(item.q.code)+'</div>':"")+
+  '<div class="options">'+item.q.options.map((o,i)=>{
+    let cls="opt"; if(answered){ cls+=" disabled"; if(i===s.picked[s.idx]) cls+=" active"; }
+    return '<button class="'+cls+'" data-examopt="'+i+'"><span class="ltr">'+"ABCD"[i]+'.</span><span>'+inline(o)+'</span></button>';
+  }).join("")+'</div>'+
+  '<div style="margin-top:16px" class="row">'+
+  (answered ? (s.idx<s.items.length-1?'<button class="btn" data-examnext>下一题 →</button>':'<button class="btn" data-examfinish>交卷 🏁</button>') : '<span class="muted" style="font-size:13px">选择一个答案后继续</span>')+
+  '</div></div>';
+}
+function examIntroHTML(){
+  const best = state.examBest;
+  return '<div class="card"><h1>🎯 模拟考试</h1>'+
+  '<p class="sub">随机抽取 '+(Math.min(30, flattenAll().length))+' 道覆盖全部单元的选择题。真实考试 MCQ 部分是 40 题 / 90 分钟，这里先热身。</p>'+
+  '<div class="callout tip"><span class="ico">⏱️</span><div>建议计时 30 分钟完成。答完可查看每一题的解析，错题会是你考前最该复习的清单。</div></div>'+
+  (best!==null? '<p class="body">历史最佳：<b>'+best+'%</b>（共 '+state.examAttempts+' 次）</p>':'<p class="body">还没有模考记录，来第一次挑战吧！</p>')+
+  '<button class="btn" data-startexam>▶️ 开始考试</button></div>';
+}
+function startExam(){
+  const pool = [...flattenAll(), ...flattenReal()];
+  const shuffled = [...pool].sort(()=>Math.random()-0.5).slice(0, Math.min(30, pool.length));
+  examSession = {items: shuffled, idx:0, picked: [], start: Date.now()};
+  state.examAttempts++;
+  save(); render();
+}
+function examClock(){
+  const sec = Math.floor((Date.now()-examSession.start)/1000);
+  return String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0");
+}
+function examPick(opt){ examSession.picked[examSession.idx] = opt; render(); }
+function examNext(){ examSession.idx++; render(); }
+function finishExam(){
+  const s = examSession;
+  const score = s.items.reduce((acc,it,i)=> acc + (s.picked[i]===it.q.answer?1:0), 0);
+  const pct = Math.round(score/s.items.length*100);
+  if(state.examBest===null || pct>state.examBest){ state.examBest=pct; }
+  view.finished = true; view.score=score; view.total=s.items.length; view.pct=pct;
+  addXP(score * 2);
+  if(pct >= 80) addXP(10);
+  save(); checkBadges(); render();
+  if(pct>=80) confetti();
+}
+function examResultHTML(){
+  const pct = view.pct;
+  const s = examSession;
+  const wrong = s.items.map((it,i)=>({it,i})).filter(x=> s.picked[x.i] !== x.it.q.answer);
+  return '<div class="card"><h1>'+(pct>=80?"🏆 太厉害了！":"📊 模考完成")+'</h1>'+
+  '<p class="sub">答对 '+view.score+' / '+view.total+' 题，正确率 <b style="font-size:22px">'+pct+'%</b></p>'+
+  '<div class="pbar'+(pct>=80?" good":"")+'" style="margin:14px 0"><i style="width:'+pct+'%"></i></div>'+
+  (pct>=80 ? '<div class="callout tip"><span class="ico">🎉</span><div>已经达到 5 分水平线！去把 FRQ 也过一遍就能上考场了。</div></div>' :
+   '<div class="callout warn"><span class="ico">💪</span><div>别灰心，错题就是提分点。下面是错题清单，回到对应单元再巩固一遍。</div></div>')+
+  '<h2>错题回顾</h2>'+
+  (wrong.length===0 ? '<p class="sub">全部答对，没有错题！👏</p>' :
+    wrong.map(w=> '<div style="margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:12px">'+
+      '<b>'+w.it.unit.cn+'：</b>'+inline(w.it.q.q)+
+      (w.it.q.code?'<div class="block-code">'+hl(w.it.q.code)+'</div>':"")+
+      '<div class="muted" style="font-size:13px">你的答案：'+(s.picked[w.i]!==undefined?"ABCD"[s.picked[w.i]]:"未作答")+' · 正确答案：'+"ABCD"[w.it.q.answer]+'</div>'+
+      '<div class="muted" style="font-size:13px">'+inline(w.it.q.explain)+'</div></div>').join("")
+  )+
+  '<div class="row" style="margin-top:16px"><button class="btn" data-go="exam">🔁 再考一次</button>'+
+  '<button class="btn ghost" data-go="home">🏠 回首页</button></div></div>';
+}
+
+/* ================= 真题演练 ================= */
+function flattenReal(){
+  return REALEXAM.map((q,i)=>({q, uid:-1, qi:i, unit:{cn: q.topic}}));
+}
+function startReal(){
+  realSession = {idx:0, order:REALEXAM.map((_,i)=>i), answers:[], finished:false};
+  view = {name:"real"};
+  nav(); render();
+}
+function realIntroHTML(){
+  return '<div class="card"><h1>🎯 真题演练</h1>'+
+  '<p class="sub">'+REALEXAM.length+' 道<b>真题风格</b>选择题，形式与难度对齐 AP CSA 正式考试（代码追踪为主、4 个选项）。逐题练习，答完立刻看解析。</p>'+
+  '<div class="callout warn"><span class="ico">⚠️</span><div>正式考试是 40 题 / 90 分钟，这里先热身。官方历年 FRQ 可在 College Board 官网 AP Central 免费下载。</div></div>'+
+  '<button class="btn" data-startreal>▶️ 开始演练</button></div>';
+}
+function realHTML(){
+  if(!realSession) return realIntroHTML();
+  if(realSession.finished) return realResultHTML();
+  const s = realSession;
+  const qi = s.order[s.idx];
+  const q = REALEXAM[qi];
+  const total = s.order.length;
+  const ans = s.answers[s.idx];
+  const answered = !!ans;
+  let opts = '';
+  if(q.options){
+    opts = '<div class="options">'+q.options.map((o,i)=>{
+      let cls="opt";
+      if(answered){ cls += " disabled"; if(i===q.answer) cls += " correct"; else if(i===ans.picked) cls += " wrong"; }
+      return '<button class="'+cls+'" data-realopt="'+i+'"><span class="ltr">'+"ABCD"[i]+'.</span><span>'+inline(o)+'</span></button>';
+    }).join("")+'</div>';
+  }
+  const explain = answered ? '<div class="explain '+(ans.correct?"good":"bad")+'"><b>'+(ans.correct?"✅ 正确":"❌ 错误")+'</b>'+inline(q.explain)+'</div>' : "";
+  const nextBtn = answered ? '<button class="btn" data-realnext>'+(s.idx<total-1?"下一题 →":"查看成绩 🎉")+'</button>' : "";
+  return '<div class="card"><div class="spread" style="margin-bottom:10px">'+
+  '<span class="q-meta">真题演练 · 第 '+(s.idx+1)+' / '+total+' 题 · '+inline(q.topic)+'</span>'+
+  '<button class="btn ghost sm" data-realexit>✕ 退出</button></div>'+
+  '<div class="q-text">'+inline(q.q)+'</div>'+
+  (q.code?'<div class="block-code">'+hl(q.code)+'</div>':"")+
+  opts + explain +
+  '<div style="margin-top:16px" class="row">'+nextBtn+'</div></div>';
+}
+function realAnswer(opt){
+  const s = realSession;
+  const qi = s.order[s.idx];
+  const q = REALEXAM[qi];
+  const correct = opt === q.answer;
+  s.answers[s.idx] = {picked:opt, correct};
+  if(correct){ addXP(8); toast("+8 XP ✅"); }
+  else { toast("看看解析 💪"); }
+  save(); render();
+}
+function realNext(){
+  const s = realSession;
+  if(s.idx < s.order.length-1){ s.idx++; render(); return; }
+  s.finished = true;
+  if(!state.realDone) state.realDone = 0;
+  state.realDone++;
+  save(); checkBadges();
+  render();
+}
+function realResultHTML(){
+  const s = realSession;
+  const total = s.order.length;
+  const correct = s.answers.filter(a=>a && a.correct).length;
+  const pct = Math.round(correct/total*100);
+  const wrong = [];
+  s.order.forEach((qi,i)=>{ if(!s.answers[i] || !s.answers[i].correct) wrong.push({q:REALEXAM[qi], i}); });
+  return '<div class="card"><h1>'+(pct>=80?"🏆 成绩不错！":"📊 演练完成")+'</h1>'+
+  '<p class="sub">答对 '+correct+' / '+total+' 题，正确率 <b style="font-size:22px">'+pct+'%</b></p>'+
+  '<div class="pbar'+(pct>=80?" good":"")+'" style="margin:14px 0"><i style="width:'+pct+'%"></i></div>'+
+  '<h2>错题回顾</h2>'+
+  (wrong.length===0 ? '<p class="sub">全部答对，太强了！👏</p>' :
+    wrong.map(w=> '<div style="margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:12px">'+
+      '<b>'+w.q.topic+'：</b>'+inline(w.q.q)+
+      (w.q.code?'<div class="block-code">'+hl(w.q.code)+'</div>':"")+
+      '<div class="muted" style="font-size:13px">你的答案：'+(s.answers[w.i]&&s.answers[w.i].picked!==undefined?"ABCD"[s.answers[w.i].picked]:"未作答")+' · 正确答案：'+"ABCD"[w.q.answer]+'</div>'+
+      '<div class="muted" style="font-size:13px">'+inline(w.q.explain)+'</div></div>').join("")
+  )+
+  '<div class="row" style="margin-top:16px"><button class="btn" data-startreal>🔁 再练一次</button>'+
+  '<button class="btn ghost" data-go="home">🏠 回首页</button></div></div>';
+}
+
+/* ================= 速查表 ================= */
+function cheatHTML(){
+  return '<div class="card"><h1>📋 速查表</h1><p class="sub">考前 10 分钟过一遍，专治“明明会但想不起来”。</p></div>'+
+  '<div class="card">'+renderBlocks(CHEATSHEET)+'</div>';
+}
+
+/* ================= 彩带 ================= */
+function confetti(){
+  const colors = ["#6366f1","#8b5cf6","#10b981","#f59e0b","#ef4444","#ec4899","#06b6d4"];
+  for(let i=0;i<90;i++){
+    const d=document.createElement("div");
+    d.className="confetti";
+    d.style.left=Math.random()*100+"vw";
+    d.style.width=(6+Math.random()*8)+"px";
+    d.style.height=(10+Math.random()*10)+"px";
+    d.style.background=colors[Math.floor(Math.random()*colors.length)];
+    d.style.animationDuration=(2.2+Math.random()*2)+"s";
+    d.style.animationDelay=(Math.random()*0.6)+"s";
+    d.style.borderRadius=Math.random()>0.5?"50%":"2px";
+    document.body.appendChild(d);
+    setTimeout(()=>d.remove(), 5000);
+  }
+}
+
+/* ================= 事件绑定 ================= */
+document.addEventListener("click", e=>{
+  const t = e.target;
+  const goBtn = t.closest("[data-go]");
+  if(goBtn){
+    if(goBtn.dataset.go==="unit"){ go("unit", {uid:+goBtn.dataset.uid, tab:"lesson"}); return; }
+    if(goBtn.dataset.go==="frq" && goBtn.dataset.fid){ go("frq", {id:+goBtn.dataset.fid}); return; }
+    if(goBtn.dataset.go==="random"){ view={name:"random"}; nav(); $("#main").innerHTML = randomHTML(); return; }
+    go(goBtn.dataset.go);
+    return;
+  }
+  const tabBtn = t.closest("[data-tab]");
+  if(tabBtn){ view.tab = tabBtn.dataset.tab; if(view.name==="unit") render(); return; }
+  const mark = t.closest("[data-markread]");
+  if(mark){
+    const uid = +mark.dataset.markread;
+    if(!state.lessonsRead[uid]){ state.lessonsRead[uid]=true; addXP(5); toast("+5 XP 完成学习 ✅"); save(); }
+    else { state.lessonsRead[uid]=false; save(); }
+    render(); return;
+  }
+  const opt = t.closest("[data-opt]");
+  if(opt){ answerQuestion(+opt.dataset.opt); return; }
+  const nx = t.closest("[data-next]");
+  if(nx){ nextQuestion(); return; }
+  const retry = t.closest("[data-retry]");
+  if(retry){ startQuiz(+retry.dataset.retry); view = {name:"unit", uid:+retry.dataset.retry, tab:"quiz"}; nav(); render(); return; }
+  const reveal = t.closest("[data-reveal]");
+  if(reveal){ revealFRQ(reveal.dataset.reveal); return; }
+  const frqdone = t.closest("[data-frqdone]");
+  if(frqdone){ const fid=+frqdone.dataset.frqdone; if(!state.frqDone[fid]){ state.frqDone[fid]=true; addXP(20); toast("🎉 完成一道 FRQ！+20 XP"); } save(); checkBadges(); render(); return; }
+  const se = t.closest("[data-startexam]");
+  if(se){ startExam(); return; }
+  const eo = t.closest("[data-examopt]");
+  if(eo){ examPick(+eo.dataset.examopt); return; }
+  const en = t.closest("[data-examnext]");
+  if(en){ examNext(); return; }
+  const ef = t.closest("[data-examfinish]");
+  if(ef){ finishExam(); return; }
+  const ro = t.closest("[data-randopt]");
+  if(ro){ answerRandom(+ro.dataset.randopt); return; }
+  const ex = t.closest("[data-export]");
+  if(ex){ exportData(); return; }
+  const im = t.closest("[data-import]");
+  if(im){ const inp = $("#importFile"); if(inp) inp.click(); return; }
+  const sr = t.closest("[data-startreal]");
+  if(sr){ startReal(); return; }
+  const rp = t.closest("[data-realopt]");
+  if(rp){ realAnswer(+rp.dataset.realopt); return; }
+  const rn = t.closest("[data-realnext]");
+  if(rn){ realNext(); return; }
+  const rx = t.closest("[data-realexit]");
+  if(rx){ go("home"); return; }
+});
+document.addEventListener("change", e=>{
+  if(e.target && e.target.id === "importFile"){ importData(e.target.files && e.target.files[0]); }
+});
+
+/* 随机练习答题（简化版） */
+let randomCurrent = null;
+function answerRandom(opt){
+  if(!randomCurrent) return;
+  const pick = randomCurrent;
+  const key = gid(pick.uid, pick.qi);
+  const prev = state.q[key];
+  const correct = opt === pick.q.answer;
+  if(!prev){
+    if(correct){ addXP(10); state.q[key]={correct:true,ft:true,picked:opt}; toast("+10 XP 🎉"); }
+    else{ state.q[key]={correct:false,ft:false,picked:opt}; }
+  } else if(!prev.correct && correct){
+    addXP(4); state.q[key]={correct:true,ft:prev.ft,picked:opt}; toast("+4 XP ✅");
+  } else if(!prev.correct && !correct){
+    state.q[key]={correct:false,ft:false,picked:opt};
+  } else { state.q[key].picked=opt; }
+  save(); nav(); $("#main").innerHTML = randomHTML();
+}
+
+/* 随机练习：记录当前题目以便答题 */
+function randomHTML(){
+  const pool = flattenAll();
+  const pick = pool[Math.floor(Math.random()*pool.length)];
+  randomCurrent = pick;
+  const st = qStatus(pick.uid, pick.qi);
+  const answered = !!st;
+  return '<div class="card"><div class="spread" style="margin-bottom:10px">'+
+  '<span class="q-meta">🎲 随机练习 · 来自「'+pick.unit.cn+'」</span>'+
+  '<button class="btn ghost sm" data-go="unit" data-uid="'+pick.uid+'">去该单元 →</button></div>'+
+  '<div class="q-text">'+inline(pick.q.q)+'</div>'+
+  (pick.q.code?'<div class="block-code">'+hl(pick.q.code)+'</div>':"")+
+  '<div class="options">'+pick.q.options.map((o,i)=>{
+    let cls="opt"; if(answered){ cls+=" disabled"; if(i===pick.q.answer)cls+=" correct"; else if(i===st.picked)cls+=" wrong"; }
+    return '<button class="'+cls+'" data-randopt="'+i+'"><span class="ltr">'+"ABCD"[i]+'.</span><span>'+inline(o)+'</span></button>';
+  }).join("")+'</div>'+
+  (answered?'<div class="explain '+(st.correct?"good":"bad")+'"><b>'+(st.correct?"✅ 正确":"❌ 错误")+'</b>'+inline(pick.q.explain)+'</div>':"")+
+  '<div style="margin-top:14px" class="row">'+(answered?'<button class="btn" data-go="random">🎲 再来一题</button>':'')+
+  '<button class="btn ghost" data-go="home">🏠 回首页</button></div></div>';
+};
+
+/* ================= 进度备份 / 恢复 ================= */
+function exportData(){
+  try{
+    const data = JSON.stringify(state, null, 2);
+    const blob = new Blob([data], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "apcsa-progress-" + todayStr() + ".json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    toast("✅ 备份文件已下载");
+  }catch(e){ toast("❌ 导出失败：" + e.message); }
+}
+function importData(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    try{
+      const obj = JSON.parse(ev.target.result);
+      if(!obj || typeof obj !== "object" || (!("xp" in obj) && !("q" in obj))){ toast("❌ 这不是有效的备份文件"); return; }
+      state = obj;
+      if(!state.q) state.q = {};
+      if(!state.lessonsRead) state.lessonsRead = {};
+      if(!state.quizDone) state.quizDone = {};
+      if(!state.frqDone) state.frqDone = {};
+      if(!state.badges) state.badges = [];
+      if(state.examBest === undefined) state.examBest = null;
+      if(!state.examAttempts) state.examAttempts = 0;
+      save();
+      go("home");
+      toast("✅ 进度已恢复");
+    }catch(e){ toast("❌ 备份文件解析失败"); }
+  };
+  reader.readAsText(file);
+}
+
+/* ================= 成就馆 ================= */
+function awardsHTML(){
+  const lv = level();
+  const lvTitle = levelTitle();
+  const curXp = state.xp;
+  const need = 150;
+  const into = curXp - (lv-1)*need;
+  const pct = Math.min(100, Math.round(into/need*100));
+  const ladder = LEVEL_TITLES.map((t,i)=>{
+    const tl = i+1;
+    let bg="transparent", bd="var(--line)";
+    if(tl<lv){ bg="var(--good-soft)"; bd="var(--good)"; }
+    if(tl===lv){ bg="var(--accent-soft)"; bd="var(--accent)"; }
+    return '<div style="display:flex;align-items:center;gap:12px;padding:8px 14px;border-radius:12px;border:1px solid '+bd+';background:'+bg+';font-size:14px;'+(tl===lv?'font-weight:700;':'')+'">'+
+      '<span style="font-weight:700;min-width:50px;color:'+(tl<=lv?'var(--accent)':'var(--soft)')+'">Lv.'+tl+'</span>'+
+      '<span>'+t+'</span>'+(tl===lv?'<span style="margin-left:auto;font-size:12px;color:var(--accent);font-weight:700">👈 当前</span>':(tl<lv?'<span style="margin-left:auto;font-size:12px;color:var(--good)">已解锁</span>':'<span style="margin-left:auto;font-size:12px;color:var(--soft)">🔒</span>'))+'</div>';
+  }).join("");
+  const badgesHTML = BADGES.map(b=>{
+    const e = state.badges.includes(b.id);
+    return '<div class="badge'+(e?" earned":"")+'"><span class="b-ico">'+b.ico+'</span><b>'+b.name+'</b><span class="muted">'+(e?b.desc:'🔒 '+b.desc)+'</span></div>';
+  }).join("");
+  const earnedCount = BADGES.filter(b=>state.badges.includes(b.id)).length;
+  const nextInfo = lv < LEVEL_TITLES.length ? ('Lv.'+(lv+1)+' · '+LEVEL_TITLES[lv]) : '已满级';
+  const remain = lv < LEVEL_TITLES.length ? (need - into) : 0;
+  return '<div class="card"><h1>🏆 成就馆</h1>'+
+  '<div class="spread"><div><div class="sub">当前等级</div><div style="font-size:42px;font-weight:800;line-height:1.1">Lv.'+lv+' · '+lvTitle+'</div></div>'+
+  '<div style="text-align:right"><div class="muted" style="font-size:13px">累计积分</div><div style="font-size:24px;font-weight:700">'+curXp+' XP</div></div></div>'+
+  '<div class="pbar" style="margin:16px 0"><i style="width:'+pct+'%"></i></div>'+
+  '<div class="muted" style="font-size:13px">下一级 '+nextInfo+(lv<LEVEL_TITLES.length?' · 还差 '+remain+' XP':'')+'</div></div>'+
+  '<div class="card"><h2 style="margin-top:0">👑 称号阶梯</h2><p class="sub">每升一级解锁一个新称号，看看你能走到多远。</p>'+
+  '<div style="display:flex;flex-direction:column;gap:6px;margin-top:12px">'+ladder+'</div></div>'+
+  '<div class="card"><div class="spread"><h2 style="margin:0">🎖️ 勋章墙</h2><span class="muted">已获得 '+earnedCount+' / '+BADGES.length+'</span></div>'+
+  '<div class="badges" style="margin-top:12px">'+badgesHTML+'</div></div>';
+}
+
+/* ================= 交互式演示 ================= */
+const DEMOS = {
+  sine: {
+    title: "Sine Wave · 拖动滑块观察",
+    note: "y = A·sin(B·x). Drag Amplitude A to change height, Frequency B to compress/stretch (period = 2π/B).",
+    controls: [
+      {id:"amp", label:"Amplitude A (振幅)", min:1, max:5, step:1, value:2},
+      {id:"freq", label:"Frequency B (频率)", min:1, max:4, step:1, value:1},
+    ],
+  },
+  exp: {
+    title: "Exponential Function · 拖动滑块观察",
+    note: "y = bˣ. When b > 1 it grows; when 0 < b < 1 it decays. The green dashed line is y = 1 — every exponential passes through (0, 1).",
+    controls: [
+      {id:"base", label:"Base b (底数)", min:0.2, max:3, step:0.1, value:2},
+    ],
+  },
+  ppc: {
+    title: "Production Possibilities Curve (PPC) · 生产可能性曲线",
+    note: "Drag to see economic growth (curve shifts OUT) vs. contraction (shifts IN). Green = efficient, orange = inefficient, red = unattainable.",
+    controls: [
+      {id:"growth", label:"Economy Level (经济水平)", min:0.5, max:1.5, step:0.05, value:1},
+    ],
+  },
+  supply: {
+    title: "Supply & Demand · 均衡变化",
+    note: "Drag Demand or Supply to watch equilibrium price and quantity change. Red = demand, blue = supply, purple = equilibrium.",
+    controls: [
+      {id:"demand", label:"Demand (需求)", min:3, max:10, step:0.5, value:8},
+      {id:"supply", label:"Supply (供给)", min:0, max:6, step:0.5, value:2},
+    ],
+  },
+  loop: {
+    title: "for Loop Visualization · 拖动 i 观察",
+    note: "for (int i=0; i<5; i++){ sum += a[i]; }. Drag i to watch its value, the condition, and the accumulation (purple = current element).",
+    controls: [
+      {id:"i", label:"Loop Variable i (循环变量)", min:0, max:5, step:1, value:0},
+    ],
+  },
+};
+
+function sineSVG(p){
+  const W=420, H=300, L=44, R=16, T=22, B=42;
+  const A=p.amp, freq=p.freq, xmin=0, xmax=2*Math.PI, ymax=A*1.35, ymin=-A*1.35;
+  const X=x=>L+(x-xmin)/(xmax-xmin)*(W-L-R);
+  const Y=y=>H-B-(y-ymin)/(ymax-ymin)*(H-T-B);
+  let s='';
+  for(let i=0;i<=6;i++){ const x=xmin+(xmax-xmin)*i/6; s+='<line x1="'+X(x).toFixed(1)+'" y1="'+Y(ymin)+'" x2="'+X(x).toFixed(1)+'" y2="'+Y(ymax)+'" stroke="#eef0f6" stroke-width="1"/>'; }
+  s+='<line x1="'+X(xmin)+'" y1="'+Y(0)+'" x2="'+X(xmax)+'" y2="'+Y(0)+'" stroke="#b6bcc8" stroke-width="1.5"/>';
+  s+='<line x1="'+X(xmin)+'" y1="'+Y(ymin)+'" x2="'+X(xmin)+'" y2="'+Y(ymax)+'" stroke="#b6bcc8" stroke-width="1.5"/>';
+  let d='';
+  for(let i=0;i<=240;i++){ const x=xmin+(xmax-xmin)*i/240, y=A*Math.sin(freq*x); d+=(i?' L':'M')+X(x).toFixed(1)+' '+Y(y).toFixed(1); }
+  s+='<path d="'+d+'" fill="none" stroke="#5e5ce6" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>';
+  s+='<text x="'+((W-L-R)/2+L)+'" y="'+(H-12)+'" text-anchor="middle" fill="#5e5ce6" font-size="13" font-weight="600">y = '+A+'·sin('+freq+'x)</text>';
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;background:#fbfcff;border-radius:12px">'+s+'</svg>';
+}
+
+function expSVG(p){
+  const W=420, H=300, L=48, R=16, T=22, B=42;
+  const b=p.base, xmin=-2, xmax=3.5;
+  let ymax=Math.pow(b, xmax), ymin=Math.pow(b, xmin);
+  if(ymax<ymin){ const t=ymax; ymax=ymin; ymin=t; }
+  ymax=Math.min(16, Math.max(ymax, 1.2)); ymin=0;
+  const X=x=>L+(x-xmin)/(xmax-xmin)*(W-L-R);
+  const Y=y=>H-B-(y-ymin)/(ymax-ymin)*(H-T-B);
+  let s='';
+  for(let i=0;i<=5;i++){ const y=ymax*i/5; s+='<line x1="'+X(xmin)+'" y1="'+Y(y)+'" x2="'+X(xmax)+'" y2="'+Y(y)+'" stroke="#eef0f6" stroke-width="1"/>'; }
+  s+='<line x1="'+X(xmin)+'" y1="'+Y(0)+'" x2="'+X(xmax)+'" y2="'+Y(0)+'" stroke="#b6bcc8" stroke-width="1.5"/>';
+  s+='<line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(0)+'" y2="'+Y(ymax)+'" stroke="#b6bcc8" stroke-width="1.5"/>';
+  let d='';
+  for(let i=0;i<=240;i++){ const x=xmin+(xmax-xmin)*i/240, y=Math.pow(b,x); d+=(i?' L':'M')+X(x).toFixed(1)+' '+Y(y).toFixed(1); }
+  s+='<path d="'+d+'" fill="none" stroke="#0a84ff" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>';
+  s+='<line x1="'+X(xmin)+'" y1="'+Y(1)+'" x2="'+X(xmax)+'" y2="'+Y(1)+'" stroke="#34c759" stroke-width="1.2" stroke-dasharray="5,4"/>';
+  s+='<circle cx="'+X(0)+'" cy="'+Y(1)+'" r="3.5" fill="#34c759"/>';
+  s+='<text x="'+(W/2)+'" y="'+(H-12)+'" text-anchor="middle" fill="#0a84ff" font-size="13" font-weight="600">y = '+b.toFixed(1)+'ˣ</text>';
+  s+='<text x="'+X(0)+'" y="'+Y(1)+'" fill="#34c759" font-size="11" dx="6" dy="-6">(0, 1)</text>';
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;background:#fbfcff;border-radius:12px">'+s+'</svg>';
+}
+
+function ppcSVG(p){
+  const W=420, H=300, L=48, R=16, T=22, B=42;
+  const g=p.growth, max=10*g;
+  const X=x=>L+(x/(max*1.2))*(W-L-R);
+  const Y=y=>H-B-(y/(max*1.2))*(H-T-B);
+  let s='';
+  s+='<line x1="'+L+'" y1="'+Y(0)+'" x2="'+X(max*1.15)+'" y2="'+Y(0)+'" stroke="#b6bcc8" stroke-width="1.5"/>';
+  s+='<line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(0)+'" y2="'+Y(max*1.15)+'" stroke="#b6bcc8" stroke-width="1.5"/>';
+  let d='';
+  for(let i=0;i<=120;i++){ const x=max*i/120; const y=max*Math.sqrt(1-Math.pow(x/max,2)); d+=(i?' L':'M')+X(x).toFixed(1)+' '+Y(y).toFixed(1); }
+  s+='<path d="'+d+'" fill="none" stroke="#f59e0b" stroke-width="2.8" stroke-linejoin="round"/>';
+  let ex=0.5*max, ey=max*Math.sqrt(1-0.25);
+  s+='<circle cx="'+X(ex)+'" cy="'+Y(ey)+'" r="4" fill="#34c759"/>';
+  s+='<text x="'+X(ex)+'" y="'+Y(ey)+'" fill="#1a9d5c" font-size="11" dx="8" dy="-6">Efficient</text>';
+  let ix=0.4*max, iy=0.4*max;
+  s+='<circle cx="'+X(ix)+'" cy="'+Y(iy)+'" r="4" fill="#ff9500"/>';
+  s+='<text x="'+X(ix)+'" y="'+Y(iy)+'" fill="#c76e00" font-size="11" dx="8" dy="16">Inefficient</text>';
+  let ux=0.85*max, uy=0.85*max;
+  s+='<circle cx="'+X(ux)+'" cy="'+Y(uy)+'" r="4" fill="#ff3b30"/>';
+  s+='<text x="'+X(ux)+'" y="'+Y(uy)+'" fill="#c40000" font-size="11" dx="8" dy="-6">Unattainable</text>';
+  s+='<text x="'+X(max)+'" y="'+Y(0)+'" fill="#9aa0aa" font-size="11" dy="16">Good A</text>';
+  s+='<text x="'+X(0)+'" y="'+Y(max)+'" fill="#9aa0aa" font-size="11" dx="-34" dy="-4">Good B</text>';
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;background:#fbfcff;border-radius:12px">'+s+'</svg>';
+}
+
+function supplySVG(p){
+  const W=420, H=300, L=52, R=16, T=22, B=42;
+  const D0=p.demand, S0=p.supply;
+  const qmax=14, pmax=12;
+  const X=q=>L+(q/qmax)*(W-L-R);
+  const Y=price=>H-B-(price/pmax)*(H-T-B);
+  const Qe=(D0-S0)/1.4, Pe=D0-0.8*Qe;
+  let s='';
+  for(let i=1;i<=6;i++){ s+='<line x1="'+X(0)+'" y1="'+Y(pmax*i/6)+'" x2="'+X(qmax)+'" y2="'+Y(pmax*i/6)+'" stroke="#eef0f6" stroke-width="1"/>'; }
+  s+='<line x1="'+L+'" y1="'+Y(0)+'" x2="'+X(qmax)+'" y2="'+Y(0)+'" stroke="#b6bcc8" stroke-width="1.5"/>';
+  s+='<line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(0)+'" y2="'+Y(pmax)+'" stroke="#b6bcc8" stroke-width="1.5"/>';
+  s+='<line x1="'+X(0)+'" y1="'+Y(D0)+'" x2="'+X(D0/0.8)+'" y2="'+Y(0)+'" stroke="#ff3b30" stroke-width="2.6"/>';
+  const qsupply=(pmax-S0)/0.6;
+  s+='<line x1="'+X(0)+'" y1="'+Y(S0)+'" x2="'+X(qsupply)+'" y2="'+Y(pmax)+'" stroke="#0a84ff" stroke-width="2.6"/>';
+  s+='<circle cx="'+X(Qe)+'" cy="'+Y(Pe)+'" r="4.5" fill="#5e5ce6"/>';
+  s+='<text x="'+X(Qe)+'" y="'+Y(Pe)+'" fill="#5e5ce6" font-size="11" dx="8" dy="-6">Equilibrium P='+Pe.toFixed(1)+' Q='+Qe.toFixed(1)+'</text>';
+  s+='<text x="'+X(D0/0.8)+'" y="'+Y(0)+'" fill="#ff3b30" font-size="12" font-weight="600" dy="16">Demand D</text>';
+  s+='<text x="'+X(qsupply)+'" y="'+Y(pmax)+'" fill="#0a84ff" font-size="12" font-weight="600" dy="-6">Supply S</text>';
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;background:#fbfcff;border-radius:12px">'+s+'</svg>';
+}
+
+function loopSVG(p){
+  const arr=[3,1,4,1,5], i=Math.round(p.i), N=arr.length;
+  const sum=arr.slice(0,i).reduce((a,b)=>a+b,0);
+  const W=420, H=190, L=40, R=20, T=36, B=30;
+  const bw=(W-L-R)/N;
+  let s='';
+  for(let k=0;k<N;k++){
+    const x=L+k*bw;
+    const active=(k===i && i<N);
+    s+='<rect x="'+x+'" y="'+T+'" width="'+(bw-8)+'" height="56" rx="8" fill="'+(active?'#5e5ce6':'#fff')+'" stroke="'+(active?'#5e5ce6':'#c6ccd8')+'" stroke-width="1.5"/>';
+    s+='<text x="'+(x+(bw-8)/2)+'" y="'+(T+32)+'" text-anchor="middle" fill="'+(active?'#fff':'#333')+'" font-size="18" font-weight="700">'+arr[k]+'</text>';
+    s+='<text x="'+(x+(bw-8)/2)+'" y="'+(T+72)+'" text-anchor="middle" fill="#9aa0aa" font-size="11">['+k+']</text>';
+  }
+  const inLoop=i<N;
+  s+='<text x="'+L+'" y="'+(T+96)+'" fill="'+(inLoop?'#1a9d5c':'#c40000')+'" font-size="13" font-weight="600">i = '+i+'　condition i<'+N+' → '+(inLoop?'true ✅ continue':'false ❌ exit loop')+'</text>';
+  s+='<text x="'+L+'" y="'+(T+120)+'" fill="#333" font-size="13">Sum = '+sum+'（first '+i+' elements added）</text>';
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;background:#fbfcff;border-radius:12px">'+s+'</svg>';
+}
+
+function demoDraw(type, p){
+  if(type==="sine") return sineSVG(p);
+  if(type==="exp") return expSVG(p);
+  if(type==="ppc") return ppcSVG(p);
+  if(type==="supply") return supplySVG(p);
+  if(type==="loop") return loopSVG(p);
+  return "";
+}
+function renderDemo(type){
+  const def = DEMOS[type];
+  if(!def) return "";
+  const p = {};
+  def.controls.forEach(c => p[c.id] = c.value);
+  const svg = demoDraw(type, p);
+  const controls = def.controls.map(c =>
+    '<label class="demo-ctl"><span>'+c.label+'：<b id="dv-'+type+'-'+c.id+'">'+c.value+'</b></span>'+
+    '<input type="range" data-demoslider="'+type+'" data-param="'+c.id+'" min="'+c.min+'" max="'+c.max+'" step="'+c.step+'" value="'+c.value+'"></label>'
+  ).join("");
+  return '<div class="demo"><div class="demo-title">'+def.title+'</div>'+
+    '<div class="demo-svg" id="demo-svg-'+type+'">'+svg+'</div>'+
+    '<div class="demo-controls">'+controls+'</div>'+
+    '<div class="demo-note">'+def.note+'</div></div>';
+}
+function demoRefresh(type){
+  const def = DEMOS[type];
+  if(!def) return;
+  const p = {};
+  def.controls.forEach(c => {
+    const inp = document.querySelector('[data-demoslider="'+type+'"][data-param="'+c.id+'"]');
+    p[c.id] = inp ? parseFloat(inp.value) : c.value;
+    const lab = document.getElementById('dv-'+type+'-'+c.id);
+    if(lab) lab.textContent = p[c.id];
+  });
+  const box = document.getElementById('demo-svg-'+type);
+  if(box) box.innerHTML = demoDraw(type, p);
+}
+document.addEventListener("input", e=>{
+  const s = e.target && e.target.closest ? e.target.closest("[data-demoslider]") : null;
+  if(s){ demoRefresh(s.dataset.demoslider); }
+});
+
+function renderVideo(b){
+  const links = (b.links||[]).map(l =>
+    '<a class="video-link" href="'+l.url+'" target="_blank" rel="noopener">'+
+    '<span class="video-ico">'+(l.site==="YouTube"?"▶️":"📺")+'</span>'+
+    '<span class="video-txt"><b>'+l.site+'</b> · '+l.label+'</span><span class="video-arrow">↗</span></a>'
+  ).join("");
+  return '<div class="video-block"><div class="video-title">🎬 '+(b.title||"Recommended Videos · 推荐视频")+'</div>'+links+'</div>';
+}
+
+
+/* ================= 启动 ================= */
+function init(){
+  updateStreak();
+  // 兼容旧状态字段
+  if(!state.q) state.q={};
+  if(!state.lessonsRead) state.lessonsRead={};
+  if(!state.quizDone) state.quizDone={};
+  if(!state.frqDone) state.frqDone={};
+  if(state.badges===undefined) state.badges=[];
+  save();
+  nav(); render(); checkBadges();
+}
+init();
+</script>
+</body>
+</html>

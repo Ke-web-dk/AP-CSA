@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AP Precalculus 学习平台 · 从零到 5 分</title>
+<style>  :root{
+    --bg:#eef1f8; --card:rgba(255,255,255,0.30); --line:rgba(0,0,0,0.08);
+    --text:#1c1c1e; --muted:#6e6e73; --soft:#9a9aa0;
+    --accent:#0a84ff; --accent2:#5e5ce6; --accent-soft:rgba(10,132,255,0.10);
+    --good:#34c759; --good-soft:rgba(52,199,89,0.14); --bad:#ff3b30; --bad-soft:rgba(255,59,48,0.12);
+    --warn:#ff9500; --warn-soft:rgba(255,149,0,0.14); --code-bg:#f2f4f9; --code-text:#1c1c1e;
+    --radius:22px; --shadow:0 18px 40px rgba(60,80,160,0.16), 0 4px 14px rgba(60,80,160,0.10);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:"SF Pro Text",-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:
+      radial-gradient(1100px 800px at 88% -12%, rgba(94,92,230,0.22), transparent 55%),
+      radial-gradient(950px 750px at -8% 12%, rgba(10,132,255,0.20), transparent 55%),
+      radial-gradient(900px 700px at 50% 115%, rgba(52,199,89,0.15), transparent 55%),
+      var(--bg);
+    background-attachment:fixed;
+    color:var(--text); line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  code,.mono{font-family:"SF Mono","Cascadia Code",Consolas,"Courier New",monospace;}
+  button{font-family:inherit; cursor:pointer; border:none; color:inherit;}
+
+  /* ---------- 顶栏（玻璃） ---------- */
+  header{
+    position:sticky; top:0; z-index:30;
+    background:rgba(255,255,255,0.32);
+    backdrop-filter:blur(28px) saturate(180%); -webkit-backdrop-filter:blur(28px) saturate(180%);
+    border-bottom:1px solid rgba(255,255,255,0.6);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 22px; gap:12px;
+    box-shadow:0 1px 0 rgba(0,0,0,0.03);
+  }
+  .brand{font-weight:700; font-size:18px; letter-spacing:.2px; white-space:nowrap; color:var(--text);}
+  .brand small{font-weight:500; color:var(--muted); font-size:12px; margin-left:8px;}
+  .stats{display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;}
+  .stat{
+    background:rgba(255,255,255,0.5); border:1px solid rgba(255,255,255,0.6);
+    padding:5px 12px; border-radius:999px; font-weight:600; font-size:13px; white-space:nowrap;
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  }
+
+  /* ---------- 布局 ---------- */
+  .layout{display:flex; max-width:1180px; margin:0 auto; gap:22px; padding:22px; min-height:calc(100vh - 60px);}
+  aside{width:232px; flex-shrink:0;}
+  main{flex:1; min-width:0;}
+
+  /* ---------- 侧边栏（玻璃） ---------- */
+  #sidebar{
+    position:sticky; top:82px; display:flex; flex-direction:column; gap:6px;
+    background:var(--card); backdrop-filter:blur(28px) saturate(180%); -webkit-backdrop-filter:blur(28px) saturate(180%);
+    border:1px solid rgba(255,255,255,0.6); border-radius:var(--radius);
+    padding:14px; box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,0.7);
+  }
+  .nav-btn{
+    text-align:left; background:none; padding:9px 12px; border-radius:12px;
+    font-size:14px; color:var(--text); transition:.15s; display:flex; align-items:center; gap:8px;
+  }
+  .nav-btn:hover{background:rgba(255,255,255,0.6);}
+  .nav-btn.active{
+    background:linear-gradient(135deg,#0a84ff,#5e5ce6); color:#fff; font-weight:600;
+    box-shadow:0 6px 18px rgba(10,132,255,.28);
+  }
+  .nav-btn .dot{width:8px; height:8px; border-radius:50%; background:var(--soft); flex-shrink:0;}
+  .nav-btn.done .dot{background:var(--good);}
+  .nav-group{font-size:11px; color:var(--soft); font-weight:700; letter-spacing:1px; margin:10px 6px 2px; text-transform:uppercase;}
+
+  /* ---------- 卡片（玻璃） ---------- */
+  .card{
+    background:var(--card); backdrop-filter:blur(28px) saturate(180%); -webkit-backdrop-filter:blur(28px) saturate(180%);
+    border:1px solid rgba(255,255,255,0.6); border-radius:var(--radius); padding:24px;
+    box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,0.7); margin-bottom:18px;
+  }
+  h1{font-size:26px; font-weight:700; margin-bottom:6px; letter-spacing:-.2px;}
+  h2{font-size:20px; font-weight:700; margin:22px 0 10px; letter-spacing:-.2px;}
+  h3{font-size:16px; font-weight:700; margin:18px 0 8px; display:flex; align-items:center; gap:8px;}
+  .sub{color:var(--muted); font-size:14px;}
+  .muted{color:var(--muted);}
+  .row{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .spread{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+
+  .btn{
+    display:inline-flex; align-items:center; gap:8px; font-weight:600; font-size:14px;
+    padding:10px 18px; border-radius:14px; transition:.15s;
+    background:linear-gradient(135deg,#0a84ff,#5e5ce6); color:#fff;
+    box-shadow:0 4px 14px rgba(10,132,255,.25);
+  }
+  .btn:hover{transform:translateY(-1px); box-shadow:0 8px 22px rgba(10,132,255,.32);}
+  .btn.ghost{background:rgba(255,255,255,0.5); color:var(--accent); border:1px solid rgba(0,0,0,0.08); box-shadow:none;}
+  .btn.ghost:hover{background:rgba(255,255,255,0.8);}
+  .btn.sm{padding:7px 13px; font-size:13px; border-radius:11px;}
+  .btn:disabled{opacity:.5; cursor:not-allowed; transform:none; box-shadow:none;}
+
+  /* ---------- 首页 ---------- */
+  .hero{
+    background:linear-gradient(135deg,#0a84ff,#5e5ce6,#bf5af2); color:#fff;
+    border-radius:var(--radius); padding:32px 30px; margin-bottom:18px;
+    box-shadow:0 14px 40px rgba(94,92,230,.3), inset 0 1px 0 rgba(255,255,255,0.35);
+  }
+  .hero h1{font-size:28px;}
+  .hero p{opacity:.95; margin:8px 0 16px; max-width:640px;}
+  .unit-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px;}
+  .unit-card{
+    background:var(--card); backdrop-filter:blur(26px) saturate(180%); -webkit-backdrop-filter:blur(26px) saturate(180%);
+    border:1px solid rgba(255,255,255,0.6); border-radius:var(--radius);
+    padding:18px; box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,0.7);
+    transition:.15s; cursor:pointer; position:relative; overflow:hidden;
+  }
+  .unit-card:hover{transform:translateY(-3px); box-shadow:0 16px 40px rgba(31,38,135,0.14), inset 0 1px 0 rgba(255,255,255,0.7);}
+  .unit-card .bar{position:absolute; top:0; left:0; height:4px; width:100%; background:rgba(0,0,0,0.05);}
+  .unit-card .bar i{display:block; height:100%; background:linear-gradient(90deg,#34c759,#0a84ff);}
+  .unit-card .icon{font-size:30px;}
+  .unit-card h3{margin:8px 0 2px; font-size:16px;}
+  .unit-card .cn{font-size:13px; color:var(--muted); font-weight:600;}
+  .unit-card .pct{font-size:12px; color:var(--soft); margin-top:6px;}
+
+  /* ---------- 进度条 ---------- */
+  .pbar{height:10px; background:rgba(0,0,0,0.06); border-radius:999px; overflow:hidden;}
+  .pbar i{display:block; height:100%; background:linear-gradient(90deg,#0a84ff,#5e5ce6); border-radius:999px; transition:.4s;}
+  .pbar.good i{background:linear-gradient(90deg,#34c759,#0a84ff);}
+
+  /* ---------- 学习块 ---------- */
+  .block-code{
+    background:var(--code-bg); color:var(--code-text); border:1px solid rgba(0,0,0,0.06); border-radius:14px; padding:16px 18px;
+    font-size:14px; line-height:1.6; overflow-x:auto; margin:10px 0; white-space:pre;
+  }
+  .kw{color:#a855f7; font-weight:600;} .st{color:#16a34a;} .num{color:#dc2626;} .cm{color:#94a3b8; font-style:italic;}
+  .callout{border-radius:14px; padding:12px 16px; margin:12px 0; font-size:14px; display:flex; gap:10px;}
+  .callout.tip{background:var(--good-soft); border-left:4px solid var(--good);}
+  .callout.warn{background:var(--warn-soft); border-left:4px solid var(--warn);}
+  .callout.err{background:var(--bad-soft); border-left:4px solid var(--bad);}
+  .callout .ico{font-size:18px; line-height:1.4;}
+  ul.li{margin:8px 0 8px 4px; padding-left:22px;}
+  ul.li li{margin:4px 0;}
+  p.body{margin:8px 0; font-size:15px;}
+  p.body code, .li code, .explain code, .q-text code{background:var(--accent-soft); color:var(--accent); padding:1px 6px; border-radius:6px; font-size:.92em;}
+
+  .tabs{display:inline-flex; background:rgba(0,0,0,0.05); border-radius:12px; padding:4px; margin-bottom:16px;}
+  .tab{padding:8px 18px; border-radius:9px; font-weight:600; font-size:14px; color:var(--muted); background:none;}
+  .tab.active{background:#fff; color:var(--accent); box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+
+  /* ---------- 题目 ---------- */
+  .q-text{font-size:16px; font-weight:600; margin:4px 0 12px;}
+  .q-meta{font-size:12px; color:var(--soft); margin-bottom:6px;}
+  .options{display:flex; flex-direction:column; gap:10px; margin-top:6px;}
+  .opt{
+    text-align:left; background:rgba(255,255,255,0.5); border:1.5px solid var(--line); border-radius:14px;
+    padding:12px 16px; font-size:15px; transition:.12s; display:flex; gap:12px; align-items:flex-start;
+  }
+  .opt .ltr{font-weight:700; color:var(--accent); flex-shrink:0;}
+  .opt:hover{border-color:var(--accent); background:rgba(255,255,255,0.8);}
+  .opt.correct{border-color:var(--good); background:var(--good-soft);}
+  .opt.wrong{border-color:var(--bad); background:var(--bad-soft);}
+  .opt.active{border-color:var(--accent); background:var(--accent-soft);}
+  .opt.disabled{pointer-events:none;}
+  .explain{margin-top:14px; border-radius:14px; padding:14px 16px; font-size:14px;}
+  .explain.good{background:var(--good-soft);}
+  .explain.bad{background:var(--bad-soft);}
+  .explain b{display:block; margin-bottom:4px;}
+
+  /* ---------- FRQ ---------- */
+  textarea{
+    width:100%; min-height:140px; border:1.5px solid var(--line); border-radius:14px; background:rgba(255,255,255,0.6); color:var(--text);
+    padding:12px; font-size:14px; font-family:inherit; resize:vertical; margin:10px 0;
+  }
+  textarea:focus{outline:none; border-color:var(--accent); background:#fff;}
+  .rubric{background:var(--warn-soft); border-left:4px solid var(--warn); border-radius:14px; padding:14px 16px; margin:10px 0; font-size:14px;}
+  .rubric li{margin:5px 0;}
+  .checkrow{display:flex; gap:12px; align-items:center; padding:8px 0; border-bottom:1px dashed var(--line);}
+  .checkrow input{width:18px; height:18px; accent-color:var(--accent);}
+
+  /* ---------- 徽章 ---------- */
+  .badges{display:flex; gap:10px; flex-wrap:wrap;}
+  .badge{
+    display:flex; flex-direction:column; align-items:center; gap:4px; padding:12px; min-width:86px;
+    border-radius:14px; background:rgba(255,255,255,0.5); border:1px solid var(--line); font-size:12px; text-align:center;
+  }
+  .badge .b-ico{font-size:26px; filter:grayscale(1); opacity:.4;}
+  .badge.earned .b-ico{filter:none; opacity:1;}
+  .badge.earned{border-color:rgba(255,149,0,.5); background:var(--warn-soft);}
+
+  /* ---------- 提示 / 彩带 ---------- */
+  #toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+    background:rgba(28,28,30,0.85); color:#fff; border:1px solid rgba(255,255,255,0.2); padding:12px 20px; border-radius:14px; font-size:14px;
+    opacity:0; transition:.3s; z-index:99; max-width:90vw; box-shadow:0 10px 30px rgba(0,0,0,.25);
+    backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  }
+  #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  .confetti{position:fixed; top:-20px; z-index:100; pointer-events:none; animation:fall linear forwards;}
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg); opacity:.2;}}
+
+  /* ---------- 响应式 ---------- */
+  @media(max-width:820px){
+    .layout{flex-direction:column; padding:12px;}
+    aside{width:100%;}
+    #sidebar{position:static; flex-direction:row; overflow-x:auto; gap:4px; padding:10px;}
+    .nav-btn{white-space:nowrap;}
+    .nav-group{display:none;}
+    .brand small{display:none;}
+  }
+  .table-wrap{overflow-x:auto;}
+  table{border-collapse:collapse; width:100%; font-size:14px; margin:10px 0;}
+  th,td{border:1px solid var(--line); padding:8px 12px; text-align:left;}
+  th{background:var(--accent-soft);}
+  td code{background:var(--accent-soft); color:var(--accent); padding:1px 6px; border-radius:6px;}
+.demo{margin:14px 0;padding:16px;background:#fbfcff;border:1px solid rgba(0,0,0,0.06);border-radius:16px;}
+.demo-title{font-weight:700;font-size:14px;margin-bottom:10px;}
+.demo-svg{overflow:hidden;}
+.demo-controls{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+.demo-ctl{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);}
+.demo-ctl input[type=range]{width:100%;accent-color:#5e5ce6;cursor:pointer;}
+.demo-note{margin-top:10px;font-size:12px;color:var(--muted);line-height:1.5;}
+.video-block{margin:14px 0;padding:14px 16px;background:#f0f6ff;border:1px solid rgba(10,132,255,.16);border-radius:14px;}
+.video-title{font-weight:700;font-size:13px;margin-bottom:10px;color:#0a84ff;}
+.video-link{display:flex;align-items:center;gap:10px;padding:9px 12px;margin:6px 0;background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:10px;text-decoration:none;color:var(--text);transition:.15s;}
+.video-link:hover{border-color:#0a84ff;box-shadow:0 4px 12px rgba(10,132,255,.12);}
+.video-ico{font-size:16px;}
+.video-txt{flex:1;font-size:13px;}
+.video-arrow{color:#9aa0aa;}
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">📐 AP Precalculus 学习平台<small>从零到 5 分</small></div>
+    <div class="stats">
+      <a href="index.html" class="stat" style="text-decoration:none;font-weight:700">🏠 选科目</a>
+      <span class="stat" id="stat-level">Lv.1 新手</span>
+      <span class="stat" id="stat-xp">0 XP</span>
+      <span class="stat" id="stat-streak">🔥 0 天</span>
+      <span class="stat" id="stat-pct">0% 掌握</span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside><nav id="sidebar"></nav></aside>
+    <main id="main"></main>
+  </div>
+
+  <div id="toast"></div>
+
+<script>const UNITS = [];
+UNITS.push({
+  id: 1, title: "Polynomial & Rational Functions", cn: "多项式与有理函数", icon: "📈",
+  objective: "Master polynomial degree, end behavior, zeros, and asymptotes · 掌握次数、端行为、零点与渐近线",
+  lesson: [
+    {t:"h", text:"What is a Polynomial? · 什么是多项式"},
+    {t:"p", text:"A **polynomial** (多项式) is an expression built from variables and coefficients using only **addition, subtraction, multiplication, and powers**. Its **degree** (次数) is the highest exponent — for example, `x² + 2x + 1` has degree 2."},
+    {t:"c", code:`3x⁴ - 2x² + x - 7   → degree 4 (highest term is x⁴)
+5x - 2              → degree 1 (linear)
+-7                  → degree 0 (constant)`},
+    {t:"h", text:"Leading Coefficient & End Behavior · 首项系数与端行为"},
+    {t:"p", text:"The **end behavior** (端行为) — where the graph goes as x → +∞ and x → -∞ — is determined by the **degree** (even/odd) and the **leading coefficient** (首项系数, positive/negative)."},
+    {t:"c", code:`Even degree → both ends go the SAME direction
+   Positive leading coefficient: both up ↗
+   Negative leading coefficient: both down ↘
+Odd degree → ends go OPPOSITE directions
+   Positive: down-left, up-right ↗
+   Negative: up-left, down-right ↘`},
+    {t:"h", text:"Zeros, Factors & Multiplicity · 零点、因式与重数"},
+    {t:"p", text:"A **zero** (零点) is an x-value where the polynomial equals 0. By the **Factor Theorem** (因式定理), x = a is a zero ⟺ (x − a) is a factor. The exponent of a factor is its **multiplicity** (重数)."},
+    {t:"c", code:`f(x) = (x - 2)(x + 1)²
+  zeros: x = 2 (multiplicity 1), x = -1 (multiplicity 2)
+Odd multiplicity  → graph CROSSES the x-axis
+Even multiplicity → graph BOUNCES off the x-axis`},
+    {t:"h", text:"Rational Functions · 有理函数"},
+    {t:"p", text:"A **rational function** (有理函数) is one polynomial divided by another, e.g. `f(x) = (x+1)/(x-2)`. Three key features: **vertical asymptote, horizontal asymptote, and hole** (洞)."},
+    {t:"c", code:`Vertical asymptote (垂直渐近线): set denominator = 0 (if it doesn't cancel)
+Horizontal asymptote (水平渐近线): compare degrees
+   deg numerator < deg denominator → y = 0
+   deg numerator = deg denominator → y = leading-coefficient ratio
+   deg numerator > deg denominator → none
+Hole (洞): a common factor that cancels out`},
+    {t:"warn", text:"Cancel FIRST, then check: in `(x-2)/((x-2)(x+1))`, x=2 is a **hole** (洞, the factor cancels), while x=-1 is a **vertical asymptote** (垂直渐近线). These two are the most-confused points on the exam."},
+    {t:"li", items:["Degree (次数) = the highest exponent","End behavior: degree parity + sign of leading coefficient","Zero multiplicity: odd = cross, even = bounce","Rational function: denominator=0 → vertical asymptote; cancelable → hole"]},
+    {t:"video", title:"Recommended Videos · 推荐视频", links:[
+      {site:"YouTube", label:"The Organic Chemistry Tutor（数学）", url:"https://www.youtube.com/@TheOrganicChemistryTutor"},
+      {site:"Bilibili", label:"AP预备微积分精讲5分班", url:"https://www.bilibili.com/list/3546833141893838?oid=113821700067742&bvid=BV1RVcUeHEm2"},
+    ]},
+  ],
+  questions: [
+    {kind:"mcq", q:"What is the degree of `3x⁴ - 2x² + x - 7`?", options:["4","3","2","7"], answer:0, explain:"The highest-degree term is 3x⁴, so the degree is 4.（最高次项是 3x⁴，次数为 4。）"},
+    {kind:"mcq", q:"What are the zeros of `f(x) = x² - 4`?", options:["x = 2","x = -2","x = ±2","No zeros"], answer:2, explain:"x² - 4 = (x-2)(x+2), so the zeros are x=2 and x=-2.（因式分解后零点是 2 和 -2。）"},
+    {kind:"trace", q:"What is the end behavior of `f(x) = -x³ + 2x`?", options:["Both ends up","Both ends down","Down-left, up-right","Up-left, down-right"], answer:3, explain:"Odd degree (3) with a negative leading coefficient → up-left, down-right.（奇数次 + 负首项 → 左上、右下。）"},
+    {kind:"mcq", q:"What is the multiplicity of the zero x = 2 in `(x - 2)³`?", options:["1","2","3","0"], answer:2, explain:"The exponent of (x-2) is 3, so the multiplicity is 3 (odd → crosses).（因式 (x-2) 的指数是 3，重数为 3。）"},
+    {kind:"trace", q:"What is the vertical asymptote of `f(x) = 1/(x - 3)`?", options:["x = 3","x = -3","y = 3","y = 0"], answer:0, explain:"Set x-3=0 → x=3, which does not cancel, so it is a vertical asymptote.（令分母=0 得 x=3。）"},
+    {kind:"mcq", q:"What is the horizontal asymptote of `f(x) = 1/x`?", options:["y = 0","y = 1","x = 0","None"], answer:0, explain:"Degree of numerator (0) < degree of denominator (1), so y = 0.（分子次数 < 分母次数 → y=0。）"},
+    {kind:"mcq", q:"In `f(x) = (x-2)/((x-2)(x+1))`, what is at x = 2?", options:["Vertical asymptote","Horizontal asymptote","A hole","A zero"], answer:2, explain:"The factor (x-2) cancels, so x=2 is a hole; x=-1 is the vertical asymptote.（(x-2) 约掉 → x=2 是洞。）"},
+    {kind:"mcq", q:"What is the horizontal asymptote of `f(x) = (3x+1)/(2x-5)`?", options:["y = 3/2","y = 1/5","y = 0","None"], answer:0, explain:"Equal degrees (both 1) → y = ratio of leading coefficients = 3/2.（次数相同 → y=首项系数比=3/2。）"},
+    {kind:"mcq", q:"Which value is a zero of `f(x) = x² - 5x + 6`?", options:["x = 2","x = 5","x = 6","x = -2"], answer:0, explain:"x² - 5x + 6 = (x-2)(x-3), so the zeros are 2 and 3.（因式分解得零点 2 和 3。）"},
+  ],
+});
+
+UNITS.push({
+  id: 2, title: "Exponential & Logarithmic Functions", cn: "指数与对数函数", icon: "📊",
+  objective: "Master exponential growth/decay, log definition & laws, and solving equations · 掌握指数、对数与解方程",
+  lesson: [
+    {t:"h", text:"Exponential Functions · 指数函数"},
+    {t:"p", text:"An **exponential function** (指数函数) has the form `y = a·bˣ`. If b > 1 it shows **growth** (增长); if 0 < b < 1 it shows **decay** (衰减). The natural base **e ≈ 2.718** is very common."},
+    {t:"c", code:`y = 2ˣ      → growth (doubles each time)
+y = (1/2)ˣ  → decay (halves each time)
+y = eˣ      → natural exponential function`},
+    {t:"demo", type:"exp"},
+    {t:"h", text:"Logarithmic Functions · 对数函数"},
+    {t:"p", text:"A **logarithm** (对数) is the inverse of an exponential: `log_b(x) = y` means **`b^y = x`**. Read it as “log base b of x equals y”."},
+    {t:"c", code:`log₂(8) = 3       because 2³ = 8
+log₁₀(1000) = 3   because 10³ = 1000
+ln(e) = 1         because e¹ = e  (ln = log base e)`},
+    {t:"h", text:"Three Laws of Logarithms · 对数三大性质"},
+    {t:"c", code:`Product → sum:   log(x·y) = log x + log y
+Quotient → difference: log(x/y) = log x - log y
+Power → multiple:      log(xⁿ) = n·log x`},
+    {t:"warn", text:"`log(x + y)` is **NOT** `log x + log y`! Only **multiplication and division** inside the log split into addition/subtraction — addition/subtraction cannot be split.（只有括号里的乘除能拆成加减，加减不能拆。）"},
+    {t:"h", text:"Change of Base Formula · 换底公式"},
+    {t:"c", code:`log_b(x) = ln(x) / ln(b)
+Example: log₂(10) = ln(10) / ln(2) ≈ 3.322`},
+    {t:"h", text:"Solving Exponential & Log Equations · 解方程"},
+    {t:"c", code:`Solve 2ˣ = 32:   2ˣ = 2⁵ → x = 5
+Solve log₃(x) = 4: x = 3⁴ = 81
+Solve eˣ = 5:      x = ln(5)   (take ln of both sides)`},
+    {t:"li", items:["b > 1 → growth, 0 < b < 1 → decay; e ≈ 2.718","log_b(x) = y ⟺ b^y = x","Logs turn × into +, ÷ into −, powers into ×","Change of base: log_b(x) = ln x / ln b"]},
+  ],
+  questions: [
+    {kind:"trace", q:"What is the value of `log₂(8)`?", options:["3","4","8","2"], answer:0, explain:"2³ = 8, so log₂(8) = 3.（2³=8，所以 log₂8=3。）"},
+    {kind:"trace", q:"What is the value of `log₁₀(1000)`?", options:["3","10","100","1000"], answer:0, explain:"10³ = 1000, so log₁₀(1000) = 3.（10³=1000。）"},
+    {kind:"trace", q:"What is the value of `ln(e)`?", options:["1","e","0","2.718"], answer:0, explain:"ln is log base e, and e¹ = e, so ln(e) = 1.（ln 以 e 为底，e¹=e。）"},
+    {kind:"trace", q:"What is the value of `log₂(32)`?", options:["5","4","6","32"], answer:0, explain:"2⁵ = 32, so log₂(32) = 5.（2⁵=32。）"},
+    {kind:"mcq", q:"What is `log₂(8) + log₂(4)` equal to?", options:["5","7","12","log₂(12)"], answer:0, explain:"log₂(8)+log₂(4) = log₂(8×4) = log₂(32) = 5.（乘法合并后等于 log₂32=5。）"},
+    {kind:"mcq", q:"Using the change of base formula, `log₂(10)` equals?", options:["ln(10)/ln(2)","ln(2)/ln(10)","ln(10-2)","log(2)·ln(10)"], answer:0, explain:"Change of base: log_b(x) = ln(x)/ln(b), so log₂(10) = ln(10)/ln(2).（换底公式。）"},
+    {kind:"trace", q:"What is the solution to `3ˣ = 81`?", options:["x = 4","x = 3","x = 27","x = 9"], answer:0, explain:"81 = 3⁴, so 3ˣ = 3⁴ and x = 4.（81=3⁴，所以 x=4。）"},
+    {kind:"mcq", q:"What is the value of `e⁰`?", options:["1","0","e","Undefined"], answer:0, explain:"Any nonzero number raised to the 0 power equals 1, so e⁰ = 1.（任何非零数的 0 次方都是 1。）"},
+    {kind:"mcq", q:"In `y = 3·2ˣ`, when x increases by 1, y...", options:["multiplies by 2","increases by 2","multiplies by 3","increases by 3"], answer:0, explain:"The base is 2, so each +1 in x multiplies y by 2 (the hallmark of exponential growth).（底数为 2，x 每加 1，y 就乘 2。）"},
+  ],
+});
+
+UNITS.push({
+  id: 3, title: "Trigonometric & Polar Functions", cn: "三角与极坐标函数", icon: "🌀",
+  objective: "Master radians, the unit circle, trig graphs, and polar coordinates · 掌握弧度、单位圆、三角图像与极坐标",
+  lesson: [
+    {t:"h", text:"Radian Measure · 弧度制"},
+    {t:"p", text:"**Radians** (弧度) measure angles by arc length. The key fact: **π radians = 180°**. Memorize the common conversions."},
+    {t:"c", code:`180° = π
+90°  = π/2
+60°  = π/3
+45°  = π/4
+30°  = π/6`},
+    {t:"h", text:"Unit Circle & Special Angles · 单位圆与特殊角"},
+    {t:"p", text:"On the **unit circle** (单位圆, radius 1), each angle θ corresponds to a point whose coordinates are **(cos θ, sin θ)**."},
+    {t:"c", code:`sin(0) = 0      sin(π/6) = 1/2    sin(π/2) = 1
+cos(0) = 1      cos(π/3) = 1/2    cos(π/2) = 0
+tan(π/4) = 1    (tan θ = sin θ / cos θ)`},
+    {t:"h", text:"Graphs of Sine & Cosine · 正弦/余弦图像"},
+    {t:"p", text:"For `y = A·sin(Bx + C) + D`, the **amplitude** (振幅) = |A| (how tall), and the **period** (周期) = 2π/B (how long one cycle is)."},
+    {t:"c", code:`y = 3 sin(2x)
+  amplitude = 3
+  period = 2π/2 = π`},
+    {t:"demo", type:"sine"},
+    {t:"h", text:"Trigonometric Identities · 三角恒等式"},
+    {t:"c", code:`sin²θ + cos²θ = 1          (the most important identity)
+tan θ = sin θ / cos θ
+1 + tan²θ = sec²θ`},
+    {t:"h", text:"Polar Coordinates · 极坐标"},
+    {t:"p", text:"**Polar coordinates** (极坐标) use **(r, θ)**: r is the distance from the origin, θ is the angle from the positive x-axis. To convert to rectangular:"},
+    {t:"c", code:`x = r·cos θ
+y = r·sin θ
+r² = x² + y²`},
+    {t:"li", items:["π radians = 180°","Unit circle point = (cos θ, sin θ)","y = A·sin(Bx+C)+D: amplitude |A|, period 2π/B","sin²θ + cos²θ = 1; polar: x = r·cos θ, y = r·sin θ"]},
+  ],
+  questions: [
+    {kind:"mcq", q:"How many degrees is π radians?", options:["180°","90°","360°","π degrees"], answer:0, explain:"π radians = 180°, the base of the radian system.（π 弧度 = 180°。）"},
+    {kind:"trace", q:"What is the value of `sin(π/2)`?", options:["1","0","1/2","√2/2"], answer:0, explain:"At π/2 (90°), the unit circle point is (0,1); sin is the y-coordinate = 1.（π/2 对应点 (0,1)，sin 是 y 坐标=1。）"},
+    {kind:"trace", q:"What is the value of `cos(0)`?", options:["1","0","-1","1/2"], answer:0, explain:"At 0 radians the point is (1,0); cos is the x-coordinate = 1.（0 弧度对应点 (1,0)，cos 是 x 坐标=1。）"},
+    {kind:"trace", q:"What is the value of `tan(π/4)`?", options:["1","0","√3","1/2"], answer:0, explain:"tan(π/4) = sin(π/4)/cos(π/4) = (√2/2)/(√2/2) = 1.（tan=sin/cos，都等于 √2/2。）"},
+    {kind:"mcq", q:"What is the period of `y = sin(2x)`?", options:["π","2π","π/2","4π"], answer:0, explain:"Period = 2π/B = 2π/2 = π.（周期=2π/B=π。）"},
+    {kind:"mcq", q:"What is the amplitude of `y = 3·sin(x)`?", options:["3","1","6","π"], answer:0, explain:"Amplitude = |A| = |3| = 3.（振幅=|A|=3。）"},
+    {kind:"mcq", q:"The identity `sin²θ + cos²θ` equals?", options:["1","0","tan θ","2"], answer:0, explain:"This is the core Pythagorean identity: sin²θ + cos²θ = 1.（核心恒等式。）"},
+    {kind:"mcq", q:"The polar point (2, 0) corresponds to which rectangular point?", options:["(2, 0)","(0, 2)","(2, 2)","(-2, 0)"], answer:0, explain:"x = 2·cos0 = 2, y = 2·sin0 = 0, so (2, 0).（x=r·cosθ, y=r·sinθ。）"},
+    {kind:"mcq", q:"How many radians is 45°?", options:["π/4","π/2","π/3","π/6"], answer:0, explain:"45° = (45/180)·π = π/4.（45°=π/4。）"},
+  ],
+});
+
+const FRQS = [];
+FRQS.push({
+  id: 1, icon: "📈", title: "FRQ 1 · Polynomial Analysis", topic: "Zeros, multiplicity & end behavior",
+  prompt: "Given the polynomial f(x) = (x - 1)(x + 2)². Answer the following:\n\n(a) Find all zeros and state the multiplicity of each.\n\n(b) Determine whether the graph **crosses** or **bounces** at each zero.\n\n(c) Describe the end behavior (as x → +∞ and x → -∞).",
+  points: [
+    "Correctly find zeros x = 1 (multiplicity 1) and x = -2 (multiplicity 2)",
+    "Correctly state: multiplicity 1 (odd) → crosses; multiplicity 2 (even) → bounces",
+    "Correctly find degree = 1 + 2 = 3 (odd)",
+    "Correctly identify the leading coefficient as positive (expands to x³ + ...)",
+    "End behavior: odd degree + positive → down-left, up-right",
+  ],
+  answerText: "Key idea: add the exponents to get the degree. Odd multiplicity crosses, even bounces. End behavior depends only on the highest-degree term (here x³, positive).",
+  answer: "(a) Zeros: x = 1 (multiplicity 1), x = -2 (multiplicity 2)\n\n(b) x = 1: multiplicity 1 (odd) → CROSSES the x-axis\n    x = -2: multiplicity 2 (even) → BOUNCES off the x-axis\n\n(c) Degree = 1 + 2 = 3 (odd), leading coefficient positive\n    So: as x → -∞, y → -∞; as x → +∞, y → +∞ (down-left, up-right)",
+});
+
+FRQS.push({
+  id: 2, icon: "📊", title: "FRQ 2 · Logarithms & Equations", topic: "Log laws & solving equations",
+  prompt: "Answer the following:\n\n(a) Use the log laws to simplify log₂(8x) into the form log₂(x) plus a constant.\n\n(b) Solve log₃(x) + log₃(x - 2) = 1.\n\n(c) Solve 5·2ˣ = 80.",
+  points: [
+    "Correctly split: log₂(8x) = log₂8 + log₂x = 3 + log₂(x)",
+    "Correctly combine: log₃(x(x-2)) = 1, i.e. x(x-2) = 3¹ = 3",
+    "Solve to x = 3 or x = -1, and correctly reject x = -1 (log domain requires x > 0)",
+    "Solve 2ˣ = 16, giving x = 4",
+    "Clear logic and complete answers",
+  ],
+  answerText: "Note that in part (b), any solution must satisfy the log domain (argument > 0). x = -1 would make log₃(-1) undefined, so it must be rejected.",
+  answer: "(a) log₂(8x) = log₂(8) + log₂(x) = 3 + log₂(x)\n\n(b) log₃(x) + log₃(x-2) = 1\n    log₃(x(x-2)) = 1\n    x(x-2) = 3¹ = 3\n    x² - 2x - 3 = 0\n    (x-3)(x+1) = 0 → x = 3 or x = -1\n    Reject x = -1 (argument must be positive)\n    So x = 3\n\n(c) 5·2ˣ = 80\n    2ˣ = 16 = 2⁴\n    x = 4",
+});
+
+FRQS.push({
+  id: 3, icon: "🌀", title: "FRQ 3 · Trigonometric Graphs", topic: "Amplitude, period & evaluation",
+  prompt: "Given the function y = 2·sin(3x). Answer the following:\n\n(a) Find the amplitude and period.\n\n(b) Evaluate y = 2·sin(3x) at x = π/6.\n\n(c) Describe the transformations that turn y = sin(x) into y = 2·sin(3x).",
+  points: [
+    "Amplitude = |2| = 2",
+    "Period = 2π/3",
+    "At x = π/6: 3x = π/2, sin(π/2) = 1, so y = 2·1 = 2",
+    "Correctly describe: vertical stretch by 2 (amplitude), horizontal compression by 1/3 (period)",
+    "Clear wording and correct conclusions",
+  ],
+  answerText: "Match y = A·sin(Bx) to the standard form: A is the amplitude (vertical stretch), B sets the period 2π/B (horizontal compression).",
+  answer: "(a) Amplitude = |2| = 2\n    Period = 2π/3\n\n(b) At x = π/6, 3x = π/2\n    y = 2·sin(π/2) = 2·1 = 2\n\n(c) y = sin(x) → y = 2·sin(3x):\n    ① Vertical: amplitude 1 → 2 (vertical stretch by 2)\n    ② Horizontal: period 2π → 2π/3 (horizontal compression by 1/3)",
+});
+
+const CHEATSHEET = [
+  {t:"h", text:"1. Polynomial & Rational Functions · 多项式与有理函数"},
+  {t:"c", code:"Degree (次数) = highest exponent\nEnd behavior: degree parity + sign of leading coefficient\n  Even degree → ends same; Odd degree → ends opposite\n  Positive leading → right end up; Negative → right end down\n\nRational function f(x) = P(x)/Q(x):\n  Vertical asymptote: Q(x)=0 (not canceled)\n  Horizontal asymptote:\n    deg P < deg Q → y = 0\n    deg P = deg Q → y = leading-coefficient ratio\n    deg P > deg Q → none\n  Hole (洞): a canceled common factor"},
+  {t:"h", text:"2. Exponential & Logarithmic · 指数与对数"},
+  {t:"c", code:"Exponential: y = a·bˣ   b>1 growth, 0<b<1 decay\nNatural base e ≈ 2.718\n\nLogarithm: log_b(x) = y  ⟺  b^y = x\n  log(x·y) = log x + log y\n  log(x/y) = log x - log y\n  log(xⁿ)  = n·log x\n  ln(e) = 1, log_b(b) = 1, log_b(1) = 0\n\nChange of base: log_b(x) = ln(x) / ln(b)"},
+  {t:"h", text:"3. Trigonometric & Polar · 三角与极坐标"},
+  {t:"c", code:"Radians: π = 180°, π/2 = 90°, π/3 = 60°\nUnit circle: point (cos θ, sin θ)\n\nSine: y = A·sin(Bx + C) + D\n  amplitude = |A|\n  period = 2π/B\n  phase shift = -C/B, vertical shift = D\n\nIdentities: sin²θ + cos²θ = 1\n           tan θ = sin θ / cos θ\n\nPolar: (r, θ)\n  x = r·cos θ, y = r·sin θ, r² = x² + y²"},
+  {t:"tip", text:"The three most-tested traps: ① hole vs. vertical asymptote in rational functions; ② `log(x+y) ≠ log x + log y`; ③ radians vs. degrees."},
+];
+
+const REALEXAM = [
+  {topic:"Polynomial", q:"What is the degree of `2x³ - x + 4`?", code:``, options:["3","2","1","4"], answer:0, explain:"The highest-degree term is 2x³, so the degree is 3.（最高次项是 2x³，次数为 3。）"},
+  {topic:"Polynomial", q:"Which value is a zero of `f(x) = x² + 2x - 3`?", code:``, options:["x = 1","x = -3","x = 2","x = 0"], answer:0, explain:"x²+2x-3 = (x+3)(x-1), so zeros are -3 and 1.（因式分解得零点 -3 和 1。）"},
+  {topic:"Rational", q:"What is the vertical asymptote of `f(x) = 1/(x + 2)`?", code:``, options:["x = -2","x = 2","y = -2","y = 0"], answer:0, explain:"Set x+2=0 → x=-2, a vertical asymptote.（令分母=0 得 x=-2。）"},
+  {topic:"Exponential", q:"What is the value of `log₅(25)`?", code:``, options:["2","5","25","1/2"], answer:0, explain:"5² = 25, so log₅(25) = 2.（5²=25。）"},
+  {topic:"Logarithm", q:"If `log₂(x) = 5`, then x = ?", code:``, options:["32","10","25","7"], answer:0, explain:"x = 2⁵ = 32.（x=2⁵=32。）"},
+  {topic:"Exponential", q:"What is the value of `e^(ln 7)`?", code:``, options:["7","e","ln 7","1"], answer:0, explain:"e and ln are inverses, so e^(ln 7) = 7.（e 与 ln 互为逆运算。）"},
+  {topic:"Trig", q:"What is the value of `cos(π)`?", code:``, options:["-1","0","1","1/2"], answer:0, explain:"At π (180°), the unit circle point is (-1, 0); cos = -1.（π 对应点 (-1,0)，cos=-1。）"},
+  {topic:"Trig", q:"What is the amplitude of `y = 4·sin(x)`?", code:``, options:["4","1","2","π"], answer:0, explain:"Amplitude = |A| = |4| = 4.（振幅=|A|=4。）"},
+  {topic:"Polar", q:"The rectangular point (0, 3) has polar radius r = ?", code:``, options:["3","0","9","√3"], answer:0, explain:"r² = 0² + 3² = 9, so r = 3.（r²=x²+y²=9。）"},
+  {topic:"Logarithm", q:"What is the value of `log₃(81)`?", code:``, options:["4","3","9","27"], answer:0, explain:"3⁴ = 81, so log₃(81) = 4.（3⁴=81。）"},
+];
+
+const LEVEL_TITLES = ["新手","学徒","入门者","进阶者","熟练者","高手","达人","大师","宗师","传奇","数学奇才","函数大师","极限猎手","微积分预备役","AP 满分战神"];
+const BADGES = [
+  {id:"first_xp", ico:"🎉", name:"初次得分", desc:"第一次获得积分"},
+  {id:"unit1",     ico:"🧱", name:"奠基者", desc:"完成第一个单元"},
+  {id:"unit3",     ico:"🌱", name:"渐入佳境", desc:"完成全部 3 个单元"},
+  {id:"all",       ico:"👑", name:"全通关", desc:"完成全部单元"},
+  {id:"perfect",   ico:"💯", name:"满分", desc:"某单元一次全对"},
+  {id:"exam60",    ico:"🥉", name:"模考及格", desc:"模拟考正确率 ≥ 60%"},
+  {id:"exam80",    ico:"🏆", name:"模考 80+", desc:"模拟考正确率 ≥ 80%"},
+  {id:"exam90",    ico:"🥇", name:"模考 90+", desc:"模拟考正确率 ≥ 90%"},
+  {id:"exam100",   ico:"💎", name:"模考满分", desc:"模拟考正确率 100%"},
+  {id:"streak3",   ico:"🔥", name:"连续 3 天", desc:"连续学习 3 天"},
+  {id:"streak7",   ico:"📅", name:"坚持 7 天", desc:"连续学习 7 天"},
+  {id:"streak14",  ico:"📆", name:"坚持 14 天", desc:"连续学习 14 天"},
+  {id:"streak30",  ico:"🗓️", name:"坚持 30 天", desc:"连续学习 30 天"},
+  {id:"xp100",     ico:"⭐", name:"百炼成钢", desc:"累计 100 XP"},
+  {id:"xp500",     ico:"🌟", name:"五百积分", desc:"累计 500 XP"},
+  {id:"xp1000",    ico:"💫", name:"千分大佬", desc:"累计 1000 XP"},
+  {id:"xp3000",    ico:"☄️", name:"三千传说", desc:"累计 3000 XP"},
+  {id:"first_frq", ico:"📝", name:"首道 FRQ", desc:"完成第一道 FRQ"},
+  {id:"first_real",ico:"🎯", name:"真题首练", desc:"完成一次真题演练"},
+  {id:"level5",    ico:"⭐", name:"五级达成", desc:"等级达到 5 级"},
+  {id:"level10",   ico:"🌟", name:"十级宗师", desc:"等级达到 10 级"},
+];
+</script>
+
+<script>
+/* ============================================================
+   应用逻辑
+   ============================================================ */
+const KEY = "apprecal_v1";
+const $  = (s, el=document) => el.querySelector(s);
+const $$ = (s, el=document) => [...el.querySelectorAll(s)];
+
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function inline(s){ return esc(s).replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>"); }
+function hl(code){
+  const re = /(\/\/[^\n]*)|(&quot;(?:[^&]|&(?!quot;))*?&quot;)|(&#39;[^&]*?&#39;)|\b(public|private|protected|static|final|void|int|double|boolean|char|String|byte|short|long|float|class|interface|extends|implements|new|return|if|else|for|while|do|switch|case|break|continue|this|super|true|false|null|import|package|instanceof)\b|\b(\d+(?:\.\d+)?)\b/g;
+  return esc(code).replace(re, (m, cm, st, ch, kw, num) => {
+    if (cm) return '<span class="cm">'+cm+'</span>';
+    if (st) return '<span class="st">'+st+'</span>';
+    if (ch) return '<span class="st">'+ch+'</span>';
+    if (kw) return '<span class="kw">'+kw+'</span>';
+    if (num) return '<span class="num">'+num+'</span>';
+    return m;
+  });
+}
+function renderBlocks(blocks){
+  return blocks.map(b => {
+    if (b.t === "h") return "<h3>"+inline(b.text)+"</h3>";
+    if (b.t === "p") return "<p class='body'>"+inline(b.text)+"</p>";
+    if (b.t === "c") return "<div class='block-code'>"+hl(b.code)+"</div>";
+    if (b.t === "tip") return "<div class='callout tip'><span class='ico'>💡</span><div>"+inline(b.text)+"</div></div>";
+    if (b.t === "warn") return "<div class='callout warn'><span class='ico'>⚠️</span><div>"+inline(b.text)+"</div></div>";
+    if (b.t === "err") return "<div class='callout err'><span class='ico'>❌</span><div>"+inline(b.text)+"</div></div>";
+    if (b.t === "li") return "<ul class='li'>"+b.items.map(x=>"<li>"+inline(x)+"</li>").join("")+"</ul>";
+    if (b.t === "table") return "<div class='table-wrap'><table>"+b.rows.map((r,i)=> "<tr>"+r.map((c,j)=> (i===0?"<th>":"<td>")+inline(c)+(i===0?"</th>":"</td>")).join("")+"</tr>").join("")+"</table></div>";
+    if (b.t === "demo") return renderDemo(b.type);
+    if (b.t === "video") return renderVideo(b);
+    return "";
+  }).join("");
+}
+
+/* ---------- 状态 ---------- */
+function todayStr(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function defaultState(){ return {xp:0, lastDay:todayStr(), streak:1, badges:[], lessonsRead:{}, q:{}, quizDone:{}, frqDone:{}, examBest:null, examAttempts:0}; }
+let state;
+try{ state = JSON.parse(localStorage.getItem(KEY)) || defaultState(); }catch(e){ state = defaultState(); }
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+function todayStr2(){ return state.lastDay; }
+function updateStreak(){
+  const t = todayStr();
+  if (state.lastDay === t) return;
+  const y = new Date(Date.now()-86400000);
+  const ystr = y.getFullYear()+"-"+String(y.getMonth()+1).padStart(2,"0")+"-"+String(y.getDate()).padStart(2,"0");
+  state.streak = (state.lastDay === ystr) ? state.streak+1 : 1;
+  state.lastDay = t;
+}
+function level(){ return Math.min(15, Math.floor(state.xp/150)+1); }
+function levelTitle(){ return LEVEL_TITLES[Math.min(LEVEL_TITLES.length-1, level()-1)]; }
+function gid(uid, qi){ return uid+":"+qi; }
+
+/* ---------- 积分与徽章 ---------- */
+function addXP(n){
+  if(n<=0) return;
+  const before = level();
+  state.xp += n;
+  const after = level();
+  if(after > before){ toast("🎉 升级！现在是 Lv."+after+" "+levelTitle()); }
+}
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove("show"), 2600); }
+function checkBadges(){
+  const earned = new Set(state.badges);
+  const doneUnits = UNITS.filter(u=>state.quizDone[u.id]).length;
+  const perfect = UNITS.some(u=> state.quizDone[u.id] && u.questions.every((q,i)=> state.q[gid(u.id,i)] && state.q[gid(u.id,i)].ft === true));
+  const frqCount = Object.keys(state.frqDone || {}).length;
+  const realCount = state.realDone || 0;
+  const exam = state.examBest;
+  const lv = level();
+
+  const conds = [
+    ["first_xp", state.xp >= 10],
+    ["unit1", doneUnits >= 1],
+    ["unit3", doneUnits >= 3],
+    ["five", doneUnits >= 5],
+    ["unit8", doneUnits >= 8],
+    ["all", doneUnits >= UNITS.length && UNITS.length > 0],
+    ["perfect", perfect],
+    ["exam60", exam !== null && exam >= 60],
+    ["exam80", exam !== null && exam >= 80],
+    ["exam90", exam !== null && exam >= 90],
+    ["exam100", exam !== null && exam >= 100],
+    ["streak3", state.streak >= 3],
+    ["streak7", state.streak >= 7],
+    ["streak14", state.streak >= 14],
+    ["streak30", state.streak >= 30],
+    ["xp100", state.xp >= 100],
+    ["xp500", state.xp >= 500],
+    ["xp1000", state.xp >= 1000],
+    ["xp3000", state.xp >= 3000],
+    ["first_frq", frqCount >= 1],
+    ["first_real", realCount >= 1],
+    ["level5", lv >= 5],
+    ["level10", lv >= 10],
+  ];
+  const newOnes = [];
+  conds.forEach(([id, ok])=>{
+    if(ok && !earned.has(id)){ state.badges.push(id); newOnes.push(id); }
+  });
+  if(newOnes.length){
+    save();
+    const names = newOnes.map(id => BADGES.find(b=>b.id===id).name).join("、");
+    toast("🏅 获得徽章：" + names);
+  }
+}
+
+/* ---------- 题目统计 ---------- */
+function qStatus(uid, qi){ return state.q[gid(uid,qi)] || null; }
+function unitStats(unit){
+  let correct=0, attempted=0, firstTryRight=0;
+  unit.questions.forEach((q,i)=>{
+    const s = qStatus(unit.id, i);
+    if(s){ attempted++; if(s.correct) correct++; if(s.ft) firstTryRight++; }
+  });
+  return {correct, attempted, total:unit.questions.length, firstTryRight};
+}
+function overallStats(){
+  let correct=0, total=0;
+  UNITS.forEach(u=>{ const s=unitStats(u); correct+=s.correct; total+=s.total; });
+  return total ? Math.round(correct/total*100) : 0;
+}
+function flattenAll(){
+  const arr=[];
+  UNITS.forEach(u=> u.questions.forEach((q,i)=> arr.push({q, uid:u.id, qi:i, unit:u})));
+  return arr;
+}
+
+/* ---------- 视图状态 ---------- */
+let view = {name:"home"};
+let quizSession = null;   // {uid, idx, order, locked}
+let examSession = null;
+let realSession = null;
+
+function nav(){
+  const sb = $("#sidebar");
+  let html = '<button class="nav-btn" data-go="home">🏠 首页</button>';
+  html += '<div class="nav-group">学习单元</div>';
+  UNITS.forEach(u=>{
+    const st = unitStats(u);
+    const done = state.quizDone[u.id];
+    html += '<button class="nav-btn'+(view.name==="unit"&&view.uid===u.id?" active":"")+(done?" done":"")+'" data-go="unit" data-uid="'+u.id+'">'+
+      '<span class="dot"></span><span>'+u.icon+' '+u.cn+'</span></button>';
+  });
+  html += '<div class="nav-group">综合</div>';
+  html += '<button class="nav-btn'+(view.name==="frq"?" active":"")+'" data-go="frq">📝 FRQ 练习</button>';
+  html += '<button class="nav-btn'+(view.name==="awards"?" active":"")+'" data-go="awards">🏆 成就馆</button>';
+  html += '<button class="nav-btn'+(view.name==="real"?" active":"")+'" data-go="real">🎯 真题演练</button>';
+  html += '<button class="nav-btn'+(view.name==="exam"?" active":"")+'" data-go="exam">🎯 模拟考试</button>';
+  html += '<button class="nav-btn'+(view.name==="cheat"?" active":"")+'" data-go="cheat">📋 速查表</button>';
+  sb.innerHTML = html;
+}
+function refreshHeader(){
+  $("#stat-level").textContent = "Lv."+level()+" "+levelTitle();
+  $("#stat-xp").textContent = state.xp+" XP";
+  $("#stat-streak").textContent = "🔥 "+state.streak+" 天";
+  $("#stat-pct").textContent = overallStats()+"% 掌握";
+}
+function go(name, params={}){
+  view = {name, ...params};
+  if(name==="unit"){ quizSession=null; }
+  examSession = null;
+  realSession = null;
+  nav(); render(); window.scrollTo({top:0, behavior:"smooth"});
+}
+function render(){ refreshHeader(); const m=$("#main");
+  if(view.name==="home") m.innerHTML = homeHTML();
+  else if(view.name==="unit") m.innerHTML = unitHTML();
+  else if(view.name==="quiz") m.innerHTML = quizHTML();
+  else if(view.name==="frq") m.innerHTML = frqHTML();
+  else if(view.name==="awards") m.innerHTML = awardsHTML();
+  else if(view.name==="real") m.innerHTML = realHTML();
+  else if(view.name==="exam") m.innerHTML = examHTML();
+  else if(view.name==="cheat") m.innerHTML = cheatHTML();
+  else if(view.name==="unitresult") m.innerHTML = resultHTML();
+}
+
+/* ================= 首页 ================= */
+function homeHTML(){
+  const done = UNITS.filter(u=>state.quizDone[u.id]).length;
+  const s = overallStats();
+  let cards = UNITS.map(u=>{
+    const st = unitStats(u);
+    const pct = st.total? Math.round(st.correct/st.total*100):0;
+    return '<div class="unit-card" data-go="unit" data-uid="'+u.id+'">'+
+      '<span class="bar"><i style="width:'+pct+'%"></i></span>'+
+      '<div class="icon">'+u.icon+'</div><h3>'+u.cn+'</h3>'+
+      '<div class="cn">'+u.title+'</div><div class="pct">'+st.correct+'/'+st.total+' 题 · '+pct+'%</div></div>';
+  }).join("");
+  const earned = BADGES.filter(b=>state.badges.includes(b.id));
+  const badgesHTML = BADGES.map(b=>{
+    const e = state.badges.includes(b.id);
+    return '<div class="badge'+(e?" earned":"")+'"><span class="b-ico">'+b.ico+'</span><b>'+b.name+'</b><span class="muted">'+b.desc+'</span></div>';
+  }).join("");
+
+  return ''+
+  '<div class="hero"><h1>你好！一起拿下 AP Precalculus 👋</h1>'+
+  '<p>这套课程按 <b>College Board 官方大纲的 3 个单元</b> 编排，从最基础的多项式讲起。每个单元先学知识点，再做即时反馈的练习题；全部学完后去做 FRQ 和模拟考试。</p>'+
+  '<div class="row"><button class="btn" data-go="unit" data-uid="'+(UNITS[0]?UNITS[0].id:1)+'">🚀 开始学习</button>'+
+  '<button class="btn ghost" data-go="random">🎲 随机练习一题</button></div></div>'+
+  '<div class="card"><div class="spread"><h2 style="margin:0">📚 课程单元</h2><span class="muted">已完成 '+done+' / '+UNITS.length+'</span></div>'+
+  '<div class="pbar" style="margin:14px 0"><i style="width:'+s+'%"></i></div>'+
+  '<div class="unit-grid">'+cards+'</div></div>'+
+  '<div class="card"><h2 style="margin-top:0">🏅 我的徽章</h2><div class="badges">'+badgesHTML+'</div></div>'+
+  '<div class="card"><h2 style="margin-top:0">💾 进度备份</h2>'+
+  '<p class="sub">学习进度会自动保存在<b>当前这个浏览器</b>里，不用手动保存。但换设备、换浏览器或清理缓存前，建议先导出备份；到新设备再导入即可恢复。</p>'+
+  '<div class="row" style="margin-top:10px">'+
+  '<button class="btn" data-export>⬇️ 导出备份文件</button>'+
+  '<button class="btn ghost" data-import>⬆️ 导入备份文件</button>'+
+  '<input type="file" id="importFile" accept=".json,application/json" style="display:none">'+
+  '</div></div>';
+}
+
+/* ================= 单元 ================= */
+function unitHTML(){
+  const u = UNITS.find(x=>x.id===view.uid) || UNITS[0];
+  const st = unitStats(u);
+  const pct = st.total? Math.round(st.correct/st.total*100):0;
+  const tab = view.tab || "lesson";
+  const lessonRead = state.lessonsRead[u.id];
+  const done = state.quizDone[u.id];
+  return ''+
+  '<div class="card"><div class="spread"><div><h1 style="margin:0">'+u.icon+' '+u.title+'</h1>'+
+  '<div class="sub">'+u.cn+' · 目标：'+inline(u.objective||"")+'</div></div>'+
+  '<div style="min-width:180px"><div class="row" style="justify-content:flex-end;margin-bottom:6px"><span class="muted" style="font-size:13px">掌握度 '+pct+'%</span></div>'+
+  '<div class="pbar"><i style="width:'+pct+'%"></i></div></div></div>'+
+  '<div class="tabs" style="margin-top:16px"><button class="tab'+(tab==="lesson"?" active":"")+'" data-tab="lesson">📖 学习知识点</button>'+
+  '<button class="tab'+(tab==="quiz"?" active":"")+'" data-tab="quiz">✏️ 练习题 ('+st.correct+'/'+st.total+')</button></div></div>'+
+  (tab==="lesson" ? lessonHTML(u, lessonRead) : quizHTML(u, 0));
+}
+function lessonHTML(u, read){
+  const blocks = renderBlocks(u.lesson);
+  return '<div class="card">'+blocks+
+  '<div style="margin-top:20px" class="spread">'+
+  '<button class="btn" data-tab="quiz">✏️ 去做练习 →</button>'+
+  '<button class="btn ghost" data-markread="'+u.id+'">'+(read?"✅ 已学完":"📌 标记为已学完")+'</button>'+
+  '</div></div>';
+}
+
+/* ================= 练习 ================= */
+function startQuiz(uid){
+  const u = UNITS.find(x=>x.id===uid);
+  quizSession = {uid, idx:0, order:u.questions.map((_,i)=>i)};
+}
+function quizHTML(u, idx){
+  if(!u) return "";
+  if(!quizSession){ startQuiz(u.id); }
+  const s = quizSession;
+  const qi = s.order[s.idx];
+  const q = u.questions[qi];
+  const st = qStatus(u.id, qi);
+  const answered = !!st;
+  const total = s.order.length;
+  let opts = "";
+  if(q.options){
+    opts = '<div class="options">'+q.options.map((o,i)=>{
+      let cls="opt"; let ltr="ABCD"[i];
+      if(answered){
+        cls += " disabled";
+        if(i===q.answer) cls += " correct";
+        else if(i===st.picked) cls += " wrong";
+      }
+      return '<button class="'+cls+'" data-opt="'+i+'"><span class="ltr">'+ltr+'.</span><span>'+inline(o)+'</span></button>';
+    }).join("")+'</div>';
+  }
+  const explain = answered ? '<div class="explain '+(st.correct?"good":"bad")+'"><b>'+(st.correct?"✅ 回答正确！":"❌ 回答错误")+'</b>'+inline(q.explain)+'</div>' : "";
+  const nextBtn = answered ? '<button class="btn" data-next>'+(s.idx < total-1 ? "下一题 →" : "查看结果 🎉")+'</button>' : "";
+  return ''+
+  '<div class="card"><div class="spread" style="margin-bottom:10px">'+
+  '<span class="q-meta">第 '+(s.idx+1)+' / '+total+' 题 · '+(q.kind==="trace"?"🔍 代码追踪":"🧩 概念题")+'</span>'+
+  '<span class="muted" style="font-size:13px">已掌握 '+unitStats(u).correct+'/'+total+'</span></div>'+
+  '<div class="q-text">'+inline(q.q)+'</div>'+
+  (q.code ? '<div class="block-code">'+hl(q.code)+'</div>' : "")+
+  opts + explain +
+  '<div style="margin-top:16px" class="row">'+nextBtn+
+  '<button class="btn ghost sm" data-tab="lesson">← 返回知识点</button></div></div>';
+}
+function answerQuestion(opt){
+  const u = UNITS.find(x=>x.id===quizSession.uid);
+  const qi = quizSession.order[quizSession.idx];
+  const q = u.questions[qi];
+  const key = gid(u.id, qi);
+  const prev = state.q[key];
+  const correct = opt === q.answer;
+  const firstTime = !prev;
+  const wasWrong = prev && !prev.correct;
+
+  if(firstTime){
+    if(correct){ addXP(10); state.q[key]={correct:true, ft:true, picked:opt}; toast("+10 XP 🎉"); }
+    else{ state.q[key]={correct:false, ft:false, picked:opt}; toast("再想想，看看解析吧 💪"); }
+  } else if(wasWrong && correct){
+    addXP(4); state.q[key]={correct:true, ft:prev.ft, picked:opt}; toast("+4 XP 改正成功 ✅");
+  } else if(wasWrong && !correct){
+    state.q[key]={correct:false, ft:false, picked:opt};
+  } else {
+    state.q[key].picked = opt; // 已正确，随意重看
+  }
+  save(); render();
+}
+function nextQuestion(){
+  const u = UNITS.find(x=>x.id===quizSession.uid);
+  const total = quizSession.order.length;
+  if(quizSession.idx < total-1){ quizSession.idx++; render(); return; }
+  const st = unitStats(u);
+  const allCorrect = st.correct === total;
+  const perfect = st.firstTryRight === total;
+  if(!state.quizDone[u.id]){
+    state.quizDone[u.id] = true;
+    addXP(20);
+    if(allCorrect){ toast("🎊 完成本单元！+20 XP"); if(perfect) confetti(); }
+    else { toast("📦 完成本单元（可随时回来补错题）+20 XP"); }
+    save(); checkBadges();
+  }
+  quizSession = null;
+  view = {name:"unitresult", uid:u.id};
+  nav(); render();
+}
+function resultHTML(){
+  const u = UNITS.find(x=>x.id===view.uid);
+  const st = unitStats(u);
+  const pct = Math.round(st.correct/st.total*100);
+  const perfect = st.firstTryRight === st.total;
+  const nextU = UNITS.find(x=>x.id===u.id+1);
+  return '<div class="card" style="border-color:'+(pct>=80?'var(--good)':'var(--warn)')+'">'+
+  '<h1 style="margin:0">'+u.icon+' '+u.cn+' · 单元完成</h1>'+
+  '<p class="sub">答对 '+st.correct+' / '+st.total+' 题，正确率 <b style="font-size:22px">'+pct+'%</b>'+(perfect?" · 一次全对 💯":"")+'</p>'+
+  '<div class="pbar'+(pct>=80?" good":"")+'" style="margin:14px 0"><i style="width:'+pct+'%"></i></div>'+
+  '<p class="body">'+(pct>=80 ? "太棒了！继续下一个单元，或去挑战模拟考试。" : "错题是进步最快的路——点“再做一次”把错题搞懂，就能冲高分。")+'</p>'+
+  '<div class="row"><button class="btn" data-retry="'+u.id+'">🔁 再做一次</button>'+
+  '<button class="btn ghost" data-go="unit" data-uid="'+u.id+'">📖 复习知识点</button>'+
+  (nextU ? '<button class="btn" data-go="unit" data-uid="'+nextU.id+'">下一个单元 →</button>' : '<button class="btn" data-go="exam">🎯 去模考</button>')+
+  '</div></div>';
+}
+
+/* ================= FRQ ================= */
+function frqHTML(){
+  if(view.id != null) return frqDetailHTML();
+  const list = FRQS.map((f,i)=>{
+    const done = state.frqDone[f.id];
+    return '<div class="unit-card" data-go="frq" data-fid="'+f.id+'"><div class="icon">'+f.icon+'</div>'+
+    '<h3>'+f.title+'</h3><div class="cn">'+f.topic+'</div><div class="pct">'+(done?"✅ 已完成":"📌 未开始")+'</div></div>';
+  }).join("");
+  return '<div class="card"><h1>📝 FRQ 主观题练习</h1>'+
+  '<p class="sub">AP Precalculus 第二部分是 4 道大题（约 60 分钟）。这里按真实考试风格，给你题目 + 评分标准，写完对照打分。</p>'+
+  '<div class="callout tip"><span class="ico">💡</span><div>建议：先在纸上/编译器里写完代码，再点“显示参考答案”对照。评分要点是阅卷老师真正给分的地方，一定要逐条自查。</div></div></div>'+
+  '<div class="unit-grid">'+list+'</div>';
+}
+function frqDetailHTML(){
+  const f = FRQS.find(x=>x.id===view.id) || FRQS[0];
+  const done = state.frqDone[f.id];
+  const rubric = f.points.map(p=>'<li>'+inline(p)+'</li>').join("");
+  return '<div class="card"><div class="spread"><h1 style="margin:0">'+f.icon+' '+f.title+'</h1>'+
+  '<button class="btn ghost sm" data-go="frq">← 返回列表</button></div>'+
+  '<div class="sub">'+f.topic+'</div>'+
+  '<h2>题目</h2><p class="body">'+inline(f.prompt)+'</p>'+
+  (f.code ? '<div class="block-code">'+hl(f.code)+'</div>' : "")+
+  '<h2>我的草稿</h2><textarea placeholder="在这里写你的答案（不会自动保存，建议写完后复制到别处）"></textarea>'+
+  '<div class="row"><button class="btn" data-reveal="answer">👀 显示参考答案</button>'+
+  '<button class="btn ghost" data-reveal="rubric">📊 显示评分标准</button>'+
+  (done?'<span class="btn sm" style="background:var(--good)">✅ 已完成</span>':'<button class="btn sm" data-frqdone="'+f.id+'">✅ 标记完成</button>')+
+  '</div><div id="frq-reveal"></div></div>';
+}
+function revealFRQ(which){
+  const f = FRQS.find(x=>x.id===view.id);
+  const box = $("#frq-reveal");
+  if(which==="answer"){
+    box.innerHTML = '<h2>参考答案</h2>'+(f.answerText?'<p class="body">'+inline(f.answerText)+'</p>':"")+'<div class="block-code">'+hl(f.answer)+'</div>';
+  } else {
+    box.innerHTML = '<div class="rubric"><b>📊 评分要点（每点对应阅卷给分）</b><ul class="li">'+f.points.map(p=>'<li>'+inline(p)+'</li>').join("")+'</ul></div>';
+  }
+}
+
+/* ================= 模拟考试 ================= */
+function examHTML(){
+  if(!examSession) return examIntroHTML();
+  if(view.finished) return examResultHTML();
+  const s = examSession;
+  const item = s.items[s.idx];
+  const answered = s.picked[s.idx] !== undefined;
+  return '<div class="card"><div class="spread" style="margin-bottom:10px">'+
+  '<span class="q-meta">模考第 '+(s.idx+1)+' / '+s.items.length+' 题</span>'+
+  '<span class="muted" style="font-size:13px">⏱️ '+examClock()+'</span></div>'+
+  '<div class="q-text">'+inline(item.q.q)+'</div>'+
+  (item.q.code?'<div class="block-code">'+hl(item.q.code)+'</div>':"")+
+  '<div class="options">'+item.q.options.map((o,i)=>{
+    let cls="opt"; if(answered){ cls+=" disabled"; if(i===s.picked[s.idx]) cls+=" active"; }
+    return '<button class="'+cls+'" data-examopt="'+i+'"><span class="ltr">'+"ABCD"[i]+'.</span><span>'+inline(o)+'</span></button>';
+  }).join("")+'</div>'+
+  '<div style="margin-top:16px" class="row">'+
+  (answered ? (s.idx<s.items.length-1?'<button class="btn" data-examnext>下一题 →</button>':'<button class="btn" data-examfinish>交卷 🏁</button>') : '<span class="muted" style="font-size:13px">选择一个答案后继续</span>')+
+  '</div></div>';
+}
+function examIntroHTML(){
+  const best = state.examBest;
+  return '<div class="card"><h1>🎯 模拟考试</h1>'+
+  '<p class="sub">随机抽取 '+(Math.min(30, flattenAll().length))+' 道覆盖全部单元的选择题。真实考试 Section I 是 40 题选择题 / 约 2 小时，这里先热身。</p>'+
+  '<div class="callout tip"><span class="ico">⏱️</span><div>建议计时 30 分钟完成。答完可查看每一题的解析，错题会是你考前最该复习的清单。</div></div>'+
+  (best!==null? '<p class="body">历史最佳：<b>'+best+'%</b>（共 '+state.examAttempts+' 次）</p>':'<p class="body">还没有模考记录，来第一次挑战吧！</p>')+
+  '<button class="btn" data-startexam>▶️ 开始考试</button></div>';
+}
+function startExam(){
+  const pool = [...flattenAll(), ...flattenReal()];
+  const shuffled = [...pool].sort(()=>Math.random()-0.5).slice(0, Math.min(30, pool.length));
+  examSession = {items: shuffled, idx:0, picked: [], start: Date.now()};
+  state.examAttempts++;
+  save(); render();
+}
+function examClock(){
+  const sec = Math.floor((Date.now()-examSession.start)/1000);
+  return String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0");
+}
+function examPick(opt){ examSession.picked[examSession.idx] = opt; render(); }
+function examNext(){ examSession.idx++; render(); }
+function finishExam(){
+  const s = examSession;
+  const score = s.items.reduce((acc,it,i)=> acc + (s.picked[i]===it.q.answer?1:0), 0);
+  const pct = Math.round(score/s.items.length*100);
+  if(state.examBest===null || pct>state.examBest){ state.examBest=pct; }
+  view.finished = true; view.score=score; view.total=s.items.length; view.pct=pct;
+  addXP(score * 2);
+  if(pct >= 80) addXP(10);
+  save(); checkBadges(); render();
+  if(pct>=80) confetti();
+}
+function examResultHTML(){
+  const pct = view.pct;
+  const s = examSession;
+  const wrong = s.items.map((it,i)=>({it,i})).filter(x=> s.picked[x.i] !== x.it.q.answer);
+  return '<div class="card"><h1>'+(pct>=80?"🏆 太厉害了！":"📊 模考完成")+'</h1>'+
+  '<p class="sub">答对 '+view.score+' / '+view.total+' 题，正确率 <b style="font-size:22px">'+pct+'%</b></p>'+
+  '<div class="pbar'+(pct>=80?" good":"")+'" style="margin:14px 0"><i style="width:'+pct+'%"></i></div>'+
+  (pct>=80 ? '<div class="callout tip"><span class="ico">🎉</span><div>已经达到 5 分水平线！去把 FRQ 也过一遍就能上考场了。</div></div>' :
+   '<div class="callout warn"><span class="ico">💪</span><div>别灰心，错题就是提分点。下面是错题清单，回到对应单元再巩固一遍。</div></div>')+
+  '<h2>错题回顾</h2>'+
+  (wrong.length===0 ? '<p class="sub">全部答对，没有错题！👏</p>' :
+    wrong.map(w=> '<div style="margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:12px">'+
+      '<b>'+w.it.unit.cn+'：</b>'+inline(w.it.q.q)+
+      (w.it.q.code?'<div class="block-code">'+hl(w.it.q.code)+'</div>':"")+
+      '<div class="muted" style="font-size:13px">你的答案：'+(s.picked[w.i]!==undefined?"ABCD"[s.picked[w.i]]:"未作答")+' · 正确答案：'+"ABCD"[w.it.q.answer]+'</div>'+
+      '<div class="muted" style="font-size:13px">'+inline(w.it.q.explain)+'</div></div>').join("")
+  )+
+  '<div class="row" style="margin-top:16px"><button class="btn" data-go="exam">🔁 再考一次</button>'+
+  '<button class="btn ghost" data-go="home">🏠 回首页</button></div></div>';
+}
+
+/* ================= 真题演练 ================= */
+function flattenReal(){
+  return REALEXAM.map((q,i)=>({q, uid:-1, qi:i, unit:{cn: q.topic}}));
+}
+function startReal(){
+  realSession = {idx:0, order:REALEXAM.map((_,i)=>i), answers:[], finished:false};
+  view = {name:"real"};
+  nav(); render();
+}
+function realIntroHTML(){
+  return '<div class="card"><h1>🎯 真题演练</h1>'+
+  '<p class="sub">'+REALEXAM.length+' 道<b>真题风格</b>选择题，形式与难度对齐 AP Precalculus 正式考试（数学选择题、4 个选项）。逐题练习，答完立刻看解析。</p>'+
+  '<div class="callout warn"><span class="ico">⚠️</span><div>正式考试 Section I 是 40 题 / 约 2 小时，这里先热身。官方历年 FRQ 可在 College Board 官网 AP Central 免费下载。</div></div>'+
+  '<button class="btn" data-startreal>▶️ 开始演练</button></div>';
+}
+function realHTML(){
+  if(!realSession) return realIntroHTML();
+  if(realSession.finished) return realResultHTML();
+  const s = realSession;
+  const qi = s.order[s.idx];
+  const q = REALEXAM[qi];
+  const total = s.order.length;
+  const ans = s.answers[s.idx];
+  const answered = !!ans;
+  let opts = '';
+  if(q.options){
+    opts = '<div class="options">'+q.options.map((o,i)=>{
+      let cls="opt";
+      if(answered){ cls += " disabled"; if(i===q.answer) cls += " correct"; else if(i===ans.picked) cls += " wrong"; }
+      return '<button class="'+cls+'" data-realopt="'+i+'"><span class="ltr">'+"ABCD"[i]+'.</span><span>'+inline(o)+'</span></button>';
+    }).join("")+'</div>';
+  }
+  const explain = answered ? '<div class="explain '+(ans.correct?"good":"bad")+'"><b>'+(ans.correct?"✅ 正确":"❌ 错误")+'</b>'+inline(q.explain)+'</div>' : "";
+  const nextBtn = answered ? '<button class="btn" data-realnext>'+(s.idx<total-1?"下一题 →":"查看成绩 🎉")+'</button>' : "";
+  return '<div class="card"><div class="spread" style="margin-bottom:10px">'+
+  '<span class="q-meta">真题演练 · 第 '+(s.idx+1)+' / '+total+' 题 · '+inline(q.topic)+'</span>'+
+  '<button class="btn ghost sm" data-realexit>✕ 退出</button></div>'+
+  '<div class="q-text">'+inline(q.q)+'</div>'+
+  (q.code?'<div class="block-code">'+hl(q.code)+'</div>':"")+
+  opts + explain +
+  '<div style="margin-top:16px" class="row">'+nextBtn+'</div></div>';
+}
+function realAnswer(opt){
+  const s = realSession;
+  const qi = s.order[s.idx];
+  const q = REALEXAM[qi];
+  const correct = opt === q.answer;
+  s.answers[s.idx] = {picked:opt, correct};
+  if(correct){ addXP(8); toast("+8 XP ✅"); }
+  else { toast("看看解析 💪"); }
+  save(); render();
+}
+function realNext(){
+  const s = realSession;
+  if(s.idx < s.order.length-1){ s.idx++; render(); return; }
+  s.finished = true;
+  if(!state.realDone) state.realDone = 0;
+  state.realDone++;
+  save(); checkBadges();
+  render();
+}
+function realResultHTML(){
+  const s = realSession;
+  const total = s.order.length;
+  const correct = s.answers.filter(a=>a && a.correct).length;
+  const pct = Math.round(correct/total*100);
+  const wrong = [];
+  s.order.forEach((qi,i)=>{ if(!s.answers[i] || !s.answers[i].correct) wrong.push({q:REALEXAM[qi], i}); });
+  return '<div class="card"><h1>'+(pct>=80?"🏆 成绩不错！":"📊 演练完成")+'</h1>'+
+  '<p class="sub">答对 '+correct+' / '+total+' 题，正确率 <b style="font-size:22px">'+pct+'%</b></p>'+
+  '<div class="pbar'+(pct>=80?" good":"")+'" style="margin:14px 0"><i style="width:'+pct+'%"></i></div>'+
+  '<h2>错题回顾</h2>'+
+  (wrong.length===0 ? '<p class="sub">全部答对，太强了！👏</p>' :
+    wrong.map(w=> '<div style="margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:12px">'+
+      '<b>'+w.q.topic+'：</b>'+inline(w.q.q)+
+      (w.q.code?'<div class="block-code">'+hl(w.q.code)+'</div>':"")+
+      '<div class="muted" style="font-size:13px">你的答案：'+(s.answers[w.i]&&s.answers[w.i].picked!==undefined?"ABCD"[s.answers[w.i].picked]:"未作答")+' · 正确答案：'+"ABCD"[w.q.answer]+'</div>'+
+      '<div class="muted" style="font-size:13px">'+inline(w.q.explain)+'</div></div>').join("")
+  )+
+  '<div class="row" style="margin-top:16px"><button class="btn" data-startreal>🔁 再练一次</button>'+
+  '<button class="btn ghost" data-go="home">🏠 回首页</button></div></div>';
+}
+
+/* ================= 速查表 ================= */
+function cheatHTML(){
+  return '<div class="card"><h1>📋 速查表</h1><p class="sub">考前 10 分钟过一遍，专治“明明会但想不起来”。</p></div>'+
+  '<div class="card">'+renderBlocks(CHEATSHEET)+'</div>';
+}
+
+/* ================= 彩带 ================= */
+function confetti(){
+  const colors = ["#6366f1","#8b5cf6","#10b981","#f59e0b","#ef4444","#ec4899","#06b6d4"];
+  for(let i=0;i<90;i++){
+    const d=document.createElement("div");
+    d.className="confetti";
+    d.style.left=Math.random()*100+"vw";
+    d.style.width=(6+Math.random()*8)+"px";
+    d.style.height=(10+Math.random()*10)+"px";
+    d.style.background=colors[Math.floor(Math.random()*colors.length)];
+    d.style.animationDuration=(2.2+Math.random()*2)+"s";
+    d.style.animationDelay=(Math.random()*0.6)+"s";
+    d.style.borderRadius=Math.random()>0.5?"50%":"2px";
+    document.body.appendChild(d);
+    setTimeout(()=>d.remove(), 5000);
+  }
+}
+
+/* ================= 事件绑定 ================= */
+document.addEventListener("click", e=>{
+  const t = e.target;
+  const goBtn = t.closest("[data-go]");
+  if(goBtn){
+    if(goBtn.dataset.go==="unit"){ go("unit", {uid:+goBtn.dataset.uid, tab:"lesson"}); return; }
+    if(goBtn.dataset.go==="frq" && goBtn.dataset.fid){ go("frq", {id:+goBtn.dataset.fid}); return; }
+    if(goBtn.dataset.go==="random"){ view={name:"random"}; nav(); $("#main").innerHTML = randomHTML(); return; }
+    go(goBtn.dataset.go);
+    return;
+  }
+  const tabBtn = t.closest("[data-tab]");
+  if(tabBtn){ view.tab = tabBtn.dataset.tab; if(view.name==="unit") render(); return; }
+  const mark = t.closest("[data-markread]");
+  if(mark){
+    const uid = +mark.dataset.markread;
+    if(!state.lessonsRead[uid]){ state.lessonsRead[uid]=true; addXP(5); toast("+5 XP 完成学习 ✅"); save(); }
+    else { state.lessonsRead[uid]=false; save(); }
+    render(); return;
+  }
+  const opt = t.closest("[data-opt]");
+  if(opt){ answerQuestion(+opt.dataset.opt); return; }
+  const nx = t.closest("[data-next]");
+  if(nx){ nextQuestion(); return; }
+  const retry = t.closest("[data-retry]");
+  if(retry){ startQuiz(+retry.dataset.retry); view = {name:"unit", uid:+retry.dataset.retry, tab:"quiz"}; nav(); render(); return; }
+  const reveal = t.closest("[data-reveal]");
+  if(reveal){ revealFRQ(reveal.dataset.reveal); return; }
+  const frqdone = t.closest("[data-frqdone]");
+  if(frqdone){ const fid=+frqdone.dataset.frqdone; if(!state.frqDone[fid]){ state.frqDone[fid]=true; addXP(20); toast("🎉 完成一道 FRQ！+20 XP"); } save(); checkBadges(); render(); return; }
+  const se = t.closest("[data-startexam]");
+  if(se){ startExam(); return; }
+  const eo = t.closest("[data-examopt]");
+  if(eo){ examPick(+eo.dataset.examopt); return; }
+  const en = t.closest("[data-examnext]");
+  if(en){ examNext(); return; }
+  const ef = t.closest("[data-examfinish]");
+  if(ef){ finishExam(); return; }
+  const ro = t.closest("[data-randopt]");
+  if(ro){ answerRandom(+ro.dataset.randopt); return; }
+  const ex = t.closest("[data-export]");
+  if(ex){ exportData(); return; }
+  const im = t.closest("[data-import]");
+  if(im){ const inp = $("#importFile"); if(inp) inp.click(); return; }
+  const sr = t.closest("[data-startreal]");
+  if(sr){ startReal(); return; }
+  const rp = t.closest("[data-realopt]");
+  if(rp){ realAnswer(+rp.dataset.realopt); return; }
+  const rn = t.closest("[data-realnext]");
+  if(rn){ realNext(); return; }
+  const rx = t.closest("[data-realexit]");
+  if(rx){ go("home"); return; }
+});
+document.addEventListener("change", e=>{
+  if(e.target && e.target.id === "importFile"){ importData(e.target.files && e.target.files[0]); }
+});
+
+/* 随机练习答题（简化版） */
+let randomCurrent = null;
+function answerRandom(opt){
+  if(!randomCurrent) return;
+  const pick = randomCurrent;
+  const key = gid(pick.uid, pick.qi);
+  const prev = state.q[key];
+  const correct = opt === pick.q.answer;
+  if(!prev){
+    if(correct){ addXP(10); state.q[key]={correct:true,ft:true,picked:opt}; toast("+10 XP 🎉"); }
+    else{ state.q[key]={correct:false,ft:false,picked:opt}; }
+  } else if(!prev.correct && correct){
+    addXP(4); state.q[key]={correct:true,ft:prev.ft,picked:opt}; toast("+4 XP ✅");
+  } else if(!prev.correct && !correct){
+    state.q[key]={correct:false,ft:false,picked:opt};
+  } else { state.q[key].picked=opt; }
+  save(); nav(); $("#main").innerHTML = randomHTML();
+}
+
+/* 随机练习：记录当前题目以便答题 */
+function randomHTML(){
+  const pool = flattenAll();
+  const pick = pool[Math.floor(Math.random()*pool.length)];
+  randomCurrent = pick;
+  const st = qStatus(pick.uid, pick.qi);
+  const answered = !!st;
+  return '<div class="card"><div class="spread" style="margin-bottom:10px">'+
+  '<span class="q-meta">🎲 随机练习 · 来自「'+pick.unit.cn+'」</span>'+
+  '<button class="btn ghost sm" data-go="unit" data-uid="'+pick.uid+'">去该单元 →</button></div>'+
+  '<div class="q-text">'+inline(pick.q.q)+'</div>'+
+  (pick.q.code?'<div class="block-code">'+hl(pick.q.code)+'</div>':"")+
+  '<div class="options">'+pick.q.options.map((o,i)=>{
+    let cls="opt"; if(answered){ cls+=" disabled"; if(i===pick.q.answer)cls+=" correct"; else if(i===st.picked)cls+=" wrong"; }
+    return '<button class="'+cls+'" data-randopt="'+i+'"><span class="ltr">'+"ABCD"[i]+'.</span><span>'+inline(o)+'</span></button>';
+  }).join("")+'</div>'+
+  (answered?'<div class="explain '+(st.correct?"good":"bad")+'"><b>'+(st.correct?"✅ 正确":"❌ 错误")+'</b>'+inline(pick.q.explain)+'</div>':"")+
+  '<div style="margin-top:14px" class="row">'+(answered?'<button class="btn" data-go="random">🎲 再来一题</button>':'')+
+  '<button class="btn ghost" data-go="home">🏠 回首页</button></div></div>';
+};
+
+/* ================= 进度备份 / 恢复 ================= */
+function exportData(){
+  try{
+    const data = JSON.stringify(state, null, 2);
+    const blob = new Blob([data], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "apcsa-progress-" + todayStr() + ".json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    toast("✅ 备份文件已下载");
+  }catch(e){ toast("❌ 导出失败：" + e.message); }
+}
+function importData(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    try{
+      const obj = JSON.parse(ev.target.result);
+      if(!obj || typeof obj !== "object" || (!("xp" in obj) && !("q" in obj))){ toast("❌ 这不是有效的备份文件"); return; }
+      state = obj;
+      if(!state.q) state.q = {};
+      if(!state.lessonsRead) state.lessonsRead = {};
+      if(!state.quizDone) state.quizDone = {};
+      if(!state.frqDone) state.frqDone = {};
+      if(!state.badges) state.badges = [];
+      if(state.examBest === undefined) state.examBest = null;
+      if(!state.examAttempts) state.examAttempts = 0;
+      save();
+      go("home");
+      toast("✅ 进度已恢复");
+    }catch(e){ toast("❌ 备份文件解析失败"); }
+  };
+  reader.readAsText(file);
+}
+
+/* ================= 成就馆 ================= */
+function awardsHTML(){
+  const lv = level();
+  const lvTitle = levelTitle();
+  const curXp = state.xp;
+  const need = 150;
+  const into = curXp - (lv-1)*need;
+  const pct = Math.min(100, Math.round(into/need*100));
+  const ladder = LEVEL_TITLES.map((t,i)=>{
+    const tl = i+1;
+    let bg="transparent", bd="var(--line)";
+    if(tl<lv){ bg="var(--good-soft)"; bd="var(--good)"; }
+    if(tl===lv){ bg="var(--accent-soft)"; bd="var(--accent)"; }
+    return '<div style="display:flex;align-items:center;gap:12px;padding:8px 14px;border-radius:12px;border:1px solid '+bd+';background:'+bg+';font-size:14px;'+(tl===lv?'font-weight:700;':'')+'">'+
+      '<span style="font-weight:700;min-width:50px;color:'+(tl<=lv?'var(--accent)':'var(--soft)')+'">Lv.'+tl+'</span>'+
+      '<span>'+t+'</span>'+(tl===lv?'<span style="margin-left:auto;font-size:12px;color:var(--accent);font-weight:700">👈 当前</span>':(tl<lv?'<span style="margin-left:auto;font-size:12px;color:var(--good)">已解锁</span>':'<span style="margin-left:auto;font-size:12px;color:var(--soft)">🔒</span>'))+'</div>';
+  }).join("");
+  const badgesHTML = BADGES.map(b=>{
+    const e = state.badges.includes(b.id);
+    return '<div class="badge'+(e?" earned":"")+'"><span class="b-ico">'+b.ico+'</span><b>'+b.name+'</b><span class="muted">'+(e?b.desc:'🔒 '+b.desc)+'</span></div>';
+  }).join("");
+  const earnedCount = BADGES.filter(b=>state.badges.includes(b.id)).length;
+  const nextInfo = lv < LEVEL_TITLES.length ? ('Lv.'+(lv+1)+' · '+LEVEL_TITLES[lv]) : '已满级';
+  const remain = lv < LEVEL_TITLES.length ? (need - into) : 0;
+  return '<div class="card"><h1>🏆 成就馆</h1>'+
+  '<div class="spread"><div><div class="sub">当前等级</div><div style="font-size:42px;font-weight:800;line-height:1.1">Lv.'+lv+' · '+lvTitle+'</div></div>'+
+  '<div style="text-align:right"><div class="muted" style="font-size:13px">累计积分</div><div style="font-size:24px;font-weight:700">'+curXp+' XP</div></div></div>'+
+  '<div class="pbar" style="margin:16px 0"><i style="width:'+pct+'%"></i></div>'+
+  '<div class="muted" style="font-size:13px">下一级 '+nextInfo+(lv<LEVEL_TITLES.length?' · 还差 '+remain+' XP':'')+'</div></div>'+
+  '<div class="card"><h2 style="margin-top:0">👑 称号阶梯</h2><p class="sub">每升一级解锁一个新称号，看看你能走到多远。</p>'+
+  '<div style="display:flex;flex-direction:column;gap:6px;margin-top:12px">'+ladder+'</div></div>'+
+  '<div class="card"><div class="spread"><h2 style="margin:0">🎖️ 勋章墙</h2><span class="muted">已获得 '+earnedCount+' / '+BADGES.length+'</span></div>'+
+  '<div class="badges" style="margin-top:12px">'+badgesHTML+'</div></div>';
+}
+
+/* ================= 交互式演示 ================= */
+const DEMOS = {
+  sine: {
+    title: "Sine Wave · 拖动滑块观察",
+    note: "y = A·sin(B·x). Drag Amplitude A to change height, Frequency B to compress/stretch (period = 2π/B).",
+    controls: [
+      {id:"amp", label:"Amplitude A (振幅)", min:1, max:5, step:1, value:2},
+      {id:"freq", label:"Frequency B (频率)", min:1, max:4, step:1, value:1},
+    ],
+  },
+  exp: {
+    title: "Exponential Function · 拖动滑块观察",
+    note: "y = bˣ. When b > 1 it grows; when 0 < b < 1 it decays. The green dashed line is y = 1 — every exponential passes through (0, 1).",
+    controls: [
+      {id:"base", label:"Base b (底数)", min:0.2, max:3, step:0.1, value:2},
+    ],
+  },
+  ppc: {
+    title: "Production Possibilities Curve (PPC) · 生产可能性曲线",
+    note: "Drag to see economic growth (curve shifts OUT) vs. contraction (shifts IN). Green = efficient, orange = inefficient, red = unattainable.",
+    controls: [
+      {id:"growth", label:"Economy Level (经济水平)", min:0.5, max:1.5, step:0.05, value:1},
+    ],
+  },
+  supply: {
+    title: "Supply & Demand · 均衡变化",
+    note: "Drag Demand or Supply to watch equilibrium price and quantity change. Red = demand, blue = supply, purple = equilibrium.",
+    controls: [
+      {id:"demand", label:"Demand (需求)", min:3, max:10, step:0.5, value:8},
+      {id:"supply", label:"Supply (供给)", min:0, max:6, step:0.5, value:2},
+    ],
+  },
+  loop: {
+    title: "for Loop Visualization · 拖动 i 观察",
+    note: "for (int i=0; i<5; i++){ sum += a[i]; }. Drag i to watch its value, the condition, and the accumulation (purple = current element).",
+    controls: [
+      {id:"i", label:"Loop Variable i (循环变量)", min:0, max:5, step:1, value:0},
+    ],
+  },
+};
+
+function sineSVG(p){
+  const W=420, H=300, L=44, R=16, T=22, B=42;
+  const A=p.amp, freq=p.freq, xmin=0, xmax=2*Math.PI, ymax=A*1.35, ymin=-A*1.35;
+  const X=x=>L+(x-xmin)/(xmax-xmin)*(W-L-R);
+  const Y=y=>H-B-(y-ymin)/(ymax-ymin)*(H-T-B);
+  let s='';
+  for(let i=0;i<=6;i++){ const x=xmin+(xmax-xmin)*i/6; s+='<line x1="'+X(x).toFixed(1)+'" y1="'+Y(ymin)+'" x2="'+X(x).toFixed(1)+'" y2="'+Y(ymax)+'" stroke="#eef0f6" stroke-width="1"/>'; }
+  s+='<line x1="'+X(xmin)+'" y1="'+Y(0)+'" x2="'+X(xmax)+'" y2="'+Y(0)+'" stroke="#b6bcc8" stroke-width="1.5"/>';
+  s+='<line x1="'+X(xmin)+'" y1="'+Y(ymin)+'" x2="'+X(xmin)+'" y2="'+Y(ymax)+'" stroke="#b6bcc8" stroke-width="1.5"/>';
+  let d='';
+  for(let i=0;i<=240;i++){ const x=xmin+(xmax-xmin)*i/240, y=A*Math.sin(freq*x); d+=(i?' L':'M')+X(x).toFixed(1)+' '+Y(y).toFixed(1); }
+  s+='<path d="'+d+'" fill="none" stroke="#5e5ce6" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>';
+  s+='<text x="'+((W-L-R)/2+L)+'" y="'+(H-12)+'" text-anchor="middle" fill="#5e5ce6" font-size="13" font-weight="600">y = '+A+'·sin('+freq+'x)</text>';
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;background:#fbfcff;border-radius:12px">'+s+'</svg>';
+}
+
+function expSVG(p){
+  const W=420, H=300, L=48, R=16, T=22, B=42;
+  const b=p.base, xmin=-2, xmax=3.5;
+  let ymax=Math.pow(b, xmax), ymin=Math.pow(b, xmin);
+  if(ymax<ymin){ const t=ymax; ymax=ymin; ymin=t; }
+  ymax=Math.min(16, Math.max(ymax, 1.2)); ymin=0;
+  const X=x=>L+(x-xmin)/(xmax-xmin)*(W-L-R);
+  const Y=y=>H-B-(y-ymin)/(ymax-ymin)*(H-T-B);
+  let s='';
+  for(let i=0;i<=5;i++){ const y=ymax*i/5; s+='<line x1="'+X(xmin)+'" y1="'+Y(y)+'" x2="'+X(xmax)+'" y2="'+Y(y)+'" stroke="#eef0f6" stroke-width="1"/>'; }
+  s+='<line x1="'+X(xmin)+'" y1="'+Y(0)+'" x2="'+X(xmax)+'" y2="'+Y(0)+'" stroke="#b6bcc8" stroke-width="1.5"/>';
+  s+='<line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(0)+'" y2="'+Y(ymax)+'" stroke="#b6bcc8" stroke-width="1.5"/>';
+  let d='';
+  for(let i=0;i<=240;i++){ const x=xmin+(xmax-xmin)*i/240, y=Math.pow(b,x); d+=(i?' L':'M')+X(x).toFixed(1)+' '+Y(y).toFixed(1); }
+  s+='<path d="'+d+'" fill="none" stroke="#0a84ff" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>';
+  s+='<line x1="'+X(xmin)+'" y1="'+Y(1)+'" x2="'+X(xmax)+'" y2="'+Y(1)+'" stroke="#34c759" stroke-width="1.2" stroke-dasharray="5,4"/>';
+  s+='<circle cx="'+X(0)+'" cy="'+Y(1)+'" r="3.5" fill="#34c759"/>';
+  s+='<text x="'+(W/2)+'" y="'+(H-12)+'" text-anchor="middle" fill="#0a84ff" font-size="13" font-weight="600">y = '+b.toFixed(1)+'ˣ</text>';
+  s+='<text x="'+X(0)+'" y="'+Y(1)+'" fill="#34c759" font-size="11" dx="6" dy="-6">(0, 1)</text>';
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;background:#fbfcff;border-radius:12px">'+s+'</svg>';
+}
+
+function ppcSVG(p){
+  const W=420, H=300, L=48, R=16, T=22, B=42;
+  const g=p.growth, max=10*g;
+  const X=x=>L+(x/(max*1.2))*(W-L-R);
+  const Y=y=>H-B-(y/(max*1.2))*(H-T-B);
+  let s='';
+  s+='<line x1="'+L+'" y1="'+Y(0)+'" x2="'+X(max*1.15)+'" y2="'+Y(0)+'" stroke="#b6bcc8" stroke-width="1.5"/>';
+  s+='<line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(0)+'" y2="'+Y(max*1.15)+'" stroke="#b6bcc8" stroke-width="1.5"/>';
+  let d='';
+  for(let i=0;i<=120;i++){ const x=max*i/120; const y=max*Math.sqrt(1-Math.pow(x/max,2)); d+=(i?' L':'M')+X(x).toFixed(1)+' '+Y(y).toFixed(1); }
+  s+='<path d="'+d+'" fill="none" stroke="#f59e0b" stroke-width="2.8" stroke-linejoin="round"/>';
+  let ex=0.5*max, ey=max*Math.sqrt(1-0.25);
+  s+='<circle cx="'+X(ex)+'" cy="'+Y(ey)+'" r="4" fill="#34c759"/>';
+  s+='<text x="'+X(ex)+'" y="'+Y(ey)+'" fill="#1a9d5c" font-size="11" dx="8" dy="-6">Efficient</text>';
+  let ix=0.4*max, iy=0.4*max;
+  s+='<circle cx="'+X(ix)+'" cy="'+Y(iy)+'" r="4" fill="#ff9500"/>';
+  s+='<text x="'+X(ix)+'" y="'+Y(iy)+'" fill="#c76e00" font-size="11" dx="8" dy="16">Inefficient</text>';
+  let ux=0.85*max, uy=0.85*max;
+  s+='<circle cx="'+X(ux)+'" cy="'+Y(uy)+'" r="4" fill="#ff3b30"/>';
+  s+='<text x="'+X(ux)+'" y="'+Y(uy)+'" fill="#c40000" font-size="11" dx="8" dy="-6">Unattainable</text>';
+  s+='<text x="'+X(max)+'" y="'+Y(0)+'" fill="#9aa0aa" font-size="11" dy="16">Good A</text>';
+  s+='<text x="'+X(0)+'" y="'+Y(max)+'" fill="#9aa0aa" font-size="11" dx="-34" dy="-4">Good B</text>';
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;background:#fbfcff;border-radius:12px">'+s+'</svg>';
+}
+
+function supplySVG(p){
+  const W=420, H=300, L=52, R=16, T=22, B=42;
+  const D0=p.demand, S0=p.supply;
+  const qmax=14, pmax=12;
+  const X=q=>L+(q/qmax)*(W-L-R);
+  const Y=price=>H-B-(price/pmax)*(H-T-B);
+  const Qe=(D0-S0)/1.4, Pe=D0-0.8*Qe;
+  let s='';
+  for(let i=1;i<=6;i++){ s+='<line x1="'+X(0)+'" y1="'+Y(pmax*i/6)+'" x2="'+X(qmax)+'" y2="'+Y(pmax*i/6)+'" stroke="#eef0f6" stroke-width="1"/>'; }
+  s+='<line x1="'+L+'" y1="'+Y(0)+'" x2="'+X(qmax)+'" y2="'+Y(0)+'" stroke="#b6bcc8" stroke-width="1.5"/>';
+  s+='<line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(0)+'" y2="'+Y(pmax)+'" stroke="#b6bcc8" stroke-width="1.5"/>';
+  s+='<line x1="'+X(0)+'" y1="'+Y(D0)+'" x2="'+X(D0/0.8)+'" y2="'+Y(0)+'" stroke="#ff3b30" stroke-width="2.6"/>';
+  const qsupply=(pmax-S0)/0.6;
+  s+='<line x1="'+X(0)+'" y1="'+Y(S0)+'" x2="'+X(qsupply)+'" y2="'+Y(pmax)+'" stroke="#0a84ff" stroke-width="2.6"/>';
+  s+='<circle cx="'+X(Qe)+'" cy="'+Y(Pe)+'" r="4.5" fill="#5e5ce6"/>';
+  s+='<text x="'+X(Qe)+'" y="'+Y(Pe)+'" fill="#5e5ce6" font-size="11" dx="8" dy="-6">Equilibrium P='+Pe.toFixed(1)+' Q='+Qe.toFixed(1)+'</text>';
+  s+='<text x="'+X(D0/0.8)+'" y="'+Y(0)+'" fill="#ff3b30" font-size="12" font-weight="600" dy="16">Demand D</text>';
+  s+='<text x="'+X(qsupply)+'" y="'+Y(pmax)+'" fill="#0a84ff" font-size="12" font-weight="600" dy="-6">Supply S</text>';
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;background:#fbfcff;border-radius:12px">'+s+'</svg>';
+}
+
+function loopSVG(p){
+  const arr=[3,1,4,1,5], i=Math.round(p.i), N=arr.length;
+  const sum=arr.slice(0,i).reduce((a,b)=>a+b,0);
+  const W=420, H=190, L=40, R=20, T=36, B=30;
+  const bw=(W-L-R)/N;
+  let s='';
+  for(let k=0;k<N;k++){
+    const x=L+k*bw;
+    const active=(k===i && i<N);
+    s+='<rect x="'+x+'" y="'+T+'" width="'+(bw-8)+'" height="56" rx="8" fill="'+(active?'#5e5ce6':'#fff')+'" stroke="'+(active?'#5e5ce6':'#c6ccd8')+'" stroke-width="1.5"/>';
+    s+='<text x="'+(x+(bw-8)/2)+'" y="'+(T+32)+'" text-anchor="middle" fill="'+(active?'#fff':'#333')+'" font-size="18" font-weight="700">'+arr[k]+'</text>';
+    s+='<text x="'+(x+(bw-8)/2)+'" y="'+(T+72)+'" text-anchor="middle" fill="#9aa0aa" font-size="11">['+k+']</text>';
+  }
+  const inLoop=i<N;
+  s+='<text x="'+L+'" y="'+(T+96)+'" fill="'+(inLoop?'#1a9d5c':'#c40000')+'" font-size="13" font-weight="600">i = '+i+'　condition i<'+N+' → '+(inLoop?'true ✅ continue':'false ❌ exit loop')+'</text>';
+  s+='<text x="'+L+'" y="'+(T+120)+'" fill="#333" font-size="13">Sum = '+sum+'（first '+i+' elements added）</text>';
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;background:#fbfcff;border-radius:12px">'+s+'</svg>';
+}
+
+function demoDraw(type, p){
+  if(type==="sine") return sineSVG(p);
+  if(type==="exp") return expSVG(p);
+  if(type==="ppc") return ppcSVG(p);
+  if(type==="supply") return supplySVG(p);
+  if(type==="loop") return loopSVG(p);
+  return "";
+}
+function renderDemo(type){
+  const def = DEMOS[type];
+  if(!def) return "";
+  const p = {};
+  def.controls.forEach(c => p[c.id] = c.value);
+  const svg = demoDraw(type, p);
+  const controls = def.controls.map(c =>
+    '<label class="demo-ctl"><span>'+c.label+'：<b id="dv-'+type+'-'+c.id+'">'+c.value+'</b></span>'+
+    '<input type="range" data-demoslider="'+type+'" data-param="'+c.id+'" min="'+c.min+'" max="'+c.max+'" step="'+c.step+'" value="'+c.value+'"></label>'
+  ).join("");
+  return '<div class="demo"><div class="demo-title">'+def.title+'</div>'+
+    '<div class="demo-svg" id="demo-svg-'+type+'">'+svg+'</div>'+
+    '<div class="demo-controls">'+controls+'</div>'+
+    '<div class="demo-note">'+def.note+'</div></div>';
+}
+function demoRefresh(type){
+  const def = DEMOS[type];
+  if(!def) return;
+  const p = {};
+  def.controls.forEach(c => {
+    const inp = document.querySelector('[data-demoslider="'+type+'"][data-param="'+c.id+'"]');
+    p[c.id] = inp ? parseFloat(inp.value) : c.value;
+    const lab = document.getElementById('dv-'+type+'-'+c.id);
+    if(lab) lab.textContent = p[c.id];
+  });
+  const box = document.getElementById('demo-svg-'+type);
+  if(box) box.innerHTML = demoDraw(type, p);
+}
+document.addEventListener("input", e=>{
+  const s = e.target && e.target.closest ? e.target.closest("[data-demoslider]") : null;
+  if(s){ demoRefresh(s.dataset.demoslider); }
+});
+
+function renderVideo(b){
+  const links = (b.links||[]).map(l =>
+    '<a class="video-link" href="'+l.url+'" target="_blank" rel="noopener">'+
+    '<span class="video-ico">'+(l.site==="YouTube"?"▶️":"📺")+'</span>'+
+    '<span class="video-txt"><b>'+l.site+'</b> · '+l.label+'</span><span class="video-arrow">↗</span></a>'
+  ).join("");
+  return '<div class="video-block"><div class="video-title">🎬 '+(b.title||"Recommended Videos · 推荐视频")+'</div>'+links+'</div>';
+}
+
+
+/* ================= 启动 ================= */
+function init(){
+  updateStreak();
+  // 兼容旧状态字段
+  if(!state.q) state.q={};
+  if(!state.lessonsRead) state.lessonsRead={};
+  if(!state.quizDone) state.quizDone={};
+  if(!state.frqDone) state.frqDone={};
+  if(state.badges===undefined) state.badges=[];
+  save();
+  nav(); render(); checkBadges();
+}
+init();
+</script>
+</body>
+</html>
