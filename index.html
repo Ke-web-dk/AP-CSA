@@ -213,30 +213,86 @@
    ============================================================ */
 const UNITS = [];
 UNITS.push({
+  id: 0, title: "Getting Started", cn: "零基础入门", icon: "🐣",
+  objective: "认识程序、变量和类型，从零看懂第一段 Java 代码",
+  lesson: [
+    {t:"h", text:"什么是程序？"},
+    {t:"p", text:"程序就是**写给电脑的一串指令**，让电脑从上往下、一步一步照着做。就像一张菜谱：先打蛋、再放盐、再翻炒——电脑也一行一行地执行。"},
+    {t:"c", code:`public class Hello {
+    public static void main(String[] args) {
+        System.out.println("你好，世界！");
+    }
+}`},
+    {t:"p", text:"先不用管 `public static` 是什么意思，现在只要记住最关键的一行：`System.out.println(...)` 的意思是「**把括号里的内容打印到屏幕上**」。双引号 `\"...\"` 里放的是文字。"},
+    {t:"h", text:"什么是变量？—— 一个贴了标签的盒子"},
+    {t:"p", text:"**变量就是一个有名字的盒子**，用来装数据。盒子上贴着标签（名字），你喊这个名字就能找到它，把里面的东西拿出来用。"},
+    {t:"c", code:`int age = 12;
+// 读作：造一个只能装整数的盒子，起名叫 age，先在里面放 12`},
+    {t:"h", text:"什么是「类型」？"},
+    {t:"p", text:"类型决定「**这个盒子只能装什么**」。每种盒子有它的规矩，装错了会报错。"},
+    {t:"c", code:`int      装整数      例: -5, 0, 42
+double   装小数      例: 3.14, -0.5
+boolean  装“是/否”   例: true 或 false
+char     装一个字符  例: 'A'、'7'   （单引号）
+String   装一串文字  例: "hello"   （双引号）`},
+    {t:"warn", text:"装错会出错：`int x = 3.5` 是错的（整数盒子装不下小数）；`int y = \"hi\"` 也是错的（整数盒子装不下文字）。"},
+    {t:"h", text:"变量的三步：声明 → 赋值 → 使用"},
+    {t:"c", code:`int score;                  // ① 声明：盒子叫 score，装整数
+score = 95;                 // ② 赋值：往盒子里放进 95
+System.out.println(score);  // ③ 使用：打印出来 → 95
+
+// 也可以一步完成：
+int score = 95;`},
+    {t:"li", items:["程序 = 写给电脑的指令，从上往下执行","变量 = 有名字、有类型的盒子","`int` 整数、`double` 小数、`boolean` 真假、`char` 单字、`String` 一串","`System.out.println(...)` 把内容打印到屏幕"]},
+  ],
+  questions: [
+    {kind:"mcq", q:"`System.out.println(...)` 的作用是？", options:["把内容打印到屏幕上","把内容保存到文件","让程序暂停","计算一个结果"], answer:0, explain:"println 就是“打印一行”，把括号里的内容输出到屏幕上。"},
+    {kind:"mcq", q:"变量最像下面哪个东西？", options:["一个贴了标签的盒子","一个计算结果","一个文件夹","一段文字"], answer:0, explain:"变量 = 有名字的盒子，用来装数据。"},
+    {kind:"mcq", q:"`int` 类型的变量能装什么？", options:["整数","小数","文字","真或假"], answer:0, explain:"int 只能装整数，如 12、-5、0。"},
+    {kind:"mcq", q:"`boolean` 类型的变量能装什么？", options:["true 或 false","任意整数","小数","一段文字"], answer:0, explain:"boolean 只装“是/否”，也就是 true 或 false。"},
+    {kind:"mcq", q:"`char` 类型的值要用什么引号？", options:["单引号 ''","双引号 \"\"","不用引号","中括号 []"], answer:0, explain:"char 装一个字符，用单引号，如 'A'。"},
+    {kind:"mcq", q:"`String` 类型的值要用什么引号？", options:["双引号 \"\"","单引号 ''","不用引号","小括号 ()"], answer:0, explain:"String 装一串文字，用双引号，如 \"hello\"。"},
+    {kind:"trace", q:"运行 `System.out.println(\"Hi\");` 屏幕上会显示？", options:["Hi","\"Hi\"","Hi 加上双引号","什么都不显示"], answer:0, explain:"双引号只是告诉电脑“这是文字”，打印时只显示文字本身 Hi，不带引号。"},
+    {kind:"mcq", q:"`int x = 5;` 这句话在做什么？", options:["创建一个整数盒子 x 并放入 5","打印数字 5","比较 x 和 5 是否相等","删除变量 x"], answer:0, explain:"int 声明类型，x 是名字，= 5 是放进 5。"},
+  ],
+});
+UNITS.push({
   id: 1, title: "Primitive Types", cn: "基础类型", icon: "🔢",
   objective: "认识变量、四种原始类型、算术运算与类型转换",
   lesson: [
-    {t:"h", text:"变量与数据类型"},
-    {t:"p", text:"Java 是**强类型**语言：每个变量必须先声明类型，之后只能装该类型的值。AP CSA 只考四种原始类型（primitive types）：`int`（整数）、`double`（小数）、`boolean`（真假）、`char`（单个字符）。"},
-    {t:"c", code:"int age = 16;          // 整数，约 -21亿 ~ 21亿\n" +
-                    "double gpa = 3.75;     // 浮点数，带小数点\n" +
-                    "boolean pass = true;   // 只有 true 或 false\n" +
-                    "char grade = 'A';      // 单个字符，用单引号\n" +
-                    "String name = \"Alex\";  // 字符串（引用类型），用双引号"},
-    {t:"tip", text:"变量命名用 **camelCase**（小驼峰）：第一个单词小写，后面每个单词首字母大写，如 `studentAge`、`finalScore`。AP 阅卷会看命名习惯。"},
-    {t:"h", text:"算术运算与优先级"},
-    {t:"c", code:"+  -  *  /  %   （加、减、乘、除、取余）\n" +
-                    "先乘除取余，后加减；同级从左到右；括号最高。"},
-    {t:"warn", text:"**整数除法会截断**（直接丢掉小数，不是四舍五入）：`7 / 2` 得到 `3` 而不是 `3.5`。只要参与运算的一方是 `double`，结果就是 `double`。"},
-    {t:"h", text:"取余 %"},
-    {t:"p", text:"`a % b` 返回 a 除以 b 的**余数**。`13 % 5` 得 `3`。判断奇偶常用 `n % 2 == 1`（奇数）或 `n % 2 == 0`（偶数）。"},
-    {t:"h", text:"类型转换（casting）"},
-    {t:"c", code:"(int) 3.7    → 3     // 强制转 int，直接砍掉小数\n" +
-                    "(double) 7   → 7.0   // 转 double\n" +
-                    "double d = 7 / 2;      // 先算 7/2=3（整数），再变成 3.0\n" +
-                    "double d = (double)7/2; // 先转 7.0，再除 → 3.5"},
-    {t:"warn", text:"`(double) 7 / 2` 是先把 7 转成 7.0 再除，得 3.5；而 `7 / 2` 先按整数算出 3。**转换的时机**非常关键，是高频考点。"},
-    {t:"li", items:["`int` 存整数，`double` 存小数，`boolean` 存 true/false，`char` 存单字符","`7/2` 得 3（截断），`7.0/2` 得 3.5","`%` 是取余数，`(int)` 是砍掉小数","运算优先级：括号 → 乘除取余 → 加减"]},
+    {t:"h", text:"回忆：变量是贴了标签的盒子"},
+    {t:"p", text:"上一课我们知道，变量就是一个**有名字、有类型的盒子**。这一课我们重点练「算术运算」和「类型转换」——也就是往盒子里做加减乘除，以及在不同盒子之间倒东西。"},
+    {t:"h", text:"先复习 5 种常用类型"},
+    {t:"c", code:`int      装整数      例: int age = 12;
+double   装小数      例: double pi = 3.14;
+boolean  装“是/否”   例: boolean ok = true;
+char     装一个字符  例: char grade = 'A';   // 单引号
+String   装一串文字  例: String name = "Alex"; // 双引号`},
+    {t:"tip", text:"口诀：**int 整数、double 小数、boolean 真假、char 单字、String 一串**。"},
+    {t:"h", text:"算术运算（盒子里东西的加减乘除）"},
+    {t:"c", code:`+ 加     - 减     * 乘     / 除     % 取余
+int a = 7 + 3;   // 10
+int b = 7 - 3;   // 4
+int c = 7 * 3;   // 21
+int d = 7 / 2;   // 3  ← 注意！`},
+    {t:"warn", text:"**整数相除会“截断”**：`7 / 2` 不是 3.5，而是 3。就像“7 个苹果分给 2 人，每人拿 3 个，多出来的 1 个直接丢掉”。想要 3.5，就写 `7.0 / 2` 或 `(double) 7 / 2`。"},
+    {t:"h", text:"取余 %（算“分完后剩几个”）"},
+    {t:"p", text:"`%` 求的是**余数**。`13 % 5` 就是“13 除以 5 余几”→ 余 3。判断奇偶常用 `n % 2 == 0`（偶数）或 `n % 2 == 1`（奇数）。"},
+    {t:"h", text:"运算顺序（先算谁）"},
+    {t:"c", code:`第 1 步：括号 ( )
+第 2 步：*  /  %  （乘、除、取余）
+第 3 步：+  -   （加、减）
+同级从左往右算。`},
+    {t:"c", code:`int x = 4 + 6 / 2;
+// 先算 6 / 2 = 3
+// 再算 4 + 3 = 7
+// 所以 x = 7`},
+    {t:"h", text:"类型转换（把小数“砍”成整数）"},
+    {t:"p", text:"想把小数变整数，用 `(int)` **直接砍掉小数部分**（不是四舍五入）。"},
+    {t:"c", code:`(int) 3.9    → 3     // 砍掉 .9
+(int) -2.7   → -2    // 也是砍，不是四舍五入
+(double) 7   → 7.0   // 整数变小数`},
+    {t:"li", items:["变量 = 有名字、有类型的盒子","`int` 整数、`double` 小数、`boolean` 真假、`char` 单字、`String` 一串","`7 / 2` 得 3（截断），`7.0 / 2` 得 3.5","`%` 取余数，`(int)` 砍掉小数","运算顺序：括号 → 乘除取余 → 加减"]},
   ],
   questions: [
     {kind:"trace", q:"下面代码运行后，x 的值是？", code:"int x = 7 / 2;", options:["3","3.5","4","2"], answer:0, explain:"`7 / 2` 是两个 int 相除，结果截断为 3，没有小数。"},
@@ -846,9 +902,9 @@ const CHEATSHEET = [
 const LEVEL_TITLES = ["新手","学徒","进阶者","熟练者","高手","专家","大师","宗师","传奇"];
 const BADGES = [
   {id:"first_xp", ico:"🎉", name:"初次得分", desc:"第一次获得积分"},
-  {id:"unit1",    ico:"🧱", name:"奠基者", desc:"完成第 1 单元"},
+  {id:"unit1",    ico:"🧱", name:"奠基者", desc:"完成第一个单元"},
   {id:"five",     ico:"🚀", name:"过半啦", desc:"完成 5 个单元"},
-  {id:"all",      ico:"👑", name:"全通关", desc:"完成全部 10 个单元"},
+  {id:"all",      ico:"👑", name:"全通关", desc:"完成全部单元"},
   {id:"perfect",  ico:"💯", name:"满分", desc:"某单元一次全对"},
   {id:"streak7",  ico:"🔥", name:"坚持 7 天", desc:"连续学习 7 天"},
   {id:"exam80",   ico:"🏆", name:"模考 80+", desc:"模拟考正确率 ≥ 80%"},
@@ -1027,7 +1083,14 @@ function homeHTML(){
   '<div class="card"><div class="spread"><h2 style="margin:0">📚 课程单元</h2><span class="muted">已完成 '+done+' / '+UNITS.length+'</span></div>'+
   '<div class="pbar" style="margin:14px 0"><i style="width:'+s+'%"></i></div>'+
   '<div class="unit-grid">'+cards+'</div></div>'+
-  '<div class="card"><h2 style="margin-top:0">🏅 我的徽章</h2><div class="badges">'+badgesHTML+'</div></div>';
+  '<div class="card"><h2 style="margin-top:0">🏅 我的徽章</h2><div class="badges">'+badgesHTML+'</div></div>'+
+  '<div class="card"><h2 style="margin-top:0">💾 进度备份</h2>'+
+  '<p class="sub">学习进度会自动保存在<b>当前这个浏览器</b>里，不用手动保存。但换设备、换浏览器或清理缓存前，建议先导出备份；到新设备再导入即可恢复。</p>'+
+  '<div class="row" style="margin-top:10px">'+
+  '<button class="btn" data-export>⬇️ 导出备份文件</button>'+
+  '<button class="btn ghost" data-import>⬆️ 导入备份文件</button>'+
+  '<input type="file" id="importFile" accept=".json,application/json" style="display:none">'+
+  '</div></div>';
 }
 
 /* ================= 单元 ================= */
@@ -1324,6 +1387,13 @@ document.addEventListener("click", e=>{
   if(ef){ finishExam(); return; }
   const ro = t.closest("[data-randopt]");
   if(ro){ answerRandom(+ro.dataset.randopt); return; }
+  const ex = t.closest("[data-export]");
+  if(ex){ exportData(); return; }
+  const im = t.closest("[data-import]");
+  if(im){ const inp = $("#importFile"); if(inp) inp.click(); return; }
+});
+document.addEventListener("change", e=>{
+  if(e.target && e.target.id === "importFile"){ importData(e.target.files && e.target.files[0]); }
 });
 
 /* 随机练习答题（简化版） */
@@ -1365,6 +1435,45 @@ function randomHTML(){
   '<div style="margin-top:14px" class="row">'+(answered?'<button class="btn" data-go="random">🎲 再来一题</button>':'')+
   '<button class="btn ghost" data-go="home">🏠 回首页</button></div></div>';
 };
+
+/* ================= 进度备份 / 恢复 ================= */
+function exportData(){
+  try{
+    const data = JSON.stringify(state, null, 2);
+    const blob = new Blob([data], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "apcsa-progress-" + todayStr() + ".json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    toast("✅ 备份文件已下载");
+  }catch(e){ toast("❌ 导出失败：" + e.message); }
+}
+function importData(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    try{
+      const obj = JSON.parse(ev.target.result);
+      if(!obj || typeof obj !== "object" || (!("xp" in obj) && !("q" in obj))){ toast("❌ 这不是有效的备份文件"); return; }
+      state = obj;
+      if(!state.q) state.q = {};
+      if(!state.lessonsRead) state.lessonsRead = {};
+      if(!state.quizDone) state.quizDone = {};
+      if(!state.frqDone) state.frqDone = {};
+      if(!state.badges) state.badges = [];
+      if(state.examBest === undefined) state.examBest = null;
+      if(!state.examAttempts) state.examAttempts = 0;
+      save();
+      go("home");
+      toast("✅ 进度已恢复");
+    }catch(e){ toast("❌ 备份文件解析失败"); }
+  };
+  reader.readAsText(file);
+}
 
 /* ================= 启动 ================= */
 function init(){
