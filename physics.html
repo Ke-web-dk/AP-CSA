@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AP Physics 学习平台 · 从零到 5 分</title>
+<style>  :root{
+    --bg:#eef1f8; --card:rgba(255,255,255,0.30); --line:rgba(0,0,0,0.08);
+    --text:#1c1c1e; --muted:#6e6e73; --soft:#9a9aa0;
+    --accent:#0a84ff; --accent2:#5e5ce6; --accent-soft:rgba(10,132,255,0.10);
+    --good:#34c759; --good-soft:rgba(52,199,89,0.14); --bad:#ff3b30; --bad-soft:rgba(255,59,48,0.12);
+    --warn:#ff9500; --warn-soft:rgba(255,149,0,0.14); --code-bg:#f2f4f9; --code-text:#1c1c1e;
+    --radius:22px; --shadow:0 18px 40px rgba(60,80,160,0.16), 0 4px 14px rgba(60,80,160,0.10);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:"SF Pro Text",-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:
+      radial-gradient(1100px 800px at 88% -12%, rgba(94,92,230,0.22), transparent 55%),
+      radial-gradient(950px 750px at -8% 12%, rgba(10,132,255,0.20), transparent 55%),
+      radial-gradient(900px 700px at 50% 115%, rgba(52,199,89,0.15), transparent 55%),
+      var(--bg);
+    background-attachment:fixed;
+    color:var(--text); line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  code,.mono{font-family:"SF Mono","Cascadia Code",Consolas,"Courier New",monospace;}
+  button{font-family:inherit; cursor:pointer; border:none; color:inherit;}
+
+  /* ---------- 顶栏（玻璃） ---------- */
+  header{
+    position:sticky; top:0; z-index:30;
+    background:rgba(255,255,255,0.32);
+    backdrop-filter:blur(28px) saturate(180%); -webkit-backdrop-filter:blur(28px) saturate(180%);
+    border-bottom:1px solid rgba(255,255,255,0.6);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 22px; gap:12px;
+    box-shadow:0 1px 0 rgba(0,0,0,0.03);
+  }
+  .brand{font-weight:700; font-size:18px; letter-spacing:.2px; white-space:nowrap; color:var(--text);}
+  .brand small{font-weight:500; color:var(--muted); font-size:12px; margin-left:8px;}
+  .stats{display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;}
+  .stat{
+    background:rgba(255,255,255,0.5); border:1px solid rgba(255,255,255,0.6);
+    padding:5px 12px; border-radius:999px; font-weight:600; font-size:13px; white-space:nowrap;
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  }
+
+  /* ---------- 布局 ---------- */
+  .layout{display:flex; max-width:1180px; margin:0 auto; gap:22px; padding:22px; min-height:calc(100vh - 60px);}
+  aside{width:232px; flex-shrink:0;}
+  main{flex:1; min-width:0;}
+
+  /* ---------- 侧边栏（玻璃） ---------- */
+  #sidebar{
+    position:sticky; top:82px; display:flex; flex-direction:column; gap:6px;
+    background:var(--card); backdrop-filter:blur(28px) saturate(180%); -webkit-backdrop-filter:blur(28px) saturate(180%);
+    border:1px solid rgba(255,255,255,0.6); border-radius:var(--radius);
+    padding:14px; box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,0.7);
+  }
+  .nav-btn{
+    text-align:left; background:none; padding:9px 12px; border-radius:12px;
+    font-size:14px; color:var(--text); transition:.15s; display:flex; align-items:center; gap:8px;
+  }
+  .nav-btn:hover{background:rgba(255,255,255,0.6);}
+  .nav-btn.active{
+    background:linear-gradient(135deg,#0a84ff,#5e5ce6); color:#fff; font-weight:600;
+    box-shadow:0 6px 18px rgba(10,132,255,.28);
+  }
+  .nav-btn .dot{width:8px; height:8px; border-radius:50%; background:var(--soft); flex-shrink:0;}
+  .nav-btn.done .dot{background:var(--good);}
+  .nav-group{font-size:11px; color:var(--soft); font-weight:700; letter-spacing:1px; margin:10px 6px 2px; text-transform:uppercase;}
+
+  /* ---------- 卡片（玻璃） ---------- */
+  .card{
+    background:var(--card); backdrop-filter:blur(28px) saturate(180%); -webkit-backdrop-filter:blur(28px) saturate(180%);
+    border:1px solid rgba(255,255,255,0.6); border-radius:var(--radius); padding:24px;
+    box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,0.7); margin-bottom:18px;
+  }
+  h1{font-size:26px; font-weight:700; margin-bottom:6px; letter-spacing:-.2px;}
+  h2{font-size:20px; font-weight:700; margin:22px 0 10px; letter-spacing:-.2px;}
+  h3{font-size:16px; font-weight:700; margin:18px 0 8px; display:flex; align-items:center; gap:8px;}
+  .sub{color:var(--muted); font-size:14px;}
+  .muted{color:var(--muted);}
+  .row{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .spread{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+
+  .btn{
+    display:inline-flex; align-items:center; gap:8px; font-weight:600; font-size:14px;
+    padding:10px 18px; border-radius:14px; transition:.15s;
+    background:linear-gradient(135deg,#0a84ff,#5e5ce6); color:#fff;
+    box-shadow:0 4px 14px rgba(10,132,255,.25);
+  }
+  .btn:hover{transform:translateY(-1px); box-shadow:0 8px 22px rgba(10,132,255,.32);}
+  .btn.ghost{background:rgba(255,255,255,0.5); color:var(--accent); border:1px solid rgba(0,0,0,0.08); box-shadow:none;}
+  .btn.ghost:hover{background:rgba(255,255,255,0.8);}
+  .btn.sm{padding:7px 13px; font-size:13px; border-radius:11px;}
+  .btn:disabled{opacity:.5; cursor:not-allowed; transform:none; box-shadow:none;}
+
+  /* ---------- 首页 ---------- */
+  .hero{
+    background:linear-gradient(135deg,#0a84ff,#5e5ce6,#bf5af2); color:#fff;
+    border-radius:var(--radius); padding:32px 30px; margin-bottom:18px;
+    box-shadow:0 14px 40px rgba(94,92,230,.3), inset 0 1px 0 rgba(255,255,255,0.35);
+  }
+  .hero h1{font-size:28px;}
+  .hero p{opacity:.95; margin:8px 0 16px; max-width:640px;}
+  .unit-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px;}
+  .unit-card{
+    background:var(--card); backdrop-filter:blur(26px) saturate(180%); -webkit-backdrop-filter:blur(26px) saturate(180%);
+    border:1px solid rgba(255,255,255,0.6); border-radius:var(--radius);
+    padding:18px; box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,0.7);
+    transition:.15s; cursor:pointer; position:relative; overflow:hidden;
+  }
+  .unit-card:hover{transform:translateY(-3px); box-shadow:0 16px 40px rgba(31,38,135,0.14), inset 0 1px 0 rgba(255,255,255,0.7);}
+  .unit-card .bar{position:absolute; top:0; left:0; height:4px; width:100%; background:rgba(0,0,0,0.05);}
+  .unit-card .bar i{display:block; height:100%; background:linear-gradient(90deg,#34c759,#0a84ff);}
+  .unit-card .icon{font-size:30px;}
+  .unit-card h3{margin:8px 0 2px; font-size:16px;}
+  .unit-card .cn{font-size:13px; color:var(--muted); font-weight:600;}
+  .unit-card .pct{font-size:12px; color:var(--soft); margin-top:6px;}
+
+  /* ---------- 进度条 ---------- */
+  .pbar{height:10px; background:rgba(0,0,0,0.06); border-radius:999px; overflow:hidden;}
+  .pbar i{display:block; height:100%; background:linear-gradient(90deg,#0a84ff,#5e5ce6); border-radius:999px; transition:.4s;}
+  .pbar.good i{background:linear-gradient(90deg,#34c759,#0a84ff);}
+
+  /* ---------- 学习块 ---------- */
+  .block-code{
+    background:var(--code-bg); color:var(--code-text); border:1px solid rgba(0,0,0,0.06); border-radius:14px; padding:16px 18px;
+    font-size:14px; line-height:1.6; overflow-x:auto; margin:10px 0; white-space:pre;
+  }
+  .kw{color:#a855f7; font-weight:600;} .st{color:#16a34a;} .num{color:#dc2626;} .cm{color:#94a3b8; font-style:italic;}
+  .callout{border-radius:14px; padding:12px 16px; margin:12px 0; font-size:14px; display:flex; gap:10px;}
+  .callout.tip{background:var(--good-soft); border-left:4px solid var(--good);}
+  .callout.warn{background:var(--warn-soft); border-left:4px solid var(--warn);}
+  .callout.err{background:var(--bad-soft); border-left:4px solid var(--bad);}
+  .callout .ico{font-size:18px; line-height:1.4;}
+  ul.li{margin:8px 0 8px 4px; padding-left:22px;}
+  ul.li li{margin:4px 0;}
+  p.body{margin:8px 0; font-size:15px;}
+  p.body code, .li code, .explain code, .q-text code{background:var(--accent-soft); color:var(--accent); padding:1px 6px; border-radius:6px; font-size:.92em;}
+
+  .tabs{display:inline-flex; background:rgba(0,0,0,0.05); border-radius:12px; padding:4px; margin-bottom:16px;}
+  .tab{padding:8px 18px; border-radius:9px; font-weight:600; font-size:14px; color:var(--muted); background:none;}
+  .tab.active{background:#fff; color:var(--accent); box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+
+  /* ---------- 题目 ---------- */
+  .q-text{font-size:16px; font-weight:600; margin:4px 0 12px;}
+  .q-meta{font-size:12px; color:var(--soft); margin-bottom:6px;}
+  .options{display:flex; flex-direction:column; gap:10px; margin-top:6px;}
+  .opt{
+    text-align:left; background:rgba(255,255,255,0.5); border:1.5px solid var(--line); border-radius:14px;
+    padding:12px 16px; font-size:15px; transition:.12s; display:flex; gap:12px; align-items:flex-start;
+  }
+  .opt .ltr{font-weight:700; color:var(--accent); flex-shrink:0;}
+  .opt:hover{border-color:var(--accent); background:rgba(255,255,255,0.8);}
+  .opt.correct{border-color:var(--good); background:var(--good-soft);}
+  .opt.wrong{border-color:var(--bad); background:var(--bad-soft);}
+  .opt.active{border-color:var(--accent); background:var(--accent-soft);}
+  .opt.disabled{pointer-events:none;}
+  .explain{margin-top:14px; border-radius:14px; padding:14px 16px; font-size:14px;}
+  .explain.good{background:var(--good-soft);}
+  .explain.bad{background:var(--bad-soft);}
+  .explain b{display:block; margin-bottom:4px;}
+
+  /* ---------- FRQ ---------- */
+  textarea{
+    width:100%; min-height:140px; border:1.5px solid var(--line); border-radius:14px; background:rgba(255,255,255,0.6); color:var(--text);
+    padding:12px; font-size:14px; font-family:inherit; resize:vertical; margin:10px 0;
+  }
+  textarea:focus{outline:none; border-color:var(--accent); background:#fff;}
+  .rubric{background:var(--warn-soft); border-left:4px solid var(--warn); border-radius:14px; padding:14px 16px; margin:10px 0; font-size:14px;}
+  .rubric li{margin:5px 0;}
+  .checkrow{display:flex; gap:12px; align-items:center; padding:8px 0; border-bottom:1px dashed var(--line);}
+  .checkrow input{width:18px; height:18px; accent-color:var(--accent);}
+
+  /* ---------- 徽章 ---------- */
+  .badges{display:flex; gap:10px; flex-wrap:wrap;}
+  .badge{
+    display:flex; flex-direction:column; align-items:center; gap:4px; padding:12px; min-width:86px;
+    border-radius:14px; background:rgba(255,255,255,0.5); border:1px solid var(--line); font-size:12px; text-align:center;
+  }
+  .badge .b-ico{font-size:26px; filter:grayscale(1); opacity:.4;}
+  .badge.earned .b-ico{filter:none; opacity:1;}
+  .badge.earned{border-color:rgba(255,149,0,.5); background:var(--warn-soft);}
+
+  /* ---------- 提示 / 彩带 ---------- */
+  #toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+    background:rgba(28,28,30,0.85); color:#fff; border:1px solid rgba(255,255,255,0.2); padding:12px 20px; border-radius:14px; font-size:14px;
+    opacity:0; transition:.3s; z-index:99; max-width:90vw; box-shadow:0 10px 30px rgba(0,0,0,.25);
+    backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  }
+  #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  .confetti{position:fixed; top:-20px; z-index:100; pointer-events:none; animation:fall linear forwards;}
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg); opacity:.2;}}
+
+  /* ---------- 响应式 ---------- */
+  @media(max-width:820px){
+    .layout{flex-direction:column; padding:12px;}
+    aside{width:100%;}
+    #sidebar{position:static; flex-direction:row; overflow-x:auto; gap:4px; padding:10px;}
+    .nav-btn{white-space:nowrap;}
+    .nav-group{display:none;}
+    .brand small{display:none;}
+  }
+  .table-wrap{overflow-x:auto;}
+  table{border-collapse:collapse; width:100%; font-size:14px; margin:10px 0;}
+  th,td{border:1px solid var(--line); padding:8px 12px; text-align:left;}
+  th{background:var(--accent-soft);}
+  td code{background:var(--accent-soft); color:var(--accent); padding:1px 6px; border-radius:6px;}
+.demo{margin:14px 0;padding:16px;background:#fbfcff;border:1px solid rgba(0,0,0,0.06);border-radius:16px;}
+.demo-title{font-weight:700;font-size:14px;margin-bottom:10px;}
+.demo-svg{overflow:hidden;}
+.demo-controls{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+.demo-ctl{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);}
+.demo-ctl input[type=range]{width:100%;accent-color:#5e5ce6;cursor:pointer;}
+.demo-note{margin-top:10px;font-size:12px;color:var(--muted);line-height:1.5;}
+.video-block{margin:14px 0;padding:14px 16px;background:#f0f6ff;border:1px solid rgba(10,132,255,.16);border-radius:14px;}
+.video-title{font-weight:700;font-size:13px;margin-bottom:10px;color:#0a84ff;}
+.video-link{display:flex;align-items:center;gap:10px;padding:9px 12px;margin:6px 0;background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:10px;text-decoration:none;color:var(--text);transition:.15s;}
+.video-link:hover{border-color:#0a84ff;box-shadow:0 4px 12px rgba(10,132,255,.12);}
+.video-ico{font-size:16px;}
+.video-txt{flex:1;font-size:13px;}
+.video-arrow{color:#9aa0aa;}
+.formula{margin:12px 0;padding:14px 16px;background:linear-gradient(135deg,#f6f7ff,#eef4ff);border:1px solid rgba(94,92,230,.18);border-radius:14px;}
+.fexpr{font-family:"Cascadia Code",Consolas,monospace;font-size:20px;font-weight:800;color:#5e5ce6;text-align:center;padding:10px 0;letter-spacing:.5px;}
+.fnote{font-size:12px;color:#6e6e73;text-align:center;margin-bottom:8px;}
+.fwhere{font-size:12px;font-weight:700;color:#6e6e73;margin:8px 0 4px;}
+.frow{display:flex;align-items:baseline;gap:10px;padding:5px 0;border-bottom:1px dashed rgba(0,0,0,.06);font-size:13px;}
+.fsym{font-weight:800;color:#5e5ce6;min-width:44px;font-family:monospace;}
+.fname{flex:1;}
+.funit{color:#9a9aa0;font-family:monospace;font-size:12px;}
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">🧲 AP Physics 学习平台<small>从零到 5 分</small></div>
+    <div class="stats">
+      <a href="index.html" class="stat" style="text-decoration:none;font-weight:700">🏠 选科目</a>
+      <span class="stat" id="stat-level">Lv.1 新手</span>
+      <span class="stat" id="stat-xp">0 XP</span>
+      <span class="stat" id="stat-streak">🔥 0 天</span>
+      <span class="stat" id="stat-pct">0% 掌握</span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside><nav id="sidebar"></nav></aside>
+    <main id="main"></main>
+  </div>
+
+  <div id="toast"></div>
+
+<script>const UNITS = [];
+UNITS.push({
+  id: 1, title: "Measurement & Kinematics", cn: "测量与运动学", icon: "📏",
+  objective: "Master SI units, scalars & vectors, and the SUVAT equations · 掌握单位、矢量与运动学公式",
+  lesson: [
+    {t:"h", text:"SI Units & Measurement · 国际单位与测量"},
+    {t:"p", text:"Physics uses **SI units**: meter (m), kilogram (kg), second (s), ampere (A), kelvin (K), mole (mol), candela (cd). Prefixes scale these: **kilo (10³), centi (10⁻²), milli (10⁻³)**."},
+    {t:"c", code:`1 km = 1000 m
+1 cm = 0.01 m
+1 ms = 0.001 s`},
+    {t:"h", text:"Precision & Accuracy · 精度与准确度"},
+    {t:"p", text:"**Precision** (精度) = how repeatable measurements are. **Accuracy** (准确度) = how close to the true value. A measurement can be precise but inaccurate."},
+    {t:"h", text:"Scalars vs Vectors · 标量与矢量"},
+    {t:"p", text:"**Scalars** (标量) have magnitude only: mass, time, speed, energy. **Vectors** (矢量) have magnitude AND direction: displacement, velocity, acceleration, force."},
+    {t:"h", text:"Speed, Velocity & Acceleration · 速度与加速度"},
+    {t:"formula", expr:"v = d / t", note:"average speed · 平均速度", rows:[
+      {sym:"v", name:"speed · 速度", unit:"m/s"},
+      {sym:"d", name:"distance · 距离", unit:"m"},
+      {sym:"t", name:"time · 时间", unit:"s"},
+    ]},
+    {t:"formula", expr:"a = Δv / Δt", note:"acceleration · 加速度", rows:[
+      {sym:"a", name:"acceleration · 加速度", unit:"m/s²"},
+      {sym:"Δv", name:"change in velocity (v − u) · 速度变化", unit:"m/s"},
+      {sym:"Δt", name:"time interval · 时间间隔", unit:"s"},
+    ]},
+    {t:"h", text:"The SUVAT Equations · 运动学四公式"},
+    {t:"p", text:"When acceleration is **constant**, these link the five quantities: **s** (displacement), **u** (initial velocity), **v** (final velocity), **a** (acceleration), **t** (time). Each equation leaves out one quantity."},
+    {t:"formula", expr:"v = u + a·t", note:"SUVAT ① · omits s", rows:[
+      {sym:"v", name:"final velocity · 末速度", unit:"m/s"},
+      {sym:"u", name:"initial velocity · 初速度", unit:"m/s"},
+      {sym:"a", name:"acceleration · 加速度", unit:"m/s²"},
+      {sym:"t", name:"time · 时间", unit:"s"},
+    ]},
+    {t:"formula", expr:"s = u·t + ½·a·t²", note:"SUVAT ② · omits v", rows:[
+      {sym:"s", name:"displacement · 位移", unit:"m"},
+      {sym:"u", name:"initial velocity · 初速度", unit:"m/s"},
+      {sym:"t", name:"time · 时间", unit:"s"},
+      {sym:"a", name:"acceleration · 加速度", unit:"m/s²"},
+    ]},
+    {t:"formula", expr:"v² = u² + 2·a·s", note:"SUVAT ③ · omits t", rows:[
+      {sym:"v", name:"final velocity · 末速度", unit:"m/s"},
+      {sym:"u", name:"initial velocity · 初速度", unit:"m/s"},
+      {sym:"a", name:"acceleration · 加速度", unit:"m/s²"},
+      {sym:"s", name:"displacement · 位移", unit:"m"},
+    ]},
+    {t:"formula", expr:"s = ½·(u + v)·t", note:"SUVAT ④ · omits a", rows:[
+      {sym:"s", name:"displacement · 位移", unit:"m"},
+      {sym:"u", name:"initial velocity · 初速度", unit:"m/s"},
+      {sym:"v", name:"final velocity · 末速度", unit:"m/s"},
+      {sym:"t", name:"time · 时间", unit:"s"},
+    ]},
+    {t:"demo", type:"motion"},
+    {t:"h", text:"Free Fall · 自由落体"},
+    {t:"p", text:"In **free fall**, acceleration is due to gravity: **a = g ≈ 9.8 m/s²** downward (ignore air resistance). Use the SUVAT equations with a = g."},
+    {t:"li", items:["SI units: m, kg, s, A, K, mol, cd","Scalars: magnitude only; vectors: magnitude + direction","SUVAT only works when acceleration is constant","Free fall: a = g ≈ 9.8 m/s²"]},
+  ],
+  questions: [
+    {kind:"mcq", q:"Which is a vector quantity?", options:["Velocity","Speed","Mass","Time"], answer:0, explain:"Velocity has direction; speed, mass, time are scalars.（速度是矢量。）"},
+    {kind:"trace", q:"A car travels 100 m in 20 s. What is its average speed?", options:["5 m/s","2000 m/s","0.2 m/s","20 m/s"], answer:0, explain:"v = d/t = 100/20 = 5 m/s.（v=d/t=5。）"},
+    {kind:"trace", q:"A car goes from 10 m/s to 30 m/s in 5 s. Acceleration?", options:["4 m/s²","2 m/s²","8 m/s²","5 m/s²"], answer:0, explain:"a = Δv/Δt = (30−10)/5 = 4 m/s².（a=Δv/Δt=4。）"},
+    {kind:"trace", q:"Using `v = u + at`, if u = 0, a = 2 m/s², t = 3 s, then v = ?", options:["6 m/s","3 m/s","9 m/s","2 m/s"], answer:0, explain:"v = 0 + 2×3 = 6 m/s.（v=6。）"},
+    {kind:"mcq", q:"In free fall (ignoring air), acceleration is?", options:["g ≈ 9.8 m/s²","0","increasing","decreasing"], answer:0, explain:"Free-fall acceleration is g ≈ 9.8 m/s² downward.（自由落体 a=g。）"},
+    {kind:"trace", q:"A ball falls from rest for 2 s (g = 10 m/s²). Speed after 2 s?", options:["20 m/s","10 m/s","40 m/s","5 m/s"], answer:0, explain:"v = u + gt = 0 + 10×2 = 20 m/s.（v=20。）"},
+    {kind:"mcq", q:"Which SUVAT equation leaves out time?", options:["v² = u² + 2as","v = u + at","s = ut + ½at²","s = ½(u+v)t"], answer:0, explain:"`v² = u² + 2as` has no t.（不含 t。）"},
+    {kind:"mcq", q:"Precision refers to?", options:["Repeatability","Closeness to true value","Size of the number","Units used"], answer:0, explain:"Precision = repeatability; accuracy = closeness to true value.（精度=可重复性。）"},
+  ],
+});
+
+UNITS.push({
+  id: 2, title: "Work, Power, Energy & Conservation", cn: "功、功率、能量与守恒", icon: "⚡",
+  objective: "Master work, kinetic & potential energy, power, and conservation · 掌握功、能量与守恒",
+  lesson: [
+    {t:"h", text:"Work · 功"},
+    {t:"p", text:"**Work** is done when a force moves an object. Only the force component along the displacement does work. If the force is perpendicular to motion, work = 0."},
+    {t:"formula", expr:"W = F · s · cos θ", note:"work · 功", rows:[
+      {sym:"W", name:"work · 功", unit:"J (joule)"},
+      {sym:"F", name:"force · 力", unit:"N (newton)"},
+      {sym:"s", name:"displacement · 位移", unit:"m"},
+      {sym:"θ", name:"angle between F and s · 力与位移夹角", unit:"° or rad"},
+    ]},
+    {t:"h", text:"Kinetic Energy · 动能"},
+    {t:"p", text:"**Kinetic energy** is the energy of motion. Doubling the speed quadruples the kinetic energy (because of the square)."},
+    {t:"formula", expr:"KE = ½ · m · v²", note:"kinetic energy · 动能", rows:[
+      {sym:"KE", name:"kinetic energy · 动能", unit:"J"},
+      {sym:"m", name:"mass · 质量", unit:"kg"},
+      {sym:"v", name:"speed · 速度", unit:"m/s"},
+    ]},
+    {t:"h", text:"Gravitational Potential Energy · 重力势能"},
+    {t:"p", text:"**Gravitational PE** depends on height above a reference point. The higher an object, the more stored energy."},
+    {t:"formula", expr:"PE = m · g · h", note:"gravitational potential energy · 重力势能", rows:[
+      {sym:"PE", name:"potential energy · 势能", unit:"J"},
+      {sym:"m", name:"mass · 质量", unit:"kg"},
+      {sym:"g", name:"gravitational field strength · 重力加速度", unit:"m/s² (≈9.8)"},
+      {sym:"h", name:"height · 高度", unit:"m"},
+    ]},
+    {t:"h", text:"Power · 功率"},
+    {t:"p", text:"**Power** is the rate of doing work (energy per second). A more powerful machine does the same work in less time."},
+    {t:"formula", expr:"P = W / t", note:"power · 功率", rows:[
+      {sym:"P", name:"power · 功率", unit:"W (watt)"},
+      {sym:"W", name:"work / energy · 功或能量", unit:"J"},
+      {sym:"t", name:"time · 时间", unit:"s"},
+    ]},
+    {t:"h", text:"Conservation of Energy · 能量守恒"},
+    {t:"p", text:"Energy cannot be **created or destroyed**, only **transformed**. In a closed system, total energy stays constant. A falling ball converts PE → KE."},
+    {t:"formula", expr:"KE₁ + PE₁ = KE₂ + PE₂", note:"mechanical energy conservation · 机械能守恒（忽略摩擦）", rows:[
+      {sym:"KE₁, PE₁", name:"energy at point 1 · 位置1的能", unit:"J"},
+      {sym:"KE₂, PE₂", name:"energy at point 2 · 位置2的能", unit:"J"},
+    ]},
+    {t:"li", items:["W = F·s·cosθ (perpendicular force → no work)","KE = ½mv², PE = mgh","P = W/t (rate of energy transfer)","In a closed system, total energy is constant"]},
+  ],
+  questions: [
+    {kind:"trace", q:"A force of 10 N moves a box 5 m in the force's direction. Work done?", options:["50 J","2 J","15 J","0 J"], answer:0, explain:"W = F·s = 10×5 = 50 J.（W=Fs=50。）"},
+    {kind:"trace", q:"A 2 kg ball moves at 3 m/s. Its kinetic energy?", options:["9 J","6 J","18 J","3 J"], answer:0, explain:"KE = ½mv² = ½×2×3² = 9 J.（KE=9。）"},
+    {kind:"trace", q:"A 2 kg object is 5 m high (g=10). Its PE?", options:["100 J","10 J","20 J","50 J"], answer:0, explain:"PE = mgh = 2×10×5 = 100 J.（PE=100。）"},
+    {kind:"trace", q:"A machine does 200 J of work in 4 s. Power?", options:["50 W","800 W","204 W","0.02 W"], answer:0, explain:"P = W/t = 200/4 = 50 W.（P=50。）"},
+    {kind:"mcq", q:"If speed doubles, kinetic energy?", options:["Quadruples","Doubles","Stays the same","Halves"], answer:0, explain:"KE ∝ v², so doubling v gives 4× KE.（速度加倍，动能变4倍。）"},
+    {kind:"mcq", q:"A force perpendicular to motion does how much work?", options:["Zero","Maximum","Half","Negative"], answer:0, explain:"cos 90° = 0, so W = 0.（垂直不做功。）"},
+    {kind:"mcq", q:"Conservation of energy says energy?", options:["Is transformed, not destroyed","Disappears","Is created","Only exists as KE"], answer:0, explain:"Energy is conserved, only changing form.（能量转化不消灭。）"},
+    {kind:"trace", q:"A ball falls from height h. As it falls, PE converts to?", options:["Kinetic energy","Heat only","Sound only","PE stays constant"], answer:0, explain:"Falling: PE → KE.（PE 转 KE。）"},
+  ],
+});
+
+UNITS.push({
+  id: 3, title: "Thermodynamics", cn: "热力学", icon: "🌡️",
+  objective: "Master temperature, heat, and specific heat capacity · 掌握温度、热量与比热容",
+  lesson: [
+    {t:"h", text:"Temperature & Heat · 温度与热量"},
+    {t:"p", text:"**Temperature** measures the average kinetic energy of particles. **Heat** is energy transferred from hot to cold. They are not the same: a spark can be very hot but contain little heat."},
+    {t:"h", text:"The Kelvin Scale · 开尔文温标"},
+    {t:"formula", expr:"T(K) = T(°C) + 273", note:"temperature conversion · 温度换算", rows:[
+      {sym:"T(K)", name:"temperature in kelvin · 开尔文温度", unit:"K"},
+      {sym:"T(°C)", name:"temperature in Celsius · 摄氏温度", unit:"°C"},
+    ]},
+    {t:"h", text:"Specific Heat Capacity · 比热容"},
+    {t:"p", text:"**Specific heat capacity (c)** is the energy needed to raise 1 kg of a substance by 1 °C. Water has a high c (4200 J/kg·°C) — it heats and cools slowly."},
+    {t:"formula", expr:"Q = m · c · ΔT", note:"heat energy · 热量", rows:[
+      {sym:"Q", name:"heat energy · 热量", unit:"J"},
+      {sym:"m", name:"mass · 质量", unit:"kg"},
+      {sym:"c", name:"specific heat capacity · 比热容", unit:"J/(kg·°C)"},
+      {sym:"ΔT", name:"temperature change (T_final − T_initial) · 温度变化", unit:"°C"},
+    ]},
+    {t:"h", text:"Thermal Equilibrium · 热平衡"},
+    {t:"p", text:"Heat flows from hot to cold until both reach the **same temperature** (thermal equilibrium). Energy is conserved: heat lost = heat gained (in an isolated system)."},
+    {t:"li", items:["Temperature = average particle KE; heat = energy transferred","T(K) = T(°C) + 273","Q = mcΔT: energy to change temperature","Heat flows hot → cold until equilibrium"]},
+  ],
+  questions: [
+    {kind:"trace", q:"Convert 27 °C to kelvin.", options:["300 K","273 K","327 K","246 K"], answer:0, explain:"T(K) = 27 + 273 = 300 K.（27+273=300。）"},
+    {kind:"trace", q:"How much heat to warm 2 kg of water by 10 °C (c = 4200)?", options:["84,000 J","42,000 J","8,400 J","420 J"], answer:0, explain:"Q = mcΔT = 2×4200×10 = 84,000 J.（Q=mcΔT=84000。）"},
+    {kind:"mcq", q:"Which has a HIGH specific heat capacity?", options:["Water","Metal","Air","Wood"], answer:0, explain:"Water's high c means it absorbs lots of heat per degree.（水比热容大。）"},
+    {kind:"mcq", q:"Temperature measures?", options:["Average kinetic energy of particles","Total heat","Mass","Volume"], answer:0, explain:"Temperature = average particle kinetic energy.（温度=平均动能。）"},
+    {kind:"mcq", q:"Heat naturally flows from?", options:["Hot to cold","Cold to hot","Both ways","Nowhere"], answer:0, explain:"Heat flows from hot to cold until equilibrium.（热从高温到低温。）"},
+    {kind:"mcq", q:"At thermal equilibrium, two objects have the same?", options:["Temperature","Mass","Volume","Density"], answer:0, explain:"Equilibrium = same temperature.（热平衡=温度相同。）"},
+  ],
+});
+
+UNITS.push({
+  id: 4, title: "Waves and Optics", cn: "波与光学", icon: "🌊",
+  objective: "Master wave speed, period, and refraction · 掌握波速、周期与折射",
+  lesson: [
+    {t:"h", text:"Wave Basics · 波的基础"},
+    {t:"p", text:"A **wave** transfers energy without transferring matter. Key quantities: **wavelength (λ)** = distance between crests; **frequency (f)** = waves per second; **period (T)** = time per wave."},
+    {t:"formula", expr:"v = f · λ", note:"wave speed · 波速", rows:[
+      {sym:"v", name:"wave speed · 波速", unit:"m/s"},
+      {sym:"f", name:"frequency · 频率", unit:"Hz (1/s)"},
+      {sym:"λ", name:"wavelength · 波长", unit:"m"},
+    ]},
+    {t:"formula", expr:"T = 1 / f", note:"period · 周期", rows:[
+      {sym:"T", name:"period · 周期", unit:"s"},
+      {sym:"f", name:"frequency · 频率", unit:"Hz"},
+    ]},
+    {t:"demo", type:"wave"},
+    {t:"h", text:"Refraction & Snell's Law · 折射与斯涅尔定律"},
+    {t:"p", text:"When light passes from one medium into another, it **bends** (refracts) because its speed changes. Light bends toward the normal when entering a denser medium."},
+    {t:"formula", expr:"n₁ · sin θ₁ = n₂ · sin θ₂", note:"Snell's law · 斯涅尔定律", rows:[
+      {sym:"n₁, n₂", name:"refractive indices · 两介质的折射率", unit:"no unit (无量纲)"},
+      {sym:"θ₁", name:"incidence angle · 入射角", unit:"°"},
+      {sym:"θ₂", name:"refraction angle · 折射角", unit:"°"},
+    ]},
+    {t:"li", items:["v = fλ links speed, frequency, wavelength","T = 1/f","Refraction: light bends when speed changes","Snell: n₁sinθ₁ = n₂sinθ₂"]},
+  ],
+  questions: [
+    {kind:"trace", q:"A wave has f = 50 Hz and λ = 2 m. Wave speed?", options:["100 m/s","25 m/s","52 m/s","0.04 m/s"], answer:0, explain:"v = fλ = 50×2 = 100 m/s.（v=fλ=100。）"},
+    {kind:"trace", q:"A wave has frequency 10 Hz. Its period?", options:["0.1 s","10 s","100 s","1 s"], answer:0, explain:"T = 1/f = 1/10 = 0.1 s.（T=1/f=0.1。）"},
+    {kind:"mcq", q:"Wavelength is the distance between?", options:["Two crests","The start and end of a wave","Two amplitudes","Two speeds"], answer:0, explain:"Wavelength = crest-to-crest distance.（波长=相邻波峰距离。）"},
+    {kind:"mcq", q:"Refraction happens because light?", options:["Changes speed between media","Reflects off a surface","Is absorbed","Changes color"], answer:0, explain:"Different media → different speeds → bending.（速度变化→折射。）"},
+    {kind:"mcq", q:"Frequency is measured in?", options:["Hertz (Hz)","Meters","Seconds","Joules"], answer:0, explain:"Frequency unit is hertz (1/s).（赫兹。）"},
+    {kind:"mcq", q:"In Snell's law, n is the?", options:["Refractive index","Frequency","Wavelength","Amplitude"], answer:0, explain:"n = refractive index of the medium.（折射率。）"},
+  ],
+});
+
+UNITS.push({
+  id: 5, title: "Electricity and Magnetism", cn: "电与磁", icon: "🔌",
+  objective: "Master charge, current, Ohm's law, power, and Coulomb's law · 掌握电流、欧姆定律与库仑定律",
+  lesson: [
+    {t:"h", text:"Electric Charge & Current · 电荷与电流"},
+    {t:"p", text:"**Current (I)** is the rate of charge flow. One ampere = one coulomb per second. **Voltage (V)** is the energy per unit charge (the \"push\")."},
+    {t:"formula", expr:"Q = I · t", note:"charge · 电荷", rows:[
+      {sym:"Q", name:"charge · 电荷", unit:"C (coulomb)"},
+      {sym:"I", name:"current · 电流", unit:"A (ampere)"},
+      {sym:"t", name:"time · 时间", unit:"s"},
+    ]},
+    {t:"h", text:"Ohm's Law · 欧姆定律"},
+    {t:"p", text:"**Ohm's law** links voltage, current, and resistance: more voltage → more current; more resistance → less current."},
+    {t:"formula", expr:"V = I · R", note:"Ohm's law · 欧姆定律", rows:[
+      {sym:"V", name:"voltage · 电压", unit:"V (volt)"},
+      {sym:"I", name:"current · 电流", unit:"A (ampere)"},
+      {sym:"R", name:"resistance · 电阻", unit:"Ω (ohm)"},
+    ]},
+    {t:"h", text:"Electrical Power · 电功率"},
+    {t:"p", text:"**Electrical power** is the rate of energy transfer. Three equivalent forms — pick the one whose variables you know."},
+    {t:"formula", expr:"P = V · I = I² · R = V² / R", note:"electrical power · 电功率", rows:[
+      {sym:"P", name:"power · 功率", unit:"W (watt)"},
+      {sym:"V", name:"voltage · 电压", unit:"V"},
+      {sym:"I", name:"current · 电流", unit:"A"},
+      {sym:"R", name:"resistance · 电阻", unit:"Ω"},
+    ]},
+    {t:"h", text:"Coulomb's Law · 库仑定律"},
+    {t:"p", text:"The **electric force** between two charges is proportional to the product of the charges and inversely proportional to the square of the distance."},
+    {t:"formula", expr:"F = k · q₁ · q₂ / r²", note:"Coulomb's law · 库仑定律", rows:[
+      {sym:"F", name:"electric force · 电场力", unit:"N"},
+      {sym:"k", name:"Coulomb constant · 库仑常数", unit:"8.99×10⁹ N·m²/C²"},
+      {sym:"q₁, q₂", name:"charges · 电荷量", unit:"C"},
+      {sym:"r", name:"distance · 距离", unit:"m"},
+    ]},
+    {t:"li", items:["Q = It: current is charge per second","V = IR: Ohm's law","P = VI = I²R = V²/R","Coulomb: F = kq₁q₂/r²"]},
+  ],
+  questions: [
+    {kind:"trace", q:"A current of 2 A flows for 5 s. Charge transferred?", options:["10 C","2.5 C","0.4 C","7 C"], answer:0, explain:"Q = It = 2×5 = 10 C.（Q=It=10。）"},
+    {kind:"trace", q:"A 12 V battery drives 3 A through a resistor. Resistance?", options:["4 Ω","36 Ω","0.25 Ω","15 Ω"], answer:0, explain:"R = V/I = 12/3 = 4 Ω.（R=V/I=4。）"},
+    {kind:"trace", q:"A device uses 12 V at 2 A. Power?", options:["24 W","6 W","14 W","0.17 W"], answer:0, explain:"P = VI = 12×2 = 24 W.（P=VI=24。）"},
+    {kind:"trace", q:"A 10 V supply drives 2 A. Power?", options:["20 W","5 W","12 W","0.2 W"], answer:0, explain:"P = VI = 10×2 = 20 W.（P=20。）"},
+    {kind:"mcq", q:"Coulomb's law shows force is proportional to?", options:["1/r²","r²","r","1/r"], answer:0, explain:"F ∝ 1/r² (inverse square).（与 r² 成反比。）"},
+    {kind:"mcq", q:"Ohm's law says current is proportional to?", options:["Voltage","Resistance","Power","Charge"], answer:0, explain:"I = V/R, so I ∝ V (at constant R).（I 与 V 成正比。）"},
+  ],
+});
+
+const FRQS = [];
+FRQS.push({
+  id: 1, icon: "📏", title: "FRQ 1 · Kinematics (SUVAT)", topic: "Constant acceleration",
+  prompt: "A car accelerates uniformly from rest to 20 m/s in 4 s. Answer:\n\n(a) Calculate its acceleration using v = u + at.\n\n(b) Calculate the distance traveled using s = ½(u+v)t.\n\n(c) Verify your distance using s = ut + ½at².",
+  points: [
+    "a = (v−u)/t = (20−0)/4 = 5 m/s²",
+    "s = ½(u+v)t = ½(0+20)(4) = 40 m",
+    "s = ut + ½at² = 0 + ½(5)(16) = 40 m",
+    "Consistent answer from both methods",
+    "Correct units (m/s², m)",
+  ],
+  answerText: "Key: identify u, v, a, t, s, then pick the SUVAT equation that leaves out the unknown you don't know.",
+  answer: "(a) a = (v−u)/t = (20−0)/4 = 5 m/s²\n\n(b) s = ½(u+v)t = ½(0+20)(4) = 40 m\n\n(c) s = ut + ½at² = 0 + ½(5)(4²) = ½×5×16 = 40 m ✓",
+});
+
+FRQS.push({
+  id: 2, icon: "⚡", title: "FRQ 2 · Energy Conservation", topic: "KE, PE, power",
+  prompt: "A 2 kg ball is dropped from a height of 5 m (g = 10 m/s², ignore air resistance). Answer:\n\n(a) What is its initial gravitational PE?\n\n(b) What is its speed just before hitting the ground?\n\n(c) If the fall takes 1 s, what is the average power released?",
+  points: [
+    "PE = mgh = 2×10×5 = 100 J",
+    "All PE converts to KE: ½mv² = 100 → v = 10 m/s",
+    "P = E/t = 100/1 = 100 W",
+    "Correct use of conservation of energy",
+    "Correct units (J, m/s, W)",
+  ],
+  answerText: "Use PE = mgh, then KE = ½mv² with conservation (PE → KE), and P = E/t.",
+  answer: "(a) PE = mgh = 2×10×5 = 100 J\n\n(b) ½mv² = 100 → v² = 100 → v = 10 m/s\n\n(c) P = E/t = 100/1 = 100 W",
+});
+
+FRQS.push({
+  id: 3, icon: "🔌", title: "FRQ 3 · Ohm's Law & Power", topic: "V = IR, P = VI",
+  prompt: "A 12 Ω resistor is connected to a 6 V battery. Answer:\n\n(a) Calculate the current using V = IR.\n\n(b) Calculate the power using P = VI.\n\n(c) Verify the power using P = V²/R.",
+  points: [
+    "I = V/R = 6/12 = 0.5 A",
+    "P = VI = 6×0.5 = 3 W",
+    "P = V²/R = 36/12 = 3 W",
+    "Consistent answers",
+    "Correct units (A, W)",
+  ],
+  answerText: "Rearrange Ohm's law for current, then use any power form.",
+  answer: "(a) I = V/R = 6/12 = 0.5 A\n\n(b) P = VI = 6×0.5 = 3 W\n\n(c) P = V²/R = 6²/12 = 36/12 = 3 W ✓",
+});
+
+const CHEATSHEET = [
+  {t:"h", text:"1. Kinematics · 运动学"},
+  {t:"c", code:"v = d/t          a = Δv/Δt\nSUVAT (constant a):\n  v = u + at        (no s)\n  s = ut + ½at²     (no v)\n  v² = u² + 2as     (no t)\n  s = ½(u+v)t       (no a)\nFree fall: a = g ≈ 9.8 m/s²"},
+  {t:"h", text:"2. Energy · 能量"},
+  {t:"c", code:"W = F·s·cosθ     KE = ½mv²\nPE = mgh          P = W/t\nKE₁ + PE₁ = KE₂ + PE₂"},
+  {t:"h", text:"3. Thermodynamics · 热力学"},
+  {t:"c", code:"T(K) = T(°C) + 273\nQ = mcΔT   (c_water = 4200 J/kg·°C)"},
+  {t:"h", text:"4. Waves & Optics · 波与光学"},
+  {t:"c", code:"v = fλ        T = 1/f\nSnell: n₁sinθ₁ = n₂sinθ₂"},
+  {t:"h", text:"5. Electricity · 电学"},
+  {t:"c", code:"Q = It        V = IR\nP = VI = I²R = V²/R\nCoulomb: F = kq₁q₂/r²"},
+  {t:"tip", text:"Top traps: ① SUVAT only when acceleration is constant; ② work needs the force component along motion; ③ check units (m/s vs km/h)."},
+];
+
+const REALEXAM = [
+  {topic:"Kinematics", q:"A car travels 80 m in 4 s. Average speed?", options:["20 m/s","80 m/s","0.05 m/s","4 m/s"], answer:0, explain:"v = d/t = 80/4 = 20 m/s.（v=20。）"},
+  {topic:"Kinematics", q:"With u=0, a=4, t=3 (v = u+at), v = ?", options:["12 m/s","7 m/s","9 m/s","1 m/s"], answer:0, explain:"v = 0 + 4×3 = 12 m/s.（v=12。）"},
+  {topic:"Energy", q:"KE of a 4 kg object at 2 m/s?", options:["8 J","16 J","4 J","2 J"], answer:0, explain:"KE = ½×4×2² = 8 J.（KE=8。）"},
+  {topic:"Energy", q:"PE of 3 kg at 4 m (g=10)?", options:["120 J","12 J","40 J","30 J"], answer:0, explain:"PE = 3×10×4 = 120 J.（PE=120。）"},
+  {topic:"Power", q:"150 J of work in 3 s. Power?", options:["50 W","450 W","0.02 W","153 W"], answer:0, explain:"P = 150/3 = 50 W.（P=50。）"},
+  {topic:"Thermo", q:"27 °C in kelvin?", options:["300 K","246 K","327 K","273 K"], answer:0, explain:"27 + 273 = 300 K.（300K。）"},
+  {topic:"Waves", q:"v = 40 m/s, λ = 4 m. Frequency?", options:["10 Hz","160 Hz","0.1 Hz","44 Hz"], answer:0, explain:"f = v/λ = 40/4 = 10 Hz.（f=10。）"},
+  {topic:"Electric", q:"12 V across 6 Ω. Current?", options:["2 A","72 A","0.5 A","18 A"], answer:0, explain:"I = V/R = 12/6 = 2 A.（I=2。）"},
+  {topic:"Electric", q:"P = VI with V=10, I=3?", options:["30 W","13 W","3.3 W","0.3 W"], answer:0, explain:"P = 10×3 = 30 W.（P=30。）"},
+  {topic:"Optics", q:"Light bending when entering glass is called?", options:["Refraction","Reflection","Diffraction","Absorption"], answer:0, explain:"Speed change → bending = refraction.（折射。）"},
+];
+
+const BANK = [
+{unit:1, topic:"Units", q:"Which is the SI unit of time?", options:["Second (s)","Minute","Hour","Day"], answer:0, explain:"The SI base unit of time is the second.（秒。）"},
+{unit:1, topic:"Vectors", q:"Which is a scalar?", options:["Mass","Velocity","Force","Displacement"], answer:0, explain:"Mass has magnitude only.（质量是标量。）"},
+{unit:1, topic:"SUVAT", q:"Which SUVAT equation leaves out displacement s?", options:["v = u + at","s = ut + ½at²","v² = u² + 2as","s = ½(u+v)t"], answer:0, explain:"`v = u + at` has no s.（不含 s。）"},
+{unit:1, topic:"Free fall", q:"Free-fall acceleration is about?", options:["9.8 m/s²","0","10 m","1 m/s"], answer:0, explain:"g ≈ 9.8 m/s².（g≈9.8。）"},
+{unit:2, topic:"Work", q:"Work = ?", options:["F·s·cosθ","F+s","F/s","mgh"], answer:0, explain:"W = Fs cosθ.（功=力×位移×cosθ。）"},
+{unit:2, topic:"Energy", q:"KE = ?", options:["½mv²","mv","mgh","F/t"], answer:0, explain:"Kinetic energy = ½mv².（动能。）"},
+{unit:2, topic:"PE", q:"PE = ?", options:["mgh","½mv²","F·s","VI"], answer:0, explain:"Gravitational PE = mgh.（重力势能。）"},
+{unit:2, topic:"Power", q:"Power = ?", options:["W/t","W·t","F·s","mgh"], answer:0, explain:"Power = work / time.（功率。）"},
+{unit:3, topic:"Thermo", q:"Heat needed = ?", options:["mcΔT","mgh","½mv²","VI"], answer:0, explain:"Q = mcΔT.（比热容公式。）"},
+{unit:3, topic:"Scale", q:"0 °C in kelvin?", options:["273 K","0 K","373 K","100 K"], answer:0, explain:"0 + 273 = 273 K.（273K。）"},
+{unit:4, topic:"Waves", q:"Wave speed = ?", options:["fλ","f/λ","λ/f","f+λ"], answer:0, explain:"v = fλ.（波速。）"},
+{unit:4, topic:"Period", q:"Period = ?", options:["1/f","f","λ","v"], answer:0, explain:"T = 1/f.（周期。）"},
+{unit:5, topic:"Ohm", q:"Ohm's law is?", options:["V = IR","V = I/R","V = I+R","V = R/I"], answer:0, explain:"V = IR.（欧姆定律。）"},
+{unit:5, topic:"Power", q:"Electrical power = ?", options:["VI","V/I","V+I","I/R"], answer:0, explain:"P = VI.（电功率。）"},
+{unit:5, topic:"Charge", q:"Charge Q = ?", options:["It","I/t","I+t","V/R"], answer:0, explain:"Q = It.（电荷=电流×时间。）"},
+{unit:5, topic:"Coulomb", q:"Coulomb's law: F = ?", options:["kq₁q₂/r²","kq₁q₂/r","kq₁q₂","kr²"], answer:0, explain:"F = kq₁q₂/r².（库仑定律。）"},
+];
+
+const LEVEL_TITLES = ["新手","学徒","入门者","进阶者","熟练者","高手","达人","大师","宗师","传奇","物理新星","运动达人","能量掌控者","公式大师","AP 满分战神"];
+const BADGES = [
+  {id:"first_xp", ico:"🎉", name:"初次得分", desc:"第一次获得积分"},
+  {id:"unit1",     ico:"🧱", name:"奠基者", desc:"完成第一个单元"},
+  {id:"unit3",     ico:"🌱", name:"渐入佳境", desc:"完成 3 个单元"},
+  {id:"all",       ico:"👑", name:"全通关", desc:"完成全部单元"},
+  {id:"perfect",   ico:"💯", name:"满分", desc:"某单元一次全对"},
+  {id:"exam60",    ico:"🥉", name:"模考及格", desc:"模拟考正确率 ≥ 60%"},
+  {id:"exam80",    ico:"🏆", name:"模考 80+", desc:"模拟考正确率 ≥ 80%"},
+  {id:"exam90",    ico:"🥇", name:"模考 90+", desc:"模拟考正确率 ≥ 90%"},
+  {id:"exam100",   ico:"💎", name:"模考满分", desc:"模拟考正确率 100%"},
+  {id:"streak3",   ico:"🔥", name:"连续 3 天", desc:"连续学习 3 天"},
+  {id:"streak7",   ico:"📅", name:"坚持 7 天", desc:"连续学习 7 天"},
+  {id:"streak14",  ico:"📆", name:"坚持 14 天", desc:"连续学习 14 天"},
+  {id:"streak30",  ico:"🗓️", name:"坚持 30 天", desc:"连续学习 30 天"},
+  {id:"xp100",     ico:"⭐", name:"百炼成钢", desc:"累计 100 XP"},
+  {id:"xp500",     ico:"🌟", name:"五百积分", desc:"累计 500 XP"},
+  {id:"xp1000",    ico:"💫", name:"千分大佬", desc:"累计 1000 XP"},
+  {id:"xp3000",    ico:"☄️", name:"三千传说", desc:"累计 3000 XP"},
+  {id:"first_frq", ico:"📝", name:"首道 FRQ", desc:"完成第一道 FRQ"},
+  {id:"first_real",ico:"🎯", name:"真题首练", desc:"完成一次真题演练"},
+  {id:"level5",    ico:"⭐", name:"五级达成", desc:"等级达到 5 级"},
+  {id:"level10",   ico:"🌟", name:"十级宗师", desc:"等级达到 10 级"},
+];
+</script>
+
+<script>
+/* ============================================================
+   应用逻辑
+   ============================================================ */
+const KEY = "apphys_v1";
+const $  = (s, el=document) => el.querySelector(s);
+const $$ = (s, el=document) => [...el.querySelectorAll(s)];
+
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function inline(s){ return esc(s).replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>"); }
+function hl(code){
+  const re = /(\/\/[^\n]*)|(&quot;(?:[^&]|&(?!quot;))*?&quot;)|(&#39;[^&]*?&#39;)|\b(public|private|protected|static|final|void|int|double|boolean|char|String|byte|short|long|float|class|interface|extends|implements|new|return|if|else|for|while|do|switch|case|break|continue|this|super|true|false|null|import|package|instanceof)\b|\b(\d+(?:\.\d+)?)\b/g;
+  return esc(code).replace(re, (m, cm, st, ch, kw, num) => {
+    if (cm) return '<span class="cm">'+cm+'</span>';
+    if (st) return '<span class="st">'+st+'</span>';
+    if (ch) return '<span class="st">'+ch+'</span>';
+    if (kw) return '<span class="kw">'+kw+'</span>';
+    if (num) return '<span class="num">'+num+'</span>';
+    return m;
+  });
+}
+function renderBlocks(blocks){
+  return blocks.map(b => {
+    if (b.t === "h") return "<h3>"+inline(b.text)+"</h3>";
+    if (b.t === "p") return "<p class='body'>"+inline(b.text)+"</p>";
+    if (b.t === "c") return "<div class='block-code'>"+hl(b.code)+"</div>";
+    if (b.t === "tip") return "<div class='callout tip'><span class='ico'>💡</span><div>"+inline(b.text)+"</div></div>";
+    if (b.t === "warn") return "<div class='callout warn'><span class='ico'>⚠️</span><div>"+inline(b.text)+"</div></div>";
+    if (b.t === "err") return "<div class='callout err'><span class='ico'>❌</span><div>"+inline(b.text)+"</div></div>";
+    if (b.t === "li") return "<ul class='li'>"+b.items.map(x=>"<li>"+inline(x)+"</li>").join("")+"</ul>";
+    if (b.t === "table") return "<div class='table-wrap'><table>"+b.rows.map((r,i)=> "<tr>"+r.map((c,j)=> (i===0?"<th>":"<td>")+inline(c)+(i===0?"</th>":"</td>")).join("")+"</tr>").join("")+"</table></div>";
+    if (b.t === "formula") return renderFormula(b);
+    if (b.t === "demo") return renderDemo(b.type);
+    if (b.t === "video") return renderVideo(b);
+    return "";
+  }).join("");
+}
+
+/* ---------- 状态 ---------- */
+function todayStr(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function defaultState(){ return {xp:0, lastDay:todayStr(), streak:1, badges:[], lessonsRead:{}, q:{}, quizDone:{}, frqDone:{}, examBest:null, examAttempts:0}; }
+let state;
+try{ state = JSON.parse(localStorage.getItem(KEY)) || defaultState(); }catch(e){ state = defaultState(); }
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+function todayStr2(){ return state.lastDay; }
+function updateStreak(){
+  const t = todayStr();
+  if (state.lastDay === t) return;
+  const y = new Date(Date.now()-86400000);
+  const ystr = y.getFullYear()+"-"+String(y.getMonth()+1).padStart(2,"0")+"-"+String(y.getDate()).padStart(2,"0");
+  state.streak = (state.lastDay === ystr) ? state.streak+1 : 1;
+  state.lastDay = t;
+}
+function level(){ return Math.min(15, Math.floor(state.xp/150)+1); }
+function levelTitle(){ return LEVEL_TITLES[Math.min(LEVEL_TITLES.length-1, level()-1)]; }
+function gid(uid, qi){ return uid+":"+qi; }
+
+/* ---------- 积分与徽章 ---------- */
+function addXP(n){
+  if(n<=0) return;
+  const before = level();
+  state.xp += n;
+  const after = level();
+  if(after > before){ toast("🎉 升级！现在是 Lv."+after+" "+levelTitle()); }
+}
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove("show"), 2600); }
+function checkBadges(){
+  const earned = new Set(state.badges);
+  const doneUnits = UNITS.filter(u=>state.quizDone[u.id]).length;
+  const perfect = UNITS.some(u=> state.quizDone[u.id] && u.questions.every((q,i)=> state.q[gid(u.id,i)] && state.q[gid(u.id,i)].ft === true));
+  const frqCount = Object.keys(state.frqDone || {}).length;
+  const realCount = state.realDone || 0;
+  const exam = state.examBest;
+  const lv = level();
+
+  const conds = [
+    ["first_xp", state.xp >= 10],
+    ["unit1", doneUnits >= 1],
+    ["unit3", doneUnits >= 3],
+    ["five", doneUnits >= 5],
+    ["unit8", doneUnits >= 8],
+    ["all", doneUnits >= UNITS.length && UNITS.length > 0],
+    ["perfect", perfect],
+    ["exam60", exam !== null && exam >= 60],
+    ["exam80", exam !== null && exam >= 80],
+    ["exam90", exam !== null && exam >= 90],
+    ["exam100", exam !== null && exam >= 100],
+    ["streak3", state.streak >= 3],
+    ["streak7", state.streak >= 7],
+    ["streak14", state.streak >= 14],
+    ["streak30", state.streak >= 30],
+    ["xp100", state.xp >= 100],
+    ["xp500", state.xp >= 500],
+    ["xp1000", state.xp >= 1000],
+    ["xp3000", state.xp >= 3000],
+    ["first_frq", frqCount >= 1],
+    ["first_real", realCount >= 1],
+    ["level5", lv >= 5],
+    ["level10", lv >= 10],
+  ];
+  const newOnes = [];
+  conds.forEach(([id, ok])=>{
+    if(ok && !earned.has(id)){ state.badges.push(id); newOnes.push(id); }
+  });
+  if(newOnes.length){
+    save();
+    const names = newOnes.map(id => BADGES.find(b=>b.id===id).name).join("、");
+    toast("🏅 获得徽章：" + names);
+  }
+}
+
+/* ---------- 题目统计 ---------- */
+function qStatus(uid, qi){ return state.q[gid(uid,qi)] || null; }
+function unitStats(unit){
+  let correct=0, attempted=0, firstTryRight=0;
+  unit.questions.forEach((q,i)=>{
+    const s = qStatus(unit.id, i);
+    if(s){ attempted++; if(s.correct) correct++; if(s.ft) firstTryRight++; }
+  });
+  return {correct, attempted, total:unit.questions.length, firstTryRight};
+}
+function overallStats(){
+  let correct=0, total=0;
+  UNITS.forEach(u=>{ const s=unitStats(u); correct+=s.correct; total+=s.total; });
+  return total ? Math.round(correct/total*100) : 0;
+}
+function flattenAll(){
+  const arr=[];
+  UNITS.forEach(u=> u.questions.forEach((q,i)=> arr.push({q, uid:u.id, qi:i, unit:u})));
+  return arr;
+}
+
+/* ---------- 视图状态 ---------- */
+let view = {name:"home"};
+let quizSession = null;   // {uid, idx, order, locked}
+let examSession = null;
+let realSession = null;
+
+function nav(){
+  const sb = $("#sidebar");
+  let html = '<button class="nav-btn" data-go="home">🏠 首页</button>';
+  html += '<div class="nav-group">学习单元</div>';
+  UNITS.forEach(u=>{
+    const st = unitStats(u);
+    const done = state.quizDone[u.id];
+    html += '<button class="nav-btn'+(view.name==="unit"&&view.uid===u.id?" active":"")+(done?" done":"")+'" data-go="unit" data-uid="'+u.id+'">'+
+      '<span class="dot"></span><span>'+u.icon+' '+u.cn+'</span></button>';
+  });
+  html += '<div class="nav-group">综合</div>';
+  html += '<button class="nav-btn'+(view.name==="frq"?" active":"")+'" data-go="frq">📝 FRQ 练习</button>';
+  html += '<button class="nav-btn'+(view.name==="awards"?" active":"")+'" data-go="awards">🏆 成就馆</button>';
+  html += '<button class="nav-btn'+(view.name==="real"?" active":"")+'" data-go="real">🎯 真题演练</button>';
+  html += '<button class="nav-btn'+(view.name==="exam"?" active":"")+'" data-go="exam">🎯 模拟考试</button>';
+  html += '<button class="nav-btn'+(view.name==="cheat"?" active":"")+'" data-go="cheat">📋 速查表</button>';
+  sb.innerHTML = html;
+}
+function refreshHeader(){
+  $("#stat-level").textContent = "Lv."+level()+" "+levelTitle();
+  $("#stat-xp").textContent = state.xp+" XP";
+  $("#stat-streak").textContent = "🔥 "+state.streak+" 天";
+  $("#stat-pct").textContent = overallStats()+"% 掌握";
+}
+function go(name, params={}){
+  view = {name, ...params};
+  if(name==="unit"){ quizSession=null; }
+  examSession = null;
+  realSession = null;
+  bankSession = null;
+  nav(); render(); window.scrollTo({top:0, behavior:"smooth"});
+}
+function render(){ refreshHeader(); const m=$("#main");
+  if(view.name==="home") m.innerHTML = homeHTML();
+  else if(view.name==="unit") m.innerHTML = unitHTML();
+  else if(view.name==="quiz") m.innerHTML = quizHTML();
+  else if(view.name==="frq") m.innerHTML = frqHTML();
+  else if(view.name==="awards") m.innerHTML = awardsHTML();
+  else if(view.name==="real") m.innerHTML = realHTML();
+  else if(view.name==="exam") m.innerHTML = examHTML();
+  else if(view.name==="cheat") m.innerHTML = cheatHTML();
+  else if(view.name==="unitresult") m.innerHTML = resultHTML();
+}
+
+/* ================= 首页 ================= */
+function homeHTML(){
+  const done = UNITS.filter(u=>state.quizDone[u.id]).length;
+  const s = overallStats();
+  let cards = UNITS.map(u=>{
+    const st = unitStats(u);
+    const pct = st.total? Math.round(st.correct/st.total*100):0;
+    return '<div class="unit-card" data-go="unit" data-uid="'+u.id+'">'+
+      '<span class="bar"><i style="width:'+pct+'%"></i></span>'+
+      '<div class="icon">'+u.icon+'</div><h3>'+u.cn+'</h3>'+
+      '<div class="cn">'+u.title+'</div><div class="pct">'+st.correct+'/'+st.total+' 题 · '+pct+'%</div></div>';
+  }).join("");
+  const earned = BADGES.filter(b=>state.badges.includes(b.id));
+  const badgesHTML = BADGES.map(b=>{
+    const e = state.badges.includes(b.id);
+    return '<div class="badge'+(e?" earned":"")+'"><span class="b-ico">'+b.ico+'</span><b>'+b.name+'</b><span class="muted">'+b.desc+'</span></div>';
+  }).join("");
+
+  return ''+
+  '<div class="hero"><h1>你好！一起拿下 AP Physics 👋</h1>'+
+  '<p>这套课程按 <b>College Board 官方大纲的 5 个单元</b> 编排，从最基础的测量讲起。每个单元先学知识点，再做即时反馈的练习题；全部学完后去做 FRQ 和模拟考试。</p>'+
+  '<div class="row"><button class="btn" data-go="unit" data-uid="'+(UNITS[0]?UNITS[0].id:1)+'">🚀 开始学习</button>'+
+  '<button class="btn ghost" data-go="random">🎲 随机练习一题</button></div></div>'+
+  '<div class="card"><div class="spread"><h2 style="margin:0">📚 课程单元</h2><span class="muted">已完成 '+done+' / '+UNITS.length+'</span></div>'+
+  '<div class="pbar" style="margin:14px 0"><i style="width:'+s+'%"></i></div>'+
+  '<div class="unit-grid">'+cards+'</div></div>'+
+  '<div class="card"><h2 style="margin-top:0">🏅 我的徽章</h2><div class="badges">'+badgesHTML+'</div></div>'+
+  '<div class="card"><h2 style="margin-top:0">💾 进度备份</h2>'+
+  '<p class="sub">学习进度会自动保存在<b>当前这个浏览器</b>里，不用手动保存。但换设备、换浏览器或清理缓存前，建议先导出备份；到新设备再导入即可恢复。</p>'+
+  '<div class="row" style="margin-top:10px">'+
+  '<button class="btn" data-export>⬇️ 导出备份文件</button>'+
+  '<button class="btn ghost" data-import>⬆️ 导入备份文件</button>'+
+  '<input type="file" id="importFile" accept=".json,application/json" style="display:none">'+
+  '</div></div>';
+}
+
+/* ================= 单元 ================= */
+function unitHTML(){
+  const u = UNITS.find(x=>x.id===view.uid) || UNITS[0];
+  const st = unitStats(u);
+  const pct = st.total? Math.round(st.correct/st.total*100):0;
+  const tab = view.tab || "lesson";
+  const lessonRead = state.lessonsRead[u.id];
+  const done = state.quizDone[u.id];
+  return ''+
+  '<div class="card"><div class="spread"><div><h1 style="margin:0">'+u.icon+' '+u.title+'</h1>'+
+  '<div class="sub">'+u.cn+' · 目标：'+inline(u.objective||"")+'</div></div>'+
+  '<div style="min-width:180px"><div class="row" style="justify-content:flex-end;margin-bottom:6px"><span class="muted" style="font-size:13px">掌握度 '+pct+'%</span></div>'+
+  '<div class="pbar"><i style="width:'+pct+'%"></i></div></div></div>'+
+  '<div class="tabs" style="margin-top:16px"><button class="tab'+(tab==="lesson"?" active":"")+'" data-tab="lesson">📖 学习知识点</button>'+
+  '<button class="tab'+(tab==="quiz"?" active":"")+'" data-tab="quiz">✏️ 练习题 ('+st.correct+'/'+st.total+')</button>'+
+  '<button class="tab'+(tab==="bank"?" active":"")+'" data-tab="bank">🎯 真题强化 ('+bankCount(u.id)+')</button></div></div>'+
+  (tab==="lesson" ? lessonHTML(u, lessonRead) : tab==="quiz" ? quizHTML(u, 0) : bankHTML(u));
+}
+function lessonHTML(u, read){
+  const blocks = renderBlocks(u.lesson);
+  return '<div class="card">'+blocks+
+  '<div style="margin-top:20px" class="spread">'+
+  '<button class="btn" data-tab="quiz">✏️ 去做练习 →</button>'+
+  '<button class="btn ghost" data-markread="'+u.id+'">'+(read?"✅ 已学完":"📌 标记为已学完")+'</button>'+
+  '</div></div>';
+}
+
+/* ================= 练习 ================= */
+function startQuiz(uid){
+  const u = UNITS.find(x=>x.id===uid);
+  quizSession = {uid, idx:0, order:u.questions.map((_,i)=>i)};
+}
+function quizHTML(u, idx){
+  if(!u) return "";
+  if(!quizSession){ startQuiz(u.id); }
+  const s = quizSession;
+  const qi = s.order[s.idx];
+  const q = u.questions[qi];
+  const st = qStatus(u.id, qi);
+  const answered = !!st;
+  const total = s.order.length;
+  let opts = "";
+  if(q.options){
+    opts = '<div class="options">'+q.options.map((o,i)=>{
+      let cls="opt"; let ltr="ABCD"[i];
+      if(answered){
+        cls += " disabled";
+        if(i===q.answer) cls += " correct";
+        else if(i===st.picked) cls += " wrong";
+      }
+      return '<button class="'+cls+'" data-opt="'+i+'"><span class="ltr">'+ltr+'.</span><span>'+inline(o)+'</span></button>';
+    }).join("")+'</div>';
+  }
+  const explain = answered ? '<div class="explain '+(st.correct?"good":"bad")+'"><b>'+(st.correct?"✅ 回答正确！":"❌ 回答错误")+'</b>'+inline(q.explain)+'</div>' : "";
+  const nextBtn = answered ? '<button class="btn" data-next>'+(s.idx < total-1 ? "下一题 →" : "查看结果 🎉")+'</button>' : "";
+  return ''+
+  '<div class="card"><div class="spread" style="margin-bottom:10px">'+
+  '<span class="q-meta">第 '+(s.idx+1)+' / '+total+' 题 · '+(q.kind==="trace"?"🔍 代码追踪":"🧩 概念题")+'</span>'+
+  '<span class="muted" style="font-size:13px">已掌握 '+unitStats(u).correct+'/'+total+'</span></div>'+
+  '<div class="q-text">'+inline(q.q)+'</div>'+
+  (q.code ? '<div class="block-code">'+hl(q.code)+'</div>' : "")+
+  opts + explain +
+  '<div style="margin-top:16px" class="row">'+nextBtn+
+  '<button class="btn ghost sm" data-tab="lesson">← 返回知识点</button></div></div>';
+}
+function answerQuestion(opt){
+  const u = UNITS.find(x=>x.id===quizSession.uid);
+  const qi = quizSession.order[quizSession.idx];
+  const q = u.questions[qi];
+  const key = gid(u.id, qi);
+  const prev = state.q[key];
+  const correct = opt === q.answer;
+  const firstTime = !prev;
+  const wasWrong = prev && !prev.correct;
+
+  if(firstTime){
+    if(correct){ addXP(10); state.q[key]={correct:true, ft:true, picked:opt}; toast("+10 XP 🎉"); }
+    else{ state.q[key]={correct:false, ft:false, picked:opt}; toast("再想想，看看解析吧 💪"); }
+  } else if(wasWrong && correct){
+    addXP(4); state.q[key]={correct:true, ft:prev.ft, picked:opt}; toast("+4 XP 改正成功 ✅");
+  } else if(wasWrong && !correct){
+    state.q[key]={correct:false, ft:false, picked:opt};
+  } else {
+    state.q[key].picked = opt; // 已正确，随意重看
+  }
+  save(); render();
+}
+function nextQuestion(){
+  const u = UNITS.find(x=>x.id===quizSession.uid);
+  const total = quizSession.order.length;
+  if(quizSession.idx < total-1){ quizSession.idx++; render(); return; }
+  const st = unitStats(u);
+  const allCorrect = st.correct === total;
+  const perfect = st.firstTryRight === total;
+  if(!state.quizDone[u.id]){
+    state.quizDone[u.id] = true;
+    addXP(20);
+    if(allCorrect){ toast("🎊 完成本单元！+20 XP"); if(perfect) confetti(); }
+    else { toast("📦 完成本单元（可随时回来补错题）+20 XP"); }
+    save(); checkBadges();
+  }
+  quizSession = null;
+  view = {name:"unitresult", uid:u.id};
+  nav(); render();
+}
+function resultHTML(){
+  const u = UNITS.find(x=>x.id===view.uid);
+  const st = unitStats(u);
+  const pct = Math.round(st.correct/st.total*100);
+  const perfect = st.firstTryRight === st.total;
+  const nextU = UNITS.find(x=>x.id===u.id+1);
+  return '<div class="card" style="border-color:'+(pct>=80?'var(--good)':'var(--warn)')+'">'+
+  '<h1 style="margin:0">'+u.icon+' '+u.cn+' · 单元完成</h1>'+
+  '<p class="sub">答对 '+st.correct+' / '+st.total+' 题，正确率 <b style="font-size:22px">'+pct+'%</b>'+(perfect?" · 一次全对 💯":"")+'</p>'+
+  '<div class="pbar'+(pct>=80?" good":"")+'" style="margin:14px 0"><i style="width:'+pct+'%"></i></div>'+
+  '<p class="body">'+(pct>=80 ? "太棒了！继续下一个单元，或去挑战模拟考试。" : "错题是进步最快的路——点“再做一次”把错题搞懂，就能冲高分。")+'</p>'+
+  '<div class="row"><button class="btn" data-retry="'+u.id+'">🔁 再做一次</button>'+
+  '<button class="btn ghost" data-go="unit" data-uid="'+u.id+'">📖 复习知识点</button>'+
+  (nextU ? '<button class="btn" data-go="unit" data-uid="'+nextU.id+'">下一个单元 →</button>' : '<button class="btn" data-go="exam">🎯 去模考</button>')+
+  '</div></div>';
+}
+
+/* ================= FRQ ================= */
+function frqHTML(){
+  if(view.id != null) return frqDetailHTML();
+  const list = FRQS.map((f,i)=>{
+    const done = state.frqDone[f.id];
+    return '<div class="unit-card" data-go="frq" data-fid="'+f.id+'"><div class="icon">'+f.icon+'</div>'+
+    '<h3>'+f.title+'</h3><div class="cn">'+f.topic+'</div><div class="pct">'+(done?"✅ 已完成":"📌 未开始")+'</div></div>';
+  }).join("");
+  return '<div class="card"><h1>📝 FRQ 主观题练习</h1>'+
+  '<p class="sub">AP Physics 第二部分是 4 道编程大题（90 分钟）。这里按真实考试风格，给你题目 + 官方式评分标准，写完对照打分。</p>'+
+  '<div class="callout tip"><span class="ico">💡</span><div>建议：先在纸上/编译器里写完代码，再点“显示参考答案”对照。评分要点是阅卷老师真正给分的地方，一定要逐条自查。</div></div></div>'+
+  '<div class="unit-grid">'+list+'</div>';
+}
+function frqDetailHTML(){
+  const f = FRQS.find(x=>x.id===view.id) || FRQS[0];
+  const done = state.frqDone[f.id];
+  const rubric = f.points.map(p=>'<li>'+inline(p)+'</li>').join("");
+  return '<div class="card"><div class="spread"><h1 style="margin:0">'+f.icon+' '+f.title+'</h1>'+
+  '<button class="btn ghost sm" data-go="frq">← 返回列表</button></div>'+
+  '<div class="sub">'+f.topic+'</div>'+
+  '<h2>题目</h2><p class="body">'+inline(f.prompt)+'</p>'+
+  (f.code ? '<div class="block-code">'+hl(f.code)+'</div>' : "")+
+  '<h2>我的草稿</h2><textarea placeholder="在这里写你的答案（不会自动保存，建议写完后复制到别处）"></textarea>'+
+  '<div class="row"><button class="btn" data-reveal="answer">👀 显示参考答案</button>'+
+  '<button class="btn ghost" data-reveal="rubric">📊 显示评分标准</button>'+
+  (done?'<span class="btn sm" style="background:var(--good)">✅ 已完成</span>':'<button class="btn sm" data-frqdone="'+f.id+'">✅ 标记完成</button>')+
+  '</div><div id="frq-reveal"></div></div>';
+}
+function revealFRQ(which){
+  const f = FRQS.find(x=>x.id===view.id);
+  const box = $("#frq-reveal");
+  if(which==="answer"){
+    box.innerHTML = '<h2>参考答案</h2>'+(f.answerText?'<p class="body">'+inline(f.answerText)+'</p>':"")+'<div class="block-code">'+hl(f.answer)+'</div>';
+  } else {
+    box.innerHTML = '<div class="rubric"><b>📊 评分要点（每点对应阅卷给分）</b><ul class="li">'+f.points.map(p=>'<li>'+inline(p)+'</li>').join("")+'</ul></div>';
+  }
+}
+
+/* ================= 模拟考试 ================= */
+function examHTML(){
+  if(!examSession) return examIntroHTML();
+  if(view.finished) return examResultHTML();
+  const s = examSession;
+  const item = s.items[s.idx];
+  const answered = s.picked[s.idx] !== undefined;
+  return '<div class="card"><div class="spread" style="margin-bottom:10px">'+
+  '<span class="q-meta">模考第 '+(s.idx+1)+' / '+s.items.length+' 题</span>'+
+  '<span class="muted" style="font-size:13px">⏱️ '+examClock()+'</span></div>'+
+  '<div class="q-text">'+inline(item.q.q)+'</div>'+
+  (item.q.code?'<div class="block-code">'+hl(item.q.code)+'</div>':"")+
+  '<div class="options">'+item.q.options.map((o,i)=>{
+    let cls="opt"; if(answered){ cls+=" disabled"; if(i===s.picked[s.idx]) cls+=" active"; }
+    return '<button class="'+cls+'" data-examopt="'+i+'"><span class="ltr">'+"ABCD"[i]+'.</span><span>'+inline(o)+'</span></button>';
+  }).join("")+'</div>'+
+  '<div style="margin-top:16px" class="row">'+
+  (answered ? (s.idx<s.items.length-1?'<button class="btn" data-examnext>下一题 →</button>':'<button class="btn" data-examfinish>交卷 🏁</button>') : '<span class="muted" style="font-size:13px">选择一个答案后继续</span>')+
+  '</div></div>';
+}
+function examIntroHTML(){
+  const best = state.examBest;
+  return '<div class="card"><h1>🎯 模拟考试</h1>'+
+  '<p class="sub">随机抽取 '+(Math.min(30, flattenAll().length))+' 道覆盖全部单元的选择题。真实考试 MCQ 部分是 40 题 / 90 分钟，这里先热身。</p>'+
+  '<div class="callout tip"><span class="ico">⏱️</span><div>建议计时 30 分钟完成。答完可查看每一题的解析，错题会是你考前最该复习的清单。</div></div>'+
+  (best!==null? '<p class="body">历史最佳：<b>'+best+'%</b>（共 '+state.examAttempts+' 次）</p>':'<p class="body">还没有模考记录，来第一次挑战吧！</p>')+
+  '<button class="btn" data-startexam>▶️ 开始考试</button></div>';
+}
+function startExam(){
+  const pool = [...flattenAll(), ...flattenReal()];
+  const shuffled = [...pool].sort(()=>Math.random()-0.5).slice(0, Math.min(30, pool.length));
+  examSession = {items: shuffled, idx:0, picked: [], start: Date.now()};
+  state.examAttempts++;
+  save(); render();
+}
+function examClock(){
+  const sec = Math.floor((Date.now()-examSession.start)/1000);
+  return String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0");
+}
+function examPick(opt){ examSession.picked[examSession.idx] = opt; render(); }
+function examNext(){ examSession.idx++; render(); }
+function finishExam(){
+  const s = examSession;
+  const score = s.items.reduce((acc,it,i)=> acc + (s.picked[i]===it.q.answer?1:0), 0);
+  const pct = Math.round(score/s.items.length*100);
+  if(state.examBest===null || pct>state.examBest){ state.examBest=pct; }
+  view.finished = true; view.score=score; view.total=s.items.length; view.pct=pct;
+  addXP(score * 2);
+  if(pct >= 80) addXP(10);
+  save(); checkBadges(); render();
+  if(pct>=80) confetti();
+}
+function examResultHTML(){
+  const pct = view.pct;
+  const s = examSession;
+  const wrong = s.items.map((it,i)=>({it,i})).filter(x=> s.picked[x.i] !== x.it.q.answer);
+  return '<div class="card"><h1>'+(pct>=80?"🏆 太厉害了！":"📊 模考完成")+'</h1>'+
+  '<p class="sub">答对 '+view.score+' / '+view.total+' 题，正确率 <b style="font-size:22px">'+pct+'%</b></p>'+
+  '<div class="pbar'+(pct>=80?" good":"")+'" style="margin:14px 0"><i style="width:'+pct+'%"></i></div>'+
+  (pct>=80 ? '<div class="callout tip"><span class="ico">🎉</span><div>已经达到 5 分水平线！去把 FRQ 也过一遍就能上考场了。</div></div>' :
+   '<div class="callout warn"><span class="ico">💪</span><div>别灰心，错题就是提分点。下面是错题清单，回到对应单元再巩固一遍。</div></div>')+
+  '<h2>错题回顾</h2>'+
+  (wrong.length===0 ? '<p class="sub">全部答对，没有错题！👏</p>' :
+    wrong.map(w=> '<div style="margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:12px">'+
+      '<b>'+w.it.unit.cn+'：</b>'+inline(w.it.q.q)+
+      (w.it.q.code?'<div class="block-code">'+hl(w.it.q.code)+'</div>':"")+
+      '<div class="muted" style="font-size:13px">你的答案：'+(s.picked[w.i]!==undefined?"ABCD"[s.picked[w.i]]:"未作答")+' · 正确答案：'+"ABCD"[w.it.q.answer]+'</div>'+
+      '<div class="muted" style="font-size:13px">'+inline(w.it.q.explain)+'</div></div>').join("")
+  )+
+  '<div class="row" style="margin-top:16px"><button class="btn" data-go="exam">🔁 再考一次</button>'+
+  '<button class="btn ghost" data-go="home">🏠 回首页</button></div></div>';
+}
+
+/* ================= 真题演练 ================= */
+function flattenReal(){
+  return REALEXAM.map((q,i)=>({q, uid:-1, qi:i, unit:{cn: q.topic}}));
+}
+function startReal(){
+  realSession = {idx:0, order:REALEXAM.map((_,i)=>i), answers:[], finished:false};
+  view = {name:"real"};
+  nav(); render();
+}
+function realIntroHTML(){
+  return '<div class="card"><h1>🎯 真题演练</h1>'+
+  '<p class="sub">'+REALEXAM.length+' 道<b>真题风格</b>选择题，形式与难度对齐 AP Physics 正式考试（代码追踪为主、4 个选项）。逐题练习，答完立刻看解析。</p>'+
+  '<div class="callout warn"><span class="ico">⚠️</span><div>正式考试是 40 题 / 90 分钟，这里先热身。官方历年 FRQ 可在 College Board 官网 AP Central 免费下载。</div></div>'+
+  '<button class="btn" data-startreal>▶️ 开始演练</button></div>';
+}
+function realHTML(){
+  if(!realSession) return realIntroHTML();
+  if(realSession.finished) return realResultHTML();
+  const s = realSession;
+  const qi = s.order[s.idx];
+  const q = REALEXAM[qi];
+  const total = s.order.length;
+  const ans = s.answers[s.idx];
+  const answered = !!ans;
+  let opts = '';
+  if(q.options){
+    opts = '<div class="options">'+q.options.map((o,i)=>{
+      let cls="opt";
+      if(answered){ cls += " disabled"; if(i===q.answer) cls += " correct"; else if(i===ans.picked) cls += " wrong"; }
+      return '<button class="'+cls+'" data-realopt="'+i+'"><span class="ltr">'+"ABCD"[i]+'.</span><span>'+inline(o)+'</span></button>';
+    }).join("")+'</div>';
+  }
+  const explain = answered ? '<div class="explain '+(ans.correct?"good":"bad")+'"><b>'+(ans.correct?"✅ 正确":"❌ 错误")+'</b>'+inline(q.explain)+'</div>' : "";
+  const nextBtn = answered ? '<button class="btn" data-realnext>'+(s.idx<total-1?"下一题 →":"查看成绩 🎉")+'</button>' : "";
+  return '<div class="card"><div class="spread" style="margin-bottom:10px">'+
+  '<span class="q-meta">真题演练 · 第 '+(s.idx+1)+' / '+total+' 题 · '+inline(q.topic)+'</span>'+
+  '<button class="btn ghost sm" data-realexit>✕ 退出</button></div>'+
+  '<div class="q-text">'+inline(q.q)+'</div>'+
+  (q.code?'<div class="block-code">'+hl(q.code)+'</div>':"")+
+  opts + explain +
+  '<div style="margin-top:16px" class="row">'+nextBtn+'</div></div>';
+}
+function realAnswer(opt){
+  const s = realSession;
+  const qi = s.order[s.idx];
+  const q = REALEXAM[qi];
+  const correct = opt === q.answer;
+  s.answers[s.idx] = {picked:opt, correct};
+  if(correct){ addXP(8); toast("+8 XP ✅"); }
+  else { toast("看看解析 💪"); }
+  save(); render();
+}
+function realNext(){
+  const s = realSession;
+  if(s.idx < s.order.length-1){ s.idx++; render(); return; }
+  s.finished = true;
+  if(!state.realDone) state.realDone = 0;
+  state.realDone++;
+  save(); checkBadges();
+  render();
+}
+function realResultHTML(){
+  const s = realSession;
+  const total = s.order.length;
+  const correct = s.answers.filter(a=>a && a.correct).length;
+  const pct = Math.round(correct/total*100);
+  const wrong = [];
+  s.order.forEach((qi,i)=>{ if(!s.answers[i] || !s.answers[i].correct) wrong.push({q:REALEXAM[qi], i}); });
+  return '<div class="card"><h1>'+(pct>=80?"🏆 成绩不错！":"📊 演练完成")+'</h1>'+
+  '<p class="sub">答对 '+correct+' / '+total+' 题，正确率 <b style="font-size:22px">'+pct+'%</b></p>'+
+  '<div class="pbar'+(pct>=80?" good":"")+'" style="margin:14px 0"><i style="width:'+pct+'%"></i></div>'+
+  '<h2>错题回顾</h2>'+
+  (wrong.length===0 ? '<p class="sub">全部答对，太强了！👏</p>' :
+    wrong.map(w=> '<div style="margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:12px">'+
+      '<b>'+w.q.topic+'：</b>'+inline(w.q.q)+
+      (w.q.code?'<div class="block-code">'+hl(w.q.code)+'</div>':"")+
+      '<div class="muted" style="font-size:13px">你的答案：'+(s.answers[w.i]&&s.answers[w.i].picked!==undefined?"ABCD"[s.answers[w.i].picked]:"未作答")+' · 正确答案：'+"ABCD"[w.q.answer]+'</div>'+
+      '<div class="muted" style="font-size:13px">'+inline(w.q.explain)+'</div></div>').join("")
+  )+
+  '<div class="row" style="margin-top:16px"><button class="btn" data-startreal>🔁 再练一次</button>'+
+  '<button class="btn ghost" data-go="home">🏠 回首页</button></div></div>';
+}
+
+/* ================= 速查表 ================= */
+function cheatHTML(){
+  return '<div class="card"><h1>📋 速查表</h1><p class="sub">考前 10 分钟过一遍，专治“明明会但想不起来”。</p></div>'+
+  '<div class="card">'+renderBlocks(CHEATSHEET)+'</div>';
+}
+
+/* ================= 彩带 ================= */
+function confetti(){
+  const colors = ["#6366f1","#8b5cf6","#10b981","#f59e0b","#ef4444","#ec4899","#06b6d4"];
+  for(let i=0;i<90;i++){
+    const d=document.createElement("div");
+    d.className="confetti";
+    d.style.left=Math.random()*100+"vw";
+    d.style.width=(6+Math.random()*8)+"px";
+    d.style.height=(10+Math.random()*10)+"px";
+    d.style.background=colors[Math.floor(Math.random()*colors.length)];
+    d.style.animationDuration=(2.2+Math.random()*2)+"s";
+    d.style.animationDelay=(Math.random()*0.6)+"s";
+    d.style.borderRadius=Math.random()>0.5?"50%":"2px";
+    document.body.appendChild(d);
+    setTimeout(()=>d.remove(), 5000);
+  }
+}
+
+/* ================= 事件绑定 ================= */
+document.addEventListener("click", e=>{
+  const t = e.target;
+  const goBtn = t.closest("[data-go]");
+  if(goBtn){
+    if(goBtn.dataset.go==="unit"){ go("unit", {uid:+goBtn.dataset.uid, tab:"lesson"}); return; }
+    if(goBtn.dataset.go==="frq" && goBtn.dataset.fid){ go("frq", {id:+goBtn.dataset.fid}); return; }
+    if(goBtn.dataset.go==="random"){ view={name:"random"}; nav(); $("#main").innerHTML = randomHTML(); return; }
+    go(goBtn.dataset.go);
+    return;
+  }
+  const tabBtn = t.closest("[data-tab]");
+  if(tabBtn){ view.tab = tabBtn.dataset.tab; if(view.name==="unit") render(); return; }
+  const mark = t.closest("[data-markread]");
+  if(mark){
+    const uid = +mark.dataset.markread;
+    if(!state.lessonsRead[uid]){ state.lessonsRead[uid]=true; addXP(5); toast("+5 XP 完成学习 ✅"); save(); }
+    else { state.lessonsRead[uid]=false; save(); }
+    render(); return;
+  }
+  const opt = t.closest("[data-opt]");
+  if(opt){ answerQuestion(+opt.dataset.opt); return; }
+  const nx = t.closest("[data-next]");
+  if(nx){ nextQuestion(); return; }
+  const retry = t.closest("[data-retry]");
+  if(retry){ startQuiz(+retry.dataset.retry); view = {name:"unit", uid:+retry.dataset.retry, tab:"quiz"}; nav(); render(); return; }
+  const reveal = t.closest("[data-reveal]");
+  if(reveal){ revealFRQ(reveal.dataset.reveal); return; }
+  const frqdone = t.closest("[data-frqdone]");
+  if(frqdone){ const fid=+frqdone.dataset.frqdone; if(!state.frqDone[fid]){ state.frqDone[fid]=true; addXP(20); toast("🎉 完成一道 FRQ！+20 XP"); } save(); checkBadges(); render(); return; }
+  const se = t.closest("[data-startexam]");
+  if(se){ startExam(); return; }
+  const eo = t.closest("[data-examopt]");
+  if(eo){ examPick(+eo.dataset.examopt); return; }
+  const en = t.closest("[data-examnext]");
+  if(en){ examNext(); return; }
+  const ef = t.closest("[data-examfinish]");
+  if(ef){ finishExam(); return; }
+  const ro = t.closest("[data-randopt]");
+  if(ro){ answerRandom(+ro.dataset.randopt); return; }
+  const ex = t.closest("[data-export]");
+  if(ex){ exportData(); return; }
+  const im = t.closest("[data-import]");
+  if(im){ const inp = $("#importFile"); if(inp) inp.click(); return; }
+  const sr = t.closest("[data-startreal]");
+  if(sr){ startReal(); return; }
+  const rp = t.closest("[data-realopt]");
+  if(rp){ realAnswer(+rp.dataset.realopt); return; }
+  const rn = t.closest("[data-realnext]");
+  if(rn){ realNext(); return; }
+  const rx = t.closest("[data-realexit]");
+  if(rx){ go("home"); return; }
+  const bo = t.closest("[data-bankopt]");
+  if(bo){ bankAnswer(+bo.dataset.bankopt); return; }
+  const bn = t.closest("[data-banknext]");
+  if(bn){ bankNext(); return; }
+  const br = t.closest("[data-bankretry]");
+  if(br){ if(bankSession){ bankInit(bankSession.uid); render(); } return; }
+});
+document.addEventListener("change", e=>{
+  if(e.target && e.target.id === "importFile"){ importData(e.target.files && e.target.files[0]); }
+});
+
+/* 随机练习答题（简化版） */
+let randomCurrent = null;
+function answerRandom(opt){
+  if(!randomCurrent) return;
+  const pick = randomCurrent;
+  const key = gid(pick.uid, pick.qi);
+  const prev = state.q[key];
+  const correct = opt === pick.q.answer;
+  if(!prev){
+    if(correct){ addXP(10); state.q[key]={correct:true,ft:true,picked:opt}; toast("+10 XP 🎉"); }
+    else{ state.q[key]={correct:false,ft:false,picked:opt}; }
+  } else if(!prev.correct && correct){
+    addXP(4); state.q[key]={correct:true,ft:prev.ft,picked:opt}; toast("+4 XP ✅");
+  } else if(!prev.correct && !correct){
+    state.q[key]={correct:false,ft:false,picked:opt};
+  } else { state.q[key].picked=opt; }
+  save(); nav(); $("#main").innerHTML = randomHTML();
+}
+
+/* 随机练习：记录当前题目以便答题 */
+function randomHTML(){
+  const pool = flattenAll();
+  const pick = pool[Math.floor(Math.random()*pool.length)];
+  randomCurrent = pick;
+  const st = qStatus(pick.uid, pick.qi);
+  const answered = !!st;
+  return '<div class="card"><div class="spread" style="margin-bottom:10px">'+
+  '<span class="q-meta">🎲 随机练习 · 来自「'+pick.unit.cn+'」</span>'+
+  '<button class="btn ghost sm" data-go="unit" data-uid="'+pick.uid+'">去该单元 →</button></div>'+
+  '<div class="q-text">'+inline(pick.q.q)+'</div>'+
+  (pick.q.code?'<div class="block-code">'+hl(pick.q.code)+'</div>':"")+
+  '<div class="options">'+pick.q.options.map((o,i)=>{
+    let cls="opt"; if(answered){ cls+=" disabled"; if(i===pick.q.answer)cls+=" correct"; else if(i===st.picked)cls+=" wrong"; }
+    return '<button class="'+cls+'" data-randopt="'+i+'"><span class="ltr">'+"ABCD"[i]+'.</span><span>'+inline(o)+'</span></button>';
+  }).join("")+'</div>'+
+  (answered?'<div class="explain '+(st.correct?"good":"bad")+'"><b>'+(st.correct?"✅ 正确":"❌ 错误")+'</b>'+inline(pick.q.explain)+'</div>':"")+
+  '<div style="margin-top:14px" class="row">'+(answered?'<button class="btn" data-go="random">🎲 再来一题</button>':'')+
+  '<button class="btn ghost" data-go="home">🏠 回首页</button></div></div>';
+};
+
+/* ================= 进度备份 / 恢复 ================= */
+function exportData(){
+  try{
+    const data = JSON.stringify(state, null, 2);
+    const blob = new Blob([data], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "apcsa-progress-" + todayStr() + ".json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    toast("✅ 备份文件已下载");
+  }catch(e){ toast("❌ 导出失败：" + e.message); }
+}
+function importData(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    try{
+      const obj = JSON.parse(ev.target.result);
+      if(!obj || typeof obj !== "object" || (!("xp" in obj) && !("q" in obj))){ toast("❌ 这不是有效的备份文件"); return; }
+      state = obj;
+      if(!state.q) state.q = {};
+      if(!state.lessonsRead) state.lessonsRead = {};
+      if(!state.quizDone) state.quizDone = {};
+      if(!state.frqDone) state.frqDone = {};
+      if(!state.badges) state.badges = [];
+      if(state.examBest === undefined) state.examBest = null;
+      if(!state.examAttempts) state.examAttempts = 0;
+      save();
+      go("home");
+      toast("✅ 进度已恢复");
+    }catch(e){ toast("❌ 备份文件解析失败"); }
+  };
+  reader.readAsText(file);
+}
+
+/* ================= 成就馆 ================= */
+function awardsHTML(){
+  const lv = level();
+  const lvTitle = levelTitle();
+  const curXp = state.xp;
+  const need = 150;
+  const into = curXp - (lv-1)*need;
+  const pct = Math.min(100, Math.round(into/need*100));
+  const ladder = LEVEL_TITLES.map((t,i)=>{
+    const tl = i+1;
+    let bg="transparent", bd="var(--line)";
+    if(tl<lv){ bg="var(--good-soft)"; bd="var(--good)"; }
+    if(tl===lv){ bg="var(--accent-soft)"; bd="var(--accent)"; }
+    return '<div style="display:flex;align-items:center;gap:12px;padding:8px 14px;border-radius:12px;border:1px solid '+bd+';background:'+bg+';font-size:14px;'+(tl===lv?'font-weight:700;':'')+'">'+
+      '<span style="font-weight:700;min-width:50px;color:'+(tl<=lv?'var(--accent)':'var(--soft)')+'">Lv.'+tl+'</span>'+
+      '<span>'+t+'</span>'+(tl===lv?'<span style="margin-left:auto;font-size:12px;color:var(--accent);font-weight:700">👈 当前</span>':(tl<lv?'<span style="margin-left:auto;font-size:12px;color:var(--good)">已解锁</span>':'<span style="margin-left:auto;font-size:12px;color:var(--soft)">🔒</span>'))+'</div>';
+  }).join("");
+  const badgesHTML = BADGES.map(b=>{
+    const e = state.badges.includes(b.id);
+    return '<div class="badge'+(e?" earned":"")+'"><span class="b-ico">'+b.ico+'</span><b>'+b.name+'</b><span class="muted">'+(e?b.desc:'🔒 '+b.desc)+'</span></div>';
+  }).join("");
+  const earnedCount = BADGES.filter(b=>state.badges.includes(b.id)).length;
+  const nextInfo = lv < LEVEL_TITLES.length ? ('Lv.'+(lv+1)+' · '+LEVEL_TITLES[lv]) : '已满级';
+  const remain = lv < LEVEL_TITLES.length ? (need - into) : 0;
+  return '<div class="card"><h1>🏆 成就馆</h1>'+
+  '<div class="spread"><div><div class="sub">当前等级</div><div style="font-size:42px;font-weight:800;line-height:1.1">Lv.'+lv+' · '+lvTitle+'</div></div>'+
+  '<div style="text-align:right"><div class="muted" style="font-size:13px">累计积分</div><div style="font-size:24px;font-weight:700">'+curXp+' XP</div></div></div>'+
+  '<div class="pbar" style="margin:16px 0"><i style="width:'+pct+'%"></i></div>'+
+  '<div class="muted" style="font-size:13px">下一级 '+nextInfo+(lv<LEVEL_TITLES.length?' · 还差 '+remain+' XP':'')+'</div></div>'+
+  '<div class="card"><h2 style="margin-top:0">👑 称号阶梯</h2><p class="sub">每升一级解锁一个新称号，看看你能走到多远。</p>'+
+  '<div style="display:flex;flex-direction:column;gap:6px;margin-top:12px">'+ladder+'</div></div>'+
+  '<div class="card"><div class="spread"><h2 style="margin:0">🎖️ 勋章墙</h2><span class="muted">已获得 '+earnedCount+' / '+BADGES.length+'</span></div>'+
+  '<div class="badges" style="margin-top:12px">'+badgesHTML+'</div></div>';
+}
+
+/* ================= 交互式演示（物理） ================= */
+const DEMOS = {
+  motion: {
+    title: "Accelerating Motion · 匀加速运动",
+    note: "Start from rest with constant a = 5 m/s². Drag time t: watch velocity v = at and displacement s = ½at². The ball's fall shows s growing with t².",
+    controls: [
+      {id:"t", label:"Time t (时间)", min:0, max:5, step:0.1, value:1},
+    ],
+  },
+  wave: {
+    title: "Wave Speed · 波速",
+    note: "Change frequency f and wavelength λ. The wave speed is v = f·λ — the product stays linked, so doubling either doubles the speed.",
+    controls: [
+      {id:"f", label:"Frequency f (频率, Hz)", min:1, max:10, step:1, value:4},
+      {id:"lam", label:"Wavelength λ (波长, m)", min:1, max:5, step:0.5, value:2},
+    ],
+  },
+};
+
+function motionSVG(p){
+  const t = p.t, a = 5, u = 0;
+  const v = u + a*t, s = u*t + 0.5*a*t*t;
+  const W=420, H=300, topY=50, botY=270, maxS=0.5*a*25;
+  const y = topY + Math.min(1, s/maxS)*(botY-topY);
+  let g='';
+  g += '<line x1="120" y1="'+topY+'" x2="120" y2="'+botY+'" stroke="#dfe4ef" stroke-width="4"/>';
+  for(let i=0;i<=5;i++){
+    const yy = topY + i*(botY-topY)/5;
+    g += '<line x1="112" y1="'+yy+'" x2="128" y2="'+yy+'" stroke="#dfe4ef" stroke-width="2"/>';
+  }
+  g += '<circle cx="120" cy="'+(y.toFixed(1))+'" r="9" fill="#5e5ce6"/>';
+  g += '<line x1="120" y1="'+topY+'" x2="120" y2="'+y.toFixed(1)+'" stroke="#a5b4fc" stroke-width="2" stroke-dasharray="4,4"/>';
+  g += '<text x="150" y="70" fill="#333" font-size="13" font-weight="700">t = '+t.toFixed(1)+' s</text>';
+  g += '<text x="150" y="96" fill="#0a84ff" font-size="13">v = u + at = '+v.toFixed(1)+' m/s</text>';
+  g += '<text x="150" y="122" fill="#5e5ce6" font-size="13">s = ut + ½at² = '+s.toFixed(1)+' m</text>';
+  g += '<text x="150" y="160" fill="#6e6e73" font-size="12">u = 0, a = 5 m/s²</text>';
+  g += '<text x="150" y="182" fill="#6e6e73" font-size="12">（球的下落高度代表位移 s）</text>';
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;background:#fbfcff;border-radius:12px">'+g+'</svg>';
+}
+
+function waveSVG(p){
+  const f = p.f, lam = p.lam, v = f*lam;
+  const W=460, H=260, cy=130, amp=34, left=30, right=430;
+  const pxPerM = (right-left)/10;
+  const lamPx = lam * pxPerM;
+  let s='';
+  s += '<line x1="'+left+'" y1="'+cy+'" x2="'+right+'" y2="'+cy+'" stroke="#dfe4ef" stroke-width="1.5"/>';
+  let d='';
+  for(let x=left;x<=right;x+=3){
+    const y = cy - amp*Math.sin(2*Math.PI*(x-left)/lamPx);
+    d += (x===left?'M':'L') + x + ' ' + y.toFixed(1) + ' ';
+  }
+  s += '<path d="'+d+'" fill="none" stroke="#0a84ff" stroke-width="2.6"/>';
+  s += '<line x1="'+left+'" y1="'+(cy+amp+18)+'" x2="'+(left+lamPx)+'" y2="'+(cy+amp+18)+'" stroke="#ff3b30" stroke-width="2"/>';
+  s += '<text x="'+(left+lamPx/2)+'" y="'+(cy+amp+34)+'" text-anchor="middle" fill="#ff3b30" font-size="12" font-weight="700">λ = '+lam+' m</text>';
+  s += '<text x="'+(W/2)+'" y="40" text-anchor="middle" fill="#5e5ce6" font-size="15" font-weight="800">v = f · λ = '+f+' × '+lam+' = '+v+' m/s</text>';
+  s += '<text x="'+(W/2)+'" y="'+(H-10)+'" text-anchor="middle" fill="#6e6e73" font-size="12">f = '+f+' Hz　λ = '+lam+' m</text>';
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;background:#fbfcff;border-radius:12px">'+s+'</svg>';
+}
+
+function demoDraw(type, p){
+  if(type==="motion") return motionSVG(p);
+  if(type==="wave") return waveSVG(p);
+  return "";
+}
+function renderDemo(type){
+  const def = DEMOS[type];
+  if(!def) return "";
+  const p = {};
+  def.controls.forEach(c => p[c.id] = c.value);
+  const svg = demoDraw(type, p);
+  const controls = def.controls.map(c =>
+    '<label class="demo-ctl"><span>'+c.label+'：<b id="dv-'+type+'-'+c.id+'">'+c.value+'</b></span>'+
+    '<input type="range" data-demoslider="'+type+'" data-param="'+c.id+'" min="'+c.min+'" max="'+c.max+'" step="'+c.step+'" value="'+c.value+'"></label>'
+  ).join("");
+  return '<div class="demo"><div class="demo-title">'+def.title+'</div>'+
+    '<div class="demo-svg" id="demo-svg-'+type+'">'+svg+'</div>'+
+    '<div class="demo-controls">'+controls+'</div>'+
+    '<div class="demo-note">'+def.note+'</div></div>';
+}
+function demoRefresh(type){
+  const def = DEMOS[type];
+  if(!def) return;
+  const p = {};
+  def.controls.forEach(c => {
+    const inp = document.querySelector('[data-demoslider="'+type+'"][data-param="'+c.id+'"]');
+    p[c.id] = inp ? parseFloat(inp.value) : c.value;
+    const lab = document.getElementById('dv-'+type+'-'+c.id);
+    if(lab) lab.textContent = p[c.id];
+  });
+  const box = document.getElementById('demo-svg-'+type);
+  if(box) box.innerHTML = demoDraw(type, p);
+}
+document.addEventListener("input", e=>{
+  const s = e.target && e.target.closest ? e.target.closest("[data-demoslider]") : null;
+  if(s){ demoRefresh(s.dataset.demoslider); }
+});
+
+function renderVideo(b){
+  const links = (b.links||[]).map(l =>
+    '<a class="video-link" href="'+l.url+'" target="_blank" rel="noopener">'+
+    '<span class="video-ico">'+(l.site==="YouTube"?"▶️":"📺")+'</span>'+
+    '<span class="video-txt"><b>'+l.site+'</b> · '+l.label+'</span><span class="video-arrow">↗</span></a>'
+  ).join("");
+  return '<div class="video-block"><div class="video-title">🎬 '+(b.title||"Recommended Videos · 推荐视频")+'</div>'+links+'</div>';
+}
+
+
+/* ================= Unit Exam Bank (真题强化) ================= */
+function bankList(uid){ return BANK.filter(q=>q.unit===uid); }
+function bankCount(uid){ return bankList(uid).length; }
+let bankSession = null;
+function bankInit(uid){ bankSession = {uid:uid, idx:0, answers:[], finished:false}; }
+function bankHTML(u){
+  const list = bankList(u.id);
+  if(list.length===0) return '<div class="card"><p class="sub">No exam questions for this unit yet. · 本单元暂无真题。</p></div>';
+  if(!bankSession || bankSession.uid!==u.id){ bankInit(u.id); }
+  const s = bankSession;
+  if(s.finished) return bankResultHTML(u);
+  const q = list[s.idx];
+  const total = list.length;
+  const ans = s.answers[s.idx];
+  const answered = !!ans;
+  let opts = '';
+  if(q.options){
+    opts = '<div class="options">'+q.options.map((o,i)=>{
+      let cls="opt";
+      if(answered){ cls+=" disabled"; if(i===q.answer) cls+=" correct"; else if(i===ans.picked) cls+=" wrong"; }
+      return '<button class="'+cls+'" data-bankopt="'+i+'"><span class="ltr">'+"ABCD"[i]+'.</span><span>'+inline(o)+'</span></button>';
+    }).join("")+'</div>';
+  }
+  const explain = answered ? '<div class="explain '+(ans.correct?"good":"bad")+'"><b>'+(ans.correct?"✅ Correct · 正确":"❌ Try again · 再想想")+'</b>'+inline(q.explain)+'</div>' : "";
+  const nextBtn = answered ? '<button class="btn" data-banknext>'+(s.idx<total-1?"Next · 下一题 →":"See result · 查看成绩 🎉")+'</button>' : "";
+  return '<div class="card"><div class="spread" style="margin-bottom:10px">'+
+  '<span class="q-meta">🎯 Exam Practice · '+inline(q.topic||"")+' · '+(s.idx+1)+' / '+total+'</span>'+
+  '<span class="muted" style="font-size:13px">已答 '+s.answers.filter(a=>a).length+' / '+total+'</span></div>'+
+  '<div class="q-text">'+inline(q.q)+'</div>'+
+  (q.code?'<div class="block-code">'+hl(q.code)+'</div>':"")+
+  opts + explain +
+  '<div style="margin-top:16px" class="row">'+nextBtn+'</div></div>';
+}
+function bankResultHTML(u){
+  const list = bankList(u.id);
+  const s = bankSession;
+  const correct = s.answers.filter(a=>a&&a.correct).length;
+  const pct = Math.round(correct/list.length*100);
+  return '<div class="card"><h2 style="margin-top:0">🎯 Exam Practice Complete · 真题强化完成</h2>'+
+  '<p class="sub">Correct · 答对：<b>'+correct+' / '+list.length+'</b>（'+pct+'%）</p>'+
+  '<div class="pbar'+(pct>=80?" good":"")+'" style="margin:12px 0"><i style="width:'+pct+'%"></i></div>'+
+  '<div class="row"><button class="btn" data-bankretry>🔁 Retry · 再来一次</button>'+
+  '<button class="btn ghost" data-tab="lesson">📖 Review lesson · 复习知识点</button></div></div>';
+}
+function bankAnswer(opt){
+  const s = bankSession;
+  if(!s || s.answers[s.idx]) return;
+  const q = bankList(s.uid)[s.idx];
+  const correct = opt === q.answer;
+  s.answers[s.idx] = {picked:opt, correct:correct};
+  if(correct){ addXP(8); toast("+8 XP ✅"); }
+  else { toast("Keep going 💪"); }
+  save(); render();
+}
+function bankNext(){
+  const s = bankSession;
+  const list = bankList(s.uid);
+  if(s.idx < list.length-1){ s.idx++; render(); return; }
+  s.finished = true;
+  render();
+}
+
+
+function renderFormula(b){
+  const rows = (b.rows||[]).map(r => '<div class="frow"><span class="fsym">'+r.sym+'</span><span class="fname">'+r.name+'</span><span class="funit">'+r.unit+'</span></div>').join("");
+  return '<div class="formula"><div class="fexpr">'+inline(b.expr)+'</div>'+(b.note?'<div class="fnote">'+inline(b.note)+'</div>':"")+'<div class="fwhere">where（其中）：</div>'+rows+'</div>';
+}
+
+/* ================= 启动 ================= */
+function init(){
+  updateStreak();
+  // 兼容旧状态字段
+  if(!state.q) state.q={};
+  if(!state.lessonsRead) state.lessonsRead={};
+  if(!state.quizDone) state.quizDone={};
+  if(!state.frqDone) state.frqDone={};
+  if(state.badges===undefined) state.badges=[];
+  save();
+  nav(); render(); checkBadges();
+}
+init();
+</script>
+</body>
+</html>

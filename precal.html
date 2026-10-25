@@ -476,6 +476,22 @@ const BADGES = [
   {id:"level5",    ico:"⭐", name:"五级达成", desc:"等级达到 5 级"},
   {id:"level10",   ico:"🌟", name:"十级宗师", desc:"等级达到 10 级"},
 ];
+
+const BANK = [
+{unit:1, topic:"Polynomial", q:"What is the degree of `2x³ - x + 4`?", options:["3","2","1","4"], answer:0, explain:"The highest-degree term is 2x³, so degree 3.（最高次项 2x³。）"},
+{unit:1, topic:"Polynomial", q:"What are the zeros of `x² - 4`?", options:["x = ±2","x = 2","x = 4","No zeros"], answer:0, explain:"x²-4 = (x-2)(x+2).（零点是 ±2。）"},
+{unit:1, topic:"Rational", q:"Vertical asymptote of `f(x) = 1/(x+2)`?", options:["x = -2","x = 2","y = -2","y = 0"], answer:0, explain:"Set x+2=0.（分母=0。）"},
+{unit:1, topic:"Rational", q:"Horizontal asymptote of `f(x) = 1/x`?", options:["y = 0","y = 1","x = 0","None"], answer:0, explain:"deg numerator < deg denominator → y=0.（分子次数<分母。）"},
+{unit:2, topic:"Log", q:"What is `log₂(8)`?", options:["3","4","8","2"], answer:0, explain:"2³=8.（2³=8。）"},
+{unit:2, topic:"Log", q:"What is `log₅(25)`?", options:["2","5","25","1/2"], answer:0, explain:"5²=25.（5²=25。）"},
+{unit:2, topic:"Log", q:"If `log₂(x) = 5`, then x = ?", options:["32","10","25","7"], answer:0, explain:"x = 2⁵ = 32.（2⁵=32。）"},
+{unit:2, topic:"Exponential", q:"What is `e^(ln 7)`?", options:["7","e","ln 7","1"], answer:0, explain:"e and ln are inverses.（互为逆运算。）"},
+{unit:3, topic:"Trig", q:"What is `cos(π)`?", options:["-1","0","1","1/2"], answer:0, explain:"At π, the unit circle point is (-1,0).（(-1,0) 点。）"},
+{unit:3, topic:"Trig", q:"What is `sin(π/2)`?", options:["1","0","1/2","√2/2"], answer:0, explain:"At π/2 the point is (0,1), sin=1.（(0,1)，sin=1。）"},
+{unit:3, topic:"Trig", q:"Period of `y = sin(2x)`?", options:["π","2π","π/2","4π"], answer:0, explain:"Period = 2π/B = 2π/2 = π.（周期=2π/B=π。）"},
+{unit:3, topic:"Trig", q:"Amplitude of `y = 4·sin(x)`?", options:["4","1","2","π"], answer:0, explain:"Amplitude = |A| = 4.（振幅=|A|=4。）"},
+];
+
 </script>
 
 <script>
@@ -644,6 +660,7 @@ function go(name, params={}){
   if(name==="unit"){ quizSession=null; }
   examSession = null;
   realSession = null;
+  bankSession = null;
   nav(); render(); window.scrollTo({top:0, behavior:"smooth"});
 }
 function render(){ refreshHeader(); const m=$("#main");
@@ -708,8 +725,9 @@ function unitHTML(){
   '<div style="min-width:180px"><div class="row" style="justify-content:flex-end;margin-bottom:6px"><span class="muted" style="font-size:13px">掌握度 '+pct+'%</span></div>'+
   '<div class="pbar"><i style="width:'+pct+'%"></i></div></div></div>'+
   '<div class="tabs" style="margin-top:16px"><button class="tab'+(tab==="lesson"?" active":"")+'" data-tab="lesson">📖 学习知识点</button>'+
-  '<button class="tab'+(tab==="quiz"?" active":"")+'" data-tab="quiz">✏️ 练习题 ('+st.correct+'/'+st.total+')</button></div></div>'+
-  (tab==="lesson" ? lessonHTML(u, lessonRead) : quizHTML(u, 0));
+  '<button class="tab'+(tab==="quiz"?" active":"")+'" data-tab="quiz">✏️ 练习题 ('+st.correct+'/'+st.total+')</button>'+
+  '<button class="tab'+(tab==="bank"?" active":"")+'" data-tab="bank">🎯 真题强化 ('+bankCount(u.id)+')</button></div></div>'+
+  (tab==="lesson" ? lessonHTML(u, lessonRead) : tab==="quiz" ? quizHTML(u, 0) : bankHTML(u));
 }
 function lessonHTML(u, read){
   const blocks = renderBlocks(u.lesson);
@@ -1085,6 +1103,12 @@ document.addEventListener("click", e=>{
   if(rn){ realNext(); return; }
   const rx = t.closest("[data-realexit]");
   if(rx){ go("home"); return; }
+  const bo = t.closest("[data-bankopt]");
+  if(bo){ bankAnswer(+bo.dataset.bankopt); return; }
+  const bn = t.closest("[data-banknext]");
+  if(bn){ bankNext(); return; }
+  const br = t.closest("[data-bankretry]");
+  if(br){ if(bankSession){ bankInit(bankSession.uid); render(); } return; }
 });
 document.addEventListener("change", e=>{
   if(e.target && e.target.id === "importFile"){ importData(e.target.files && e.target.files[0]); }
@@ -1396,6 +1420,69 @@ function renderVideo(b){
     '<span class="video-txt"><b>'+l.site+'</b> · '+l.label+'</span><span class="video-arrow">↗</span></a>'
   ).join("");
   return '<div class="video-block"><div class="video-title">🎬 '+(b.title||"Recommended Videos · 推荐视频")+'</div>'+links+'</div>';
+}
+
+
+/* ================= Unit Exam Bank (真题强化) ================= */
+function bankList(uid){ return BANK.filter(q=>q.unit===uid); }
+function bankCount(uid){ return bankList(uid).length; }
+let bankSession = null;
+function bankInit(uid){ bankSession = {uid:uid, idx:0, answers:[], finished:false}; }
+function bankHTML(u){
+  const list = bankList(u.id);
+  if(list.length===0) return '<div class="card"><p class="sub">No exam questions for this unit yet. · 本单元暂无真题。</p></div>';
+  if(!bankSession || bankSession.uid!==u.id){ bankInit(u.id); }
+  const s = bankSession;
+  if(s.finished) return bankResultHTML(u);
+  const q = list[s.idx];
+  const total = list.length;
+  const ans = s.answers[s.idx];
+  const answered = !!ans;
+  let opts = '';
+  if(q.options){
+    opts = '<div class="options">'+q.options.map((o,i)=>{
+      let cls="opt";
+      if(answered){ cls+=" disabled"; if(i===q.answer) cls+=" correct"; else if(i===ans.picked) cls+=" wrong"; }
+      return '<button class="'+cls+'" data-bankopt="'+i+'"><span class="ltr">'+"ABCD"[i]+'.</span><span>'+inline(o)+'</span></button>';
+    }).join("")+'</div>';
+  }
+  const explain = answered ? '<div class="explain '+(ans.correct?"good":"bad")+'"><b>'+(ans.correct?"✅ Correct · 正确":"❌ Try again · 再想想")+'</b>'+inline(q.explain)+'</div>' : "";
+  const nextBtn = answered ? '<button class="btn" data-banknext>'+(s.idx<total-1?"Next · 下一题 →":"See result · 查看成绩 🎉")+'</button>' : "";
+  return '<div class="card"><div class="spread" style="margin-bottom:10px">'+
+  '<span class="q-meta">🎯 Exam Practice · '+inline(q.topic||"")+' · '+(s.idx+1)+' / '+total+'</span>'+
+  '<span class="muted" style="font-size:13px">已答 '+s.answers.filter(a=>a).length+' / '+total+'</span></div>'+
+  '<div class="q-text">'+inline(q.q)+'</div>'+
+  (q.code?'<div class="block-code">'+hl(q.code)+'</div>':"")+
+  opts + explain +
+  '<div style="margin-top:16px" class="row">'+nextBtn+'</div></div>';
+}
+function bankResultHTML(u){
+  const list = bankList(u.id);
+  const s = bankSession;
+  const correct = s.answers.filter(a=>a&&a.correct).length;
+  const pct = Math.round(correct/list.length*100);
+  return '<div class="card"><h2 style="margin-top:0">🎯 Exam Practice Complete · 真题强化完成</h2>'+
+  '<p class="sub">Correct · 答对：<b>'+correct+' / '+list.length+'</b>（'+pct+'%）</p>'+
+  '<div class="pbar'+(pct>=80?" good":"")+'" style="margin:12px 0"><i style="width:'+pct+'%"></i></div>'+
+  '<div class="row"><button class="btn" data-bankretry>🔁 Retry · 再来一次</button>'+
+  '<button class="btn ghost" data-tab="lesson">📖 Review lesson · 复习知识点</button></div></div>';
+}
+function bankAnswer(opt){
+  const s = bankSession;
+  if(!s || s.answers[s.idx]) return;
+  const q = bankList(s.uid)[s.idx];
+  const correct = opt === q.answer;
+  s.answers[s.idx] = {picked:opt, correct:correct};
+  if(correct){ addXP(8); toast("+8 XP ✅"); }
+  else { toast("Keep going 💪"); }
+  save(); render();
+}
+function bankNext(){
+  const s = bankSession;
+  const list = bankList(s.uid);
+  if(s.idx < list.length-1){ s.idx++; render(); return; }
+  s.finished = true;
+  render();
 }
 
 

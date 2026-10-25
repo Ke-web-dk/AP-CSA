@@ -961,6 +961,54 @@ const BADGES = [
   {id:"level5",    ico:"⭐", name:"五级达成", desc:"等级达到 5 级"},
   {id:"level10",   ico:"🌟", name:"十级宗师", desc:"等级达到 10 级"},
 ];
+
+const BANK = [
+{unit:0, topic:"Basics", q:"What is a variable?", options:["A named box that holds data","A computed result","A loop","A method"], answer:0, explain:"A variable is a named box that holds data.（变量=有名字的盒子。）"},
+{unit:0, topic:"Basics", q:"What does `System.out.println(\"Hi\")` do?", options:["Prints Hi to the screen","Saves to a file","Deletes Hi","Compares strings"], answer:0, explain:"It prints the content to the screen.（打印到屏幕。）"},
+{unit:0, topic:"Types", q:"Which type holds `true` or `false`?", options:["boolean","int","String","char"], answer:0, explain:"boolean holds true/false.（boolean 装真假。）"},
+{unit:0, topic:"Types", q:"`String` values use which quotes?", options:["Double quotes","Single quotes","No quotes","Brackets"], answer:0, explain:"String uses double quotes, e.g. \"hi\".（String 用双引号。）"},
+{unit:1, topic:"Arithmetic", q:"What is `7 / 2`?", options:["3","3.5","4","2"], answer:0, explain:"Integer division truncates to 3.（整数除法截断。）"},
+{unit:1, topic:"Arithmetic", q:"What is `7.0 / 2`?", options:["3.5","3.0","3","4"], answer:0, explain:"7.0 is double, so the result is 3.5.（有 double 得 3.5。）"},
+{unit:1, topic:"Modulo", q:"What is `13 % 5`?", options:["3","2","2.6","0"], answer:0, explain:"13 ÷ 5 leaves remainder 3.（余 3。）"},
+{unit:1, topic:"Casting", q:"What is `(int) 3.9`?", options:["3","4","3.9","Compile error"], answer:0, explain:"(int) chops the decimal.（截断得 3。）"},
+{unit:2, topic:"String", q:"`\"hello\".length()` is?", options:["5","4","6","Compile error"], answer:0, explain:"hello has 5 characters.（长度 5。）"},
+{unit:2, topic:"String", q:"`\"hello\".substring(1,3)` is?", options:["el","ell","he","llo"], answer:0, explain:"[1,3) gives 'e','l' → \"el\".（取索引 1、2。）"},
+{unit:2, topic:"String", q:"`\"banana\".indexOf(\"na\")` is?", options:["2","3","1","-1"], answer:0, explain:"\"na\" first appears at index 2.（索引 2。）"},
+{unit:2, topic:"Math", q:"`Math.pow(2,3)` is?", options:["8.0","8","6","9"], answer:0, explain:"2³ = 8.0 (double).（返回 8.0。）"},
+{unit:3, topic:"Boolean", q:"`7 % 2 == 1` is?", options:["true","false","0","Compile error"], answer:0, explain:"7%2 = 1, and 1==1 is true.（true。）"},
+{unit:3, topic:"Boolean", q:"`!(a && b)` equals?", options:["!a || !b","!a && !b","a || b","!(a || b)"], answer:0, explain:"De Morgan's law.（德摩根定律。）"},
+{unit:3, topic:"Boolean", q:"`false && (10/0 > 1)` evaluates to?", options:["false","true","Throws an exception","Compile error"], answer:0, explain:"Short-circuit: the right side is never evaluated.（短路求值。）"},
+{unit:3, topic:"Conditionals", q:"`int x=5; if(x>2) x=2; else x=3;` — x = ?", options:["2","3","5","Compile error"], answer:0, explain:"5>2 is true, so x=2.（x=2。）"},
+{unit:4, topic:"Loops", q:"`for(int i=0;i<5;i++)` runs how many times?", options:["5","4","6","Infinite"], answer:0, explain:"i = 0..4 → 5 times.（5 次。）"},
+{unit:4, topic:"Loops", q:"`int s=0; for(int i=1;i<=5;i++) s+=i;` — s = ?", options:["15","10","14","20"], answer:0, explain:"1+2+3+4+5 = 15.（求和 15。）"},
+{unit:4, topic:"Loops", q:"Two nested loops (outer 3, inner 2) run how many total?", options:["6","5","9","3"], answer:0, explain:"3 × 2 = 6.（3×2=6。）"},
+{unit:4, topic:"Loops", q:"`for(int i=10;i>0;i-=3)` prints?", options:["10 7 4 1","10 7 4","10 7 4 1 -2","10 7 4 0"], answer:0, explain:"10,7,4,1 then -2 stops.（10 7 4 1。）"},
+{unit:5, topic:"Classes", q:"A constructor's name must equal?", options:["The class name","Any name","`new`","`main`"], answer:0, explain:"Constructor name = class name, no return type.（构造器名=类名。）"},
+{unit:5, topic:"Classes", q:"Static methods cannot directly access?", options:["Instance variables","Static variables","Other static methods","Local variables"], answer:0, explain:"Static methods can't access instance variables.（静态方法不能访问实例变量。）"},
+{unit:5, topic:"Classes", q:"`this.name = name;` is used to?", options:["Assign the parameter to the field","Call a static method","Create an object","Delete a field"], answer:0, explain:"this refers to the field when the parameter shadows it.（this 指字段。）"},
+{unit:5, topic:"Classes", q:"Overloading means?", options:["Same name, different parameters","Different name, same parameters","Same return type","Same body"], answer:0, explain:"Overloading = same name, different parameter list.（同名不同参数。）"},
+{unit:6, topic:"Arrays", q:"`int[] a = new int[4]; a[0]` = ?", options:["0","null","Compile error","Random"], answer:0, explain:"int array defaults to 0.（默认 0。）"},
+{unit:6, topic:"Arrays", q:"`int[] a = {2,4,6,8}; a.length` = ?", options:["4","3","5","Compile error"], answer:0, explain:"4 elements → length 4 (no parens).（长度 4。）"},
+{unit:6, topic:"Arrays", q:"`int[] a={1,2,3}; int[] b=a; b[0]=9; a[0]` = ?", options:["9","1","3","0"], answer:0, explain:"b and a share the same array.（共享引用。）"},
+{unit:6, topic:"Arrays", q:"What is the max of {3,7,2,9,5}?", options:["9","3","7","5"], answer:0, explain:"Comparing one by one, 9 is the max.（最大 9。）"},
+{unit:7, topic:"ArrayList", q:"After adding 2 elements, `list.size()` = ?", options:["2","1","0","Compile error"], answer:0, explain:"size() returns the number of elements.（元素个数。）"},
+{unit:7, topic:"ArrayList", q:"`list.remove(1)` on [5,10,15] removes?", options:["10 (index 1)","5","15","Value 1"], answer:0, explain:"remove(1) removes index 1, value 10.（按索引删。）"},
+{unit:7, topic:"ArrayList", q:"Which declaration is wrong?", options:["ArrayList<int> a","ArrayList<Integer> b","ArrayList<String> c","ArrayList<Double> d"], answer:0, explain:"Generics can't use primitive int.（不能用 int。）"},
+{unit:7, topic:"ArrayList", q:"`l.set(1, 99)` does?", options:["Replaces index 1","Adds 99","Removes 99","Sorts"], answer:0, explain:"set(i,x) replaces the element at i.（替换索引 1。）"},
+{unit:8, topic:"2D Array", q:"`int[][] g = new int[3][4]; g.length` = ?", options:["3","4","12","7"], answer:0, explain:"g.length is the number of rows = 3.（行数 3。）"},
+{unit:8, topic:"2D Array", q:"`g[0].length` for new int[3][4] = ?", options:["4","3","12","0"], answer:0, explain:"Columns = 4.（列数 4。）"},
+{unit:8, topic:"2D Array", q:"`g[2][1]` for {{1,2,3},{4,5,6},{7,8,9}} = ?", options:["8","5","6","2"], answer:0, explain:"Row 2, col 1 = 8.（第 2 行第 1 列。）"},
+{unit:8, topic:"2D Array", q:"A 3×4 2D array has how many elements?", options:["12","7","3","4"], answer:0, explain:"3 × 4 = 12.（3×4=12。）"},
+{unit:9, topic:"Inheritance", q:"`A x = new B(); x.f();` where B overrides f() runs?", options:["B's f()","A's f()","Both","Compile error"], answer:0, explain:"Polymorphism: the actual object is B.（多态，调用 B 的。）"},
+{unit:9, topic:"Inheritance", q:"`super()` is used to?", options:["Call the parent constructor","Call the child constructor","Create an object","Delete a field"], answer:0, explain:"super() calls the parent constructor.（调父类构造器。）"},
+{unit:9, topic:"Inheritance", q:"Overriding requires?", options:["The same signature","A different name","A different return type","A different parameter name"], answer:0, explain:"Overriding requires the exact same signature.（签名一致。）"},
+{unit:9, topic:"Inheritance", q:"`instanceof` checks?", options:["The actual type","The variable name","The value","The memory address"], answer:0, explain:"instanceof checks the actual object type.（判断实际类型。）"},
+{unit:10, topic:"Recursion", q:"`fact(4)` = ?", options:["24","12","4","1"], answer:0, explain:"4×3×2×1 = 24.（阶乘 24。）"},
+{unit:10, topic:"Recursion", q:"`mystery(3)` for `n + mystery(n-1)`, base n==0→0 = ?", options:["6","3","0","10"], answer:0, explain:"3+2+1+0 = 6.（6。）"},
+{unit:10, topic:"Recursion", q:"The base case's role is to?", options:["Stop the recursion","Speed it up","Add memory","Avoid compile errors"], answer:0, explain:"The base case stops the recursion.（停止条件。）"},
+{unit:10, topic:"Recursion", q:"`g(5)` for Fibonacci (g(0)=0, g(1)=1) = ?", options:["5","8","3","13"], answer:0, explain:"Fibonacci: 0,1,1,2,3,5 → g(5)=5.（斐波那契 5。）"},
+];
+
 </script>
 
 <script>
@@ -1129,6 +1177,7 @@ function go(name, params={}){
   if(name==="unit"){ quizSession=null; }
   examSession = null;
   realSession = null;
+  bankSession = null;
   nav(); render(); window.scrollTo({top:0, behavior:"smooth"});
 }
 function render(){ refreshHeader(); const m=$("#main");
@@ -1193,8 +1242,9 @@ function unitHTML(){
   '<div style="min-width:180px"><div class="row" style="justify-content:flex-end;margin-bottom:6px"><span class="muted" style="font-size:13px">掌握度 '+pct+'%</span></div>'+
   '<div class="pbar"><i style="width:'+pct+'%"></i></div></div></div>'+
   '<div class="tabs" style="margin-top:16px"><button class="tab'+(tab==="lesson"?" active":"")+'" data-tab="lesson">📖 学习知识点</button>'+
-  '<button class="tab'+(tab==="quiz"?" active":"")+'" data-tab="quiz">✏️ 练习题 ('+st.correct+'/'+st.total+')</button></div></div>'+
-  (tab==="lesson" ? lessonHTML(u, lessonRead) : quizHTML(u, 0));
+  '<button class="tab'+(tab==="quiz"?" active":"")+'" data-tab="quiz">✏️ 练习题 ('+st.correct+'/'+st.total+')</button>'+
+  '<button class="tab'+(tab==="bank"?" active":"")+'" data-tab="bank">🎯 真题强化 ('+bankCount(u.id)+')</button></div></div>'+
+  (tab==="lesson" ? lessonHTML(u, lessonRead) : tab==="quiz" ? quizHTML(u, 0) : bankHTML(u));
 }
 function lessonHTML(u, read){
   const blocks = renderBlocks(u.lesson);
@@ -1570,6 +1620,12 @@ document.addEventListener("click", e=>{
   if(rn){ realNext(); return; }
   const rx = t.closest("[data-realexit]");
   if(rx){ go("home"); return; }
+  const bo = t.closest("[data-bankopt]");
+  if(bo){ bankAnswer(+bo.dataset.bankopt); return; }
+  const bn = t.closest("[data-banknext]");
+  if(bn){ bankNext(); return; }
+  const br = t.closest("[data-bankretry]");
+  if(br){ if(bankSession){ bankInit(bankSession.uid); render(); } return; }
 });
 document.addEventListener("change", e=>{
   if(e.target && e.target.id === "importFile"){ importData(e.target.files && e.target.files[0]); }
@@ -1881,6 +1937,69 @@ function renderVideo(b){
     '<span class="video-txt"><b>'+l.site+'</b> · '+l.label+'</span><span class="video-arrow">↗</span></a>'
   ).join("");
   return '<div class="video-block"><div class="video-title">🎬 '+(b.title||"Recommended Videos · 推荐视频")+'</div>'+links+'</div>';
+}
+
+
+/* ================= Unit Exam Bank (真题强化) ================= */
+function bankList(uid){ return BANK.filter(q=>q.unit===uid); }
+function bankCount(uid){ return bankList(uid).length; }
+let bankSession = null;
+function bankInit(uid){ bankSession = {uid:uid, idx:0, answers:[], finished:false}; }
+function bankHTML(u){
+  const list = bankList(u.id);
+  if(list.length===0) return '<div class="card"><p class="sub">No exam questions for this unit yet. · 本单元暂无真题。</p></div>';
+  if(!bankSession || bankSession.uid!==u.id){ bankInit(u.id); }
+  const s = bankSession;
+  if(s.finished) return bankResultHTML(u);
+  const q = list[s.idx];
+  const total = list.length;
+  const ans = s.answers[s.idx];
+  const answered = !!ans;
+  let opts = '';
+  if(q.options){
+    opts = '<div class="options">'+q.options.map((o,i)=>{
+      let cls="opt";
+      if(answered){ cls+=" disabled"; if(i===q.answer) cls+=" correct"; else if(i===ans.picked) cls+=" wrong"; }
+      return '<button class="'+cls+'" data-bankopt="'+i+'"><span class="ltr">'+"ABCD"[i]+'.</span><span>'+inline(o)+'</span></button>';
+    }).join("")+'</div>';
+  }
+  const explain = answered ? '<div class="explain '+(ans.correct?"good":"bad")+'"><b>'+(ans.correct?"✅ Correct · 正确":"❌ Try again · 再想想")+'</b>'+inline(q.explain)+'</div>' : "";
+  const nextBtn = answered ? '<button class="btn" data-banknext>'+(s.idx<total-1?"Next · 下一题 →":"See result · 查看成绩 🎉")+'</button>' : "";
+  return '<div class="card"><div class="spread" style="margin-bottom:10px">'+
+  '<span class="q-meta">🎯 Exam Practice · '+inline(q.topic||"")+' · '+(s.idx+1)+' / '+total+'</span>'+
+  '<span class="muted" style="font-size:13px">已答 '+s.answers.filter(a=>a).length+' / '+total+'</span></div>'+
+  '<div class="q-text">'+inline(q.q)+'</div>'+
+  (q.code?'<div class="block-code">'+hl(q.code)+'</div>':"")+
+  opts + explain +
+  '<div style="margin-top:16px" class="row">'+nextBtn+'</div></div>';
+}
+function bankResultHTML(u){
+  const list = bankList(u.id);
+  const s = bankSession;
+  const correct = s.answers.filter(a=>a&&a.correct).length;
+  const pct = Math.round(correct/list.length*100);
+  return '<div class="card"><h2 style="margin-top:0">🎯 Exam Practice Complete · 真题强化完成</h2>'+
+  '<p class="sub">Correct · 答对：<b>'+correct+' / '+list.length+'</b>（'+pct+'%）</p>'+
+  '<div class="pbar'+(pct>=80?" good":"")+'" style="margin:12px 0"><i style="width:'+pct+'%"></i></div>'+
+  '<div class="row"><button class="btn" data-bankretry>🔁 Retry · 再来一次</button>'+
+  '<button class="btn ghost" data-tab="lesson">📖 Review lesson · 复习知识点</button></div></div>';
+}
+function bankAnswer(opt){
+  const s = bankSession;
+  if(!s || s.answers[s.idx]) return;
+  const q = bankList(s.uid)[s.idx];
+  const correct = opt === q.answer;
+  s.answers[s.idx] = {picked:opt, correct:correct};
+  if(correct){ addXP(8); toast("+8 XP ✅"); }
+  else { toast("Keep going 💪"); }
+  save(); render();
+}
+function bankNext(){
+  const s = bankSession;
+  const list = bankList(s.uid);
+  if(s.idx < list.length-1){ s.idx++; render(); return; }
+  s.finished = true;
+  render();
 }
 
 

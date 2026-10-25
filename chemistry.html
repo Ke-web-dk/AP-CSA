@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AP Chemistry 学习平台 · 从零到 5 分</title>
+<style>  :root{
+    --bg:#eef1f8; --card:rgba(255,255,255,0.30); --line:rgba(0,0,0,0.08);
+    --text:#1c1c1e; --muted:#6e6e73; --soft:#9a9aa0;
+    --accent:#0a84ff; --accent2:#5e5ce6; --accent-soft:rgba(10,132,255,0.10);
+    --good:#34c759; --good-soft:rgba(52,199,89,0.14); --bad:#ff3b30; --bad-soft:rgba(255,59,48,0.12);
+    --warn:#ff9500; --warn-soft:rgba(255,149,0,0.14); --code-bg:#f2f4f9; --code-text:#1c1c1e;
+    --radius:22px; --shadow:0 18px 40px rgba(60,80,160,0.16), 0 4px 14px rgba(60,80,160,0.10);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:"SF Pro Text",-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:
+      radial-gradient(1100px 800px at 88% -12%, rgba(94,92,230,0.22), transparent 55%),
+      radial-gradient(950px 750px at -8% 12%, rgba(10,132,255,0.20), transparent 55%),
+      radial-gradient(900px 700px at 50% 115%, rgba(52,199,89,0.15), transparent 55%),
+      var(--bg);
+    background-attachment:fixed;
+    color:var(--text); line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  code,.mono{font-family:"SF Mono","Cascadia Code",Consolas,"Courier New",monospace;}
+  button{font-family:inherit; cursor:pointer; border:none; color:inherit;}
+
+  /* ---------- 顶栏（玻璃） ---------- */
+  header{
+    position:sticky; top:0; z-index:30;
+    background:rgba(255,255,255,0.32);
+    backdrop-filter:blur(28px) saturate(180%); -webkit-backdrop-filter:blur(28px) saturate(180%);
+    border-bottom:1px solid rgba(255,255,255,0.6);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 22px; gap:12px;
+    box-shadow:0 1px 0 rgba(0,0,0,0.03);
+  }
+  .brand{font-weight:700; font-size:18px; letter-spacing:.2px; white-space:nowrap; color:var(--text);}
+  .brand small{font-weight:500; color:var(--muted); font-size:12px; margin-left:8px;}
+  .stats{display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;}
+  .stat{
+    background:rgba(255,255,255,0.5); border:1px solid rgba(255,255,255,0.6);
+    padding:5px 12px; border-radius:999px; font-weight:600; font-size:13px; white-space:nowrap;
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  }
+
+  /* ---------- 布局 ---------- */
+  .layout{display:flex; max-width:1180px; margin:0 auto; gap:22px; padding:22px; min-height:calc(100vh - 60px);}
+  aside{width:232px; flex-shrink:0;}
+  main{flex:1; min-width:0;}
+
+  /* ---------- 侧边栏（玻璃） ---------- */
+  #sidebar{
+    position:sticky; top:82px; display:flex; flex-direction:column; gap:6px;
+    background:var(--card); backdrop-filter:blur(28px) saturate(180%); -webkit-backdrop-filter:blur(28px) saturate(180%);
+    border:1px solid rgba(255,255,255,0.6); border-radius:var(--radius);
+    padding:14px; box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,0.7);
+  }
+  .nav-btn{
+    text-align:left; background:none; padding:9px 12px; border-radius:12px;
+    font-size:14px; color:var(--text); transition:.15s; display:flex; align-items:center; gap:8px;
+  }
+  .nav-btn:hover{background:rgba(255,255,255,0.6);}
+  .nav-btn.active{
+    background:linear-gradient(135deg,#0a84ff,#5e5ce6); color:#fff; font-weight:600;
+    box-shadow:0 6px 18px rgba(10,132,255,.28);
+  }
+  .nav-btn .dot{width:8px; height:8px; border-radius:50%; background:var(--soft); flex-shrink:0;}
+  .nav-btn.done .dot{background:var(--good);}
+  .nav-group{font-size:11px; color:var(--soft); font-weight:700; letter-spacing:1px; margin:10px 6px 2px; text-transform:uppercase;}
+
+  /* ---------- 卡片（玻璃） ---------- */
+  .card{
+    background:var(--card); backdrop-filter:blur(28px) saturate(180%); -webkit-backdrop-filter:blur(28px) saturate(180%);
+    border:1px solid rgba(255,255,255,0.6); border-radius:var(--radius); padding:24px;
+    box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,0.7); margin-bottom:18px;
+  }
+  h1{font-size:26px; font-weight:700; margin-bottom:6px; letter-spacing:-.2px;}
+  h2{font-size:20px; font-weight:700; margin:22px 0 10px; letter-spacing:-.2px;}
+  h3{font-size:16px; font-weight:700; margin:18px 0 8px; display:flex; align-items:center; gap:8px;}
+  .sub{color:var(--muted); font-size:14px;}
+  .muted{color:var(--muted);}
+  .row{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .spread{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+
+  .btn{
+    display:inline-flex; align-items:center; gap:8px; font-weight:600; font-size:14px;
+    padding:10px 18px; border-radius:14px; transition:.15s;
+    background:linear-gradient(135deg,#0a84ff,#5e5ce6); color:#fff;
+    box-shadow:0 4px 14px rgba(10,132,255,.25);
+  }
+  .btn:hover{transform:translateY(-1px); box-shadow:0 8px 22px rgba(10,132,255,.32);}
+  .btn.ghost{background:rgba(255,255,255,0.5); color:var(--accent); border:1px solid rgba(0,0,0,0.08); box-shadow:none;}
+  .btn.ghost:hover{background:rgba(255,255,255,0.8);}
+  .btn.sm{padding:7px 13px; font-size:13px; border-radius:11px;}
+  .btn:disabled{opacity:.5; cursor:not-allowed; transform:none; box-shadow:none;}
+
+  /* ---------- 首页 ---------- */
+  .hero{
+    background:linear-gradient(135deg,#0a84ff,#5e5ce6,#bf5af2); color:#fff;
+    border-radius:var(--radius); padding:32px 30px; margin-bottom:18px;
+    box-shadow:0 14px 40px rgba(94,92,230,.3), inset 0 1px 0 rgba(255,255,255,0.35);
+  }
+  .hero h1{font-size:28px;}
+  .hero p{opacity:.95; margin:8px 0 16px; max-width:640px;}
+  .unit-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px;}
+  .unit-card{
+    background:var(--card); backdrop-filter:blur(26px) saturate(180%); -webkit-backdrop-filter:blur(26px) saturate(180%);
+    border:1px solid rgba(255,255,255,0.6); border-radius:var(--radius);
+    padding:18px; box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,0.7);
+    transition:.15s; cursor:pointer; position:relative; overflow:hidden;
+  }
+  .unit-card:hover{transform:translateY(-3px); box-shadow:0 16px 40px rgba(31,38,135,0.14), inset 0 1px 0 rgba(255,255,255,0.7);}
+  .unit-card .bar{position:absolute; top:0; left:0; height:4px; width:100%; background:rgba(0,0,0,0.05);}
+  .unit-card .bar i{display:block; height:100%; background:linear-gradient(90deg,#34c759,#0a84ff);}
+  .unit-card .icon{font-size:30px;}
+  .unit-card h3{margin:8px 0 2px; font-size:16px;}
+  .unit-card .cn{font-size:13px; color:var(--muted); font-weight:600;}
+  .unit-card .pct{font-size:12px; color:var(--soft); margin-top:6px;}
+
+  /* ---------- 进度条 ---------- */
+  .pbar{height:10px; background:rgba(0,0,0,0.06); border-radius:999px; overflow:hidden;}
+  .pbar i{display:block; height:100%; background:linear-gradient(90deg,#0a84ff,#5e5ce6); border-radius:999px; transition:.4s;}
+  .pbar.good i{background:linear-gradient(90deg,#34c759,#0a84ff);}
+
+  /* ---------- 学习块 ---------- */
+  .block-code{
+    background:var(--code-bg); color:var(--code-text); border:1px solid rgba(0,0,0,0.06); border-radius:14px; padding:16px 18px;
+    font-size:14px; line-height:1.6; overflow-x:auto; margin:10px 0; white-space:pre;
+  }
+  .kw{color:#a855f7; font-weight:600;} .st{color:#16a34a;} .num{color:#dc2626;} .cm{color:#94a3b8; font-style:italic;}
+  .callout{border-radius:14px; padding:12px 16px; margin:12px 0; font-size:14px; display:flex; gap:10px;}
+  .callout.tip{background:var(--good-soft); border-left:4px solid var(--good);}
+  .callout.warn{background:var(--warn-soft); border-left:4px solid var(--warn);}
+  .callout.err{background:var(--bad-soft); border-left:4px solid var(--bad);}
+  .callout .ico{font-size:18px; line-height:1.4;}
+  ul.li{margin:8px 0 8px 4px; padding-left:22px;}
+  ul.li li{margin:4px 0;}
+  p.body{margin:8px 0; font-size:15px;}
+  p.body code, .li code, .explain code, .q-text code{background:var(--accent-soft); color:var(--accent); padding:1px 6px; border-radius:6px; font-size:.92em;}
+
+  .tabs{display:inline-flex; background:rgba(0,0,0,0.05); border-radius:12px; padding:4px; margin-bottom:16px;}
+  .tab{padding:8px 18px; border-radius:9px; font-weight:600; font-size:14px; color:var(--muted); background:none;}
+  .tab.active{background:#fff; color:var(--accent); box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+
+  /* ---------- 题目 ---------- */
+  .q-text{font-size:16px; font-weight:600; margin:4px 0 12px;}
+  .q-meta{font-size:12px; color:var(--soft); margin-bottom:6px;}
+  .options{display:flex; flex-direction:column; gap:10px; margin-top:6px;}
+  .opt{
+    text-align:left; background:rgba(255,255,255,0.5); border:1.5px solid var(--line); border-radius:14px;
+    padding:12px 16px; font-size:15px; transition:.12s; display:flex; gap:12px; align-items:flex-start;
+  }
+  .opt .ltr{font-weight:700; color:var(--accent); flex-shrink:0;}
+  .opt:hover{border-color:var(--accent); background:rgba(255,255,255,0.8);}
+  .opt.correct{border-color:var(--good); background:var(--good-soft);}
+  .opt.wrong{border-color:var(--bad); background:var(--bad-soft);}
+  .opt.active{border-color:var(--accent); background:var(--accent-soft);}
+  .opt.disabled{pointer-events:none;}
+  .explain{margin-top:14px; border-radius:14px; padding:14px 16px; font-size:14px;}
+  .explain.good{background:var(--good-soft);}
+  .explain.bad{background:var(--bad-soft);}
+  .explain b{display:block; margin-bottom:4px;}
+
+  /* ---------- FRQ ---------- */
+  textarea{
+    width:100%; min-height:140px; border:1.5px solid var(--line); border-radius:14px; background:rgba(255,255,255,0.6); color:var(--text);
+    padding:12px; font-size:14px; font-family:inherit; resize:vertical; margin:10px 0;
+  }
+  textarea:focus{outline:none; border-color:var(--accent); background:#fff;}
+  .rubric{background:var(--warn-soft); border-left:4px solid var(--warn); border-radius:14px; padding:14px 16px; margin:10px 0; font-size:14px;}
+  .rubric li{margin:5px 0;}
+  .checkrow{display:flex; gap:12px; align-items:center; padding:8px 0; border-bottom:1px dashed var(--line);}
+  .checkrow input{width:18px; height:18px; accent-color:var(--accent);}
+
+  /* ---------- 徽章 ---------- */
+  .badges{display:flex; gap:10px; flex-wrap:wrap;}
+  .badge{
+    display:flex; flex-direction:column; align-items:center; gap:4px; padding:12px; min-width:86px;
+    border-radius:14px; background:rgba(255,255,255,0.5); border:1px solid var(--line); font-size:12px; text-align:center;
+  }
+  .badge .b-ico{font-size:26px; filter:grayscale(1); opacity:.4;}
+  .badge.earned .b-ico{filter:none; opacity:1;}
+  .badge.earned{border-color:rgba(255,149,0,.5); background:var(--warn-soft);}
+
+  /* ---------- 提示 / 彩带 ---------- */
+  #toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+    background:rgba(28,28,30,0.85); color:#fff; border:1px solid rgba(255,255,255,0.2); padding:12px 20px; border-radius:14px; font-size:14px;
+    opacity:0; transition:.3s; z-index:99; max-width:90vw; box-shadow:0 10px 30px rgba(0,0,0,.25);
+    backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  }
+  #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  .confetti{position:fixed; top:-20px; z-index:100; pointer-events:none; animation:fall linear forwards;}
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg); opacity:.2;}}
+
+  /* ---------- 响应式 ---------- */
+  @media(max-width:820px){
+    .layout{flex-direction:column; padding:12px;}
+    aside{width:100%;}
+    #sidebar{position:static; flex-direction:row; overflow-x:auto; gap:4px; padding:10px;}
+    .nav-btn{white-space:nowrap;}
+    .nav-group{display:none;}
+    .brand small{display:none;}
+  }
+  .table-wrap{overflow-x:auto;}
+  table{border-collapse:collapse; width:100%; font-size:14px; margin:10px 0;}
+  th,td{border:1px solid var(--line); padding:8px 12px; text-align:left;}
+  th{background:var(--accent-soft);}
+  td code{background:var(--accent-soft); color:var(--accent); padding:1px 6px; border-radius:6px;}
+.demo{margin:14px 0;padding:16px;background:#fbfcff;border:1px solid rgba(0,0,0,0.06);border-radius:16px;}
+.demo-title{font-weight:700;font-size:14px;margin-bottom:10px;}
+.demo-svg{overflow:hidden;}
+.demo-controls{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+.demo-ctl{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);}
+.demo-ctl input[type=range]{width:100%;accent-color:#5e5ce6;cursor:pointer;}
+.demo-note{margin-top:10px;font-size:12px;color:var(--muted);line-height:1.5;}
+.video-block{margin:14px 0;padding:14px 16px;background:#f0f6ff;border:1px solid rgba(10,132,255,.16);border-radius:14px;}
+.video-title{font-weight:700;font-size:13px;margin-bottom:10px;color:#0a84ff;}
+.video-link{display:flex;align-items:center;gap:10px;padding:9px 12px;margin:6px 0;background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:10px;text-decoration:none;color:var(--text);transition:.15s;}
+.video-link:hover{border-color:#0a84ff;box-shadow:0 4px 12px rgba(10,132,255,.12);}
+.video-ico{font-size:16px;}
+.video-txt{flex:1;font-size:13px;}
+.video-arrow{color:#9aa0aa;}
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">☕ AP Chemistry 学习平台<small>从零到 5 分</small></div>
+    <div class="stats">
+      <a href="index.html" class="stat" style="text-decoration:none;font-weight:700">🏠 选科目</a>
+      <span class="stat" id="stat-level">Lv.1 新手</span>
+      <span class="stat" id="stat-xp">0 XP</span>
+      <span class="stat" id="stat-streak">🔥 0 天</span>
+      <span class="stat" id="stat-pct">0% 掌握</span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside><nav id="sidebar"></nav></aside>
+    <main id="main"></main>
+  </div>
+
+  <div id="toast"></div>
+
+<script>const UNITS = [];
+UNITS.push({
+  id: 1, title: "Atomic Models & the Periodic Table", cn: "原子模型与周期表", icon: "⚛️",
+  objective: "Understand the atom: protons, neutrons, electrons, isotopes, electron shells · 理解原子结构与电子排布",
+  lesson: [
+    {t:"h", text:"Detectives of the Atom · 原子模型的历史"},
+    {t:"p", text:"Scientists were like **detectives**: each new experiment added a clue and improved the model. You don't need to memorize dates — just the **big idea** each model added."},
+    {t:"c", code:`Dalton    → atoms are solid, indivisible balls
+Thomson   → discovered electrons (the "plum pudding" model)
+Rutherford→ discovered the tiny, positive nucleus (mostly empty space)
+Bohr      → electrons orbit in shells / energy levels`},
+    {t:"h", text:"Inside the Atom · 原子的组成"},
+    {t:"p", text:"An atom has a **nucleus** (原子核) holding **protons** (质子, +) and **neutrons** (中子, 0), with **electrons** (电子, −) orbiting outside. The nucleus is like a tiny sun; electrons are the planets."},
+    {t:"c", code:`proton   p⁺   charge +1   mass 1
+neutron  n⁰   charge  0   mass 1
+electron e⁻   charge −1   mass ~0 (negligible)
+Atomic number Z = number of protons (= electrons in a neutral atom)
+Mass number A   = protons + neutrons`},
+    {t:"demo", type:"bohr"},
+    {t:"h", text:"Isotopes · 同位素"},
+    {t:"p", text:"**Isotopes** are atoms of the same element with the **same number of protons but different numbers of neutrons**. Example: carbon-12, carbon-13, carbon-14 all have 6 protons but 6, 7, and 8 neutrons."},
+    {t:"h", text:"Relative Atomic Mass (Ar) · 相对原子质量"},
+    {t:"p", text:"**Ar** is the weighted average mass of an element's isotopes. Example: chlorine is 75% Cl-35 and 25% Cl-37, so Ar ≈ 0.75×35 + 0.25×37 = 35.5."},
+    {t:"h", text:"Ions · 离子"},
+    {t:"p", text:"An **ion** is an atom that has lost or gained electrons. Lose an electron → positive charge (Na → Na⁺); gain one → negative (Cl → Cl⁻)."},
+    {t:"h", text:"Electron Configuration · 电子排布"},
+    {t:"p", text:"Electrons fill shells and orbitals in a fixed order — like filling seats in a theater row by row. The order is **1s → 2s → 2p → 3s → 3p → 4s**."},
+    {t:"c", code:`s holds 2 electrons, p holds 6, d holds 10
+Example (Oxygen, Z=8): 1s² 2s² 2p⁴`},
+    {t:"h", text:"The Periodic Table · 周期表"},
+    {t:"p", text:"**Groups** (columns) have the same number of outer electrons → similar chemistry. **Periods** (rows) have the same number of shells. Trend: atomic radius **decreases** across a period and **increases** down a group."},
+    {t:"li", items:["Z = protons; A = protons + neutrons","Isotopes: same protons, different neutrons","Ions: lose electrons (+), gain electrons (−)","Config order: 1s → 2s → 2p → 3s → 3p → 4s","Radius ↓ across a period, ↑ down a group"]},
+    {t:"video", title:"Recommended Videos · 推荐视频", links:[
+      {site:"YouTube", label:"Crash Course Chemistry（化学入门）", url:"https://www.youtube.com/playlist?list=PL8dPuuaLjXtPHzzYuWy6fYEaX9mQQ8oGr"},
+      {site:"Bilibili", label:"化学视频（B站）", url:"https://www.bilibili.com/video/BV1FP4y1k7LB/"},
+    ]},
+  ],
+  questions: [
+    {kind:"mcq", q:"The atomic number Z equals the number of?", options:["Protons","Neutrons","Electrons + neutrons","Shells"], answer:0, explain:"Z is the number of protons (and electrons in a neutral atom).（原子序数=质子数。）"},
+    {kind:"trace", q:"An atom has 11 protons and 12 neutrons. What is its mass number A?", options:["23","11","12","1"], answer:0, explain:"A = protons + neutrons = 11 + 12 = 23.（质量数=质子+中子=23。）"},
+    {kind:"mcq", q:"Isotopes of an element differ in the number of?", options:["Neutrons","Protons","Electrons","Shells"], answer:0, explain:"Isotopes have the same protons but different neutrons.（同位素中子数不同。）"},
+    {kind:"mcq", q:"When Na loses one electron, it becomes?", options:["Na⁺","Na⁻","Na²⁺","Neutral Na"], answer:0, explain:"Losing one negative electron leaves +1 → Na⁺.（失去一个电子→正一价。）"},
+    {kind:"trace", q:"What is the electron configuration of oxygen (Z = 8)?", options:["1s² 2s² 2p⁴","1s² 2s² 2p⁶","1s² 2p⁶","2s² 2p⁶"], answer:0, explain:"8 electrons: 1s² (2) + 2s² (2) + 2p⁴ (4).（8 个电子排布。）"},
+    {kind:"mcq", q:"Elements in the same GROUP have?", options:["The same number of outer electrons","The same number of shells","The same mass","The same neutrons"], answer:0, explain:"Same group = same outer electrons → similar chemistry.（同族=外层电子数相同。）"},
+    {kind:"mcq", q:"Atomic radius generally does what across a period (left → right)?", options:["Decreases","Increases","Stays the same","Doubles"], answer:0, explain:"More protons pull the same shell closer → radius decreases.（同周期半径减小。）"},
+    {kind:"trace", q:"Chlorine is 75% Cl-35 and 25% Cl-37. Its Ar is about?", options:["35.5","36","35","37"], answer:0, explain:"0.75×35 + 0.25×37 = 35.5.（加权平均 35.5。）"},
+  ],
+});
+
+UNITS.push({
+  id: 2, title: "All About Compounds", cn: "化合物与离子键", icon: "🧂",
+  objective: "Master ions, ionic bonding, and naming/writing ionic formulas · 掌握离子、离子键与化学式",
+  lesson: [
+    {t:"h", text:"Monatomic & Polyatomic Ions · 单原子与多原子离子"},
+    {t:"p", text:"A **monatomic ion** is a single atom with a charge (Na⁺, Cl⁻). A **polyatomic ion** (多原子离子) is a group of atoms that carries a charge together — treat it as one unit."},
+    {t:"c", code:`Common polyatomic ions:
+OH⁻   hydroxide      NO₃⁻  nitrate
+SO₄²⁻  sulfate        CO₃²⁻  carbonate
+NH₄⁺   ammonium       PO₄³⁻  phosphate`},
+    {t:"h", text:"Ionic Bonding · 离子键"},
+    {t:"p", text:"**Ionic bonds** form between a **metal** (loses electrons) and a **nonmetal** (gains electrons). The opposite charges attract, like magnets snapping together."},
+    {t:"demo", type:"ionic"},
+    {t:"h", text:"Writing Ionic Formulas · 写离子式"},
+    {t:"p", text:"The total positive charge must equal the total negative charge. **Criss-cross** the charges to find the subscripts."},
+    {t:"c", code:`Na⁺ + Cl⁻      → NaCl        (1 : 1)
+Mg²⁺ + Cl⁻    → MgCl₂       (1 : 2)
+Al³⁺ + O²⁻    → Al₂O₃      (2 : 3)
+Ca²⁺ + NO₃⁻   → Ca(NO₃)₂  (1 : 2)`},
+    {t:"h", text:"Naming Binary Ionic Compounds · 命名二元离子化合物"},
+    {t:"p", text:"Metal name first, then the nonmetal with the ending **-ide**. No prefixes — charges already determine the ratio."},
+    {t:"c", code:`NaCl  → sodium chloride
+MgO   → magnesium oxide
+CaCl₂ → calcium chloride`},
+    {t:"h", text:"Naming Ternary Ionic Compounds · 命名含多原子离子"},
+    {t:"p", text:"Metal name + the polyatomic ion's name (do NOT change the ending)."},
+    {t:"c", code:`NaNO₃  → sodium nitrate
+CaSO₄  → calcium sulfate
+NH₄Cl  → ammonium chloride`},
+    {t:"li", items:["Monatomic = one atom; polyatomic = a charged group","Ionic bonds: metal loses e⁻, nonmetal gains e⁻","Criss-cross charges to write formulas","Naming: metal + nonmetal-ide, or metal + polyatomic name"]},
+  ],
+  questions: [
+    {kind:"mcq", q:"Which of these is a polyatomic ion?", options:["OH⁻","Na⁺","Cl⁻","Mg²⁺"], answer:0, explain:"OH⁻ is a group of atoms carrying one charge.（OH⁻ 是多原子离子。）"},
+    {kind:"mcq", q:"Ionic bonds typically form between?", options:["A metal and a nonmetal","Two metals","Two noble gases","Two nonmetals"], answer:0, explain:"Metal loses electrons, nonmetal gains them.（金属+非金属。）"},
+    {kind:"trace", q:"Mg²⁺ and Cl⁻ combine to give which formula?", options:["MgCl₂","MgCl","Mg₂Cl","MgCl₃"], answer:0, explain:"Mg²⁺ needs two Cl⁻ → MgCl₂.（Mg 2+ 需两个 Cl-。）"},
+    {kind:"mcq", q:"What is the name of NaCl?", options:["Sodium chloride","Sodium chlorate","Sodium chlorine","Chlorine sodium"], answer:0, explain:"Metal name + nonmetal-ide → sodium chloride.（钠+氯-ide。）"},
+    {kind:"mcq", q:"What is the name of NaNO₃?", options:["Sodium nitrate","Sodium nitride","Sodium nitrogen","Nitrate sodium"], answer:0, explain:"Metal + polyatomic name: sodium nitrate.（钠+硝酸根。）"},
+    {kind:"mcq", q:"Which charge does a chloride ion carry?", options:["−1","+1","−2","0"], answer:0, explain:"Cl gains one electron → Cl⁻ (charge −1).（氯得一个电子→-1。）"},
+    {kind:"trace", q:"Al³⁺ and O²⁻ combine to give which formula?", options:["Al₂O₃","AlO","Al₃O₂","AlO₃"], answer:0, explain:"Criss-cross 3 and 2 → Al₂O₃.（交叉得 Al₂O₃。）"},
+    {kind:"mcq", q:"Ca²⁺ and NO₃⁻ combine to give?", options:["Ca(NO₃)₂","CaNO₃","Ca₂NO₃","Ca(NO₃)"], answer:0, explain:"Ca²⁺ needs two NO₃⁻ → Ca(NO₃)₂.（需两个硝酸根。）"},
+  ],
+});
+
+UNITS.push({
+  id: 3, title: "Chemical Reactions", cn: "化学反应与配平", icon: "⚗️",
+  objective: "Balance equations, recognize reaction types, and use moles · 掌握配平、反应类型与摩尔",
+  lesson: [
+    {t:"h", text:"Chemical Equations · 化学方程式"},
+    {t:"p", text:"A chemical equation shows **reactants → products**. The **law of conservation of mass** says atoms are never created or destroyed — so the number of each atom must be equal on both sides."},
+    {t:"c", code:`H₂ + O₂ → H₂O        (unbalanced: 2 H left? no, 2 vs 2, but O: 2 vs 1)`},
+    {t:"h", text:"Balancing Equations · 配平"},
+    {t:"p", text:"Only change **coefficients** (the big numbers in front), never change subscripts. Count atoms, then adjust until both sides match."},
+    {t:"c", code:`H₂ + O₂ → H₂O   (2 O on left, 1 on right)
+2H₂ + O₂ → 2H₂O  (now: 4 H, 2 O on both sides ✓)
+Check: H: 2×2 = 4 = 2×2;  O: 2 = 2. Balanced.`},
+    {t:"h", text:"Types of Reactions · 反应类型"},
+    {t:"c", code:`Synthesis (合成):   A + B → AB
+Decomposition (分解): AB → A + B
+Combustion (燃烧):   CₓHᵧ + O₂ → CO₂ + H₂O
+Single replacement:  A + BC → AC + B
+Double replacement:  AB + CD → AD + CB`},
+    {t:"h", text:"The Mole · 摩尔"},
+    {t:"p", text:"A **mole** is a counting unit, like a \"dozen\" but huge: **1 mol = 6.02 × 10²³ particles**. The **molar mass** is the mass of one mole, equal to the sum of atomic masses."},
+    {t:"c", code:`moles = mass / molar mass
+Example: 1 mol H₂O = 2(1) + 16 = 18 g`},
+    {t:"li", items:["Atoms are conserved: balance both sides","Only change coefficients, not subscripts","Synthesis, decomposition, combustion, replacement","1 mol = 6.02 × 10²³; moles = mass / molar mass"]},
+  ],
+  questions: [
+    {kind:"mcq", q:"The law of conservation of mass means?", options:["Atoms are conserved","Moles are conserved","Coefficients are equal","Mass is lost as gas"], answer:0, explain:"Atoms are neither created nor destroyed.（原子守恒。）"},
+    {kind:"trace", q:"Balance `H₂ + O₂ → H₂O`. What are the coefficients?", options:["2, 1, 2","1, 1, 2","2, 2, 2","1, 2, 1"], answer:0, explain:"2H₂ + O₂ → 2H₂O balances: 4 H, 2 O each side.（2,1,2。）"},
+    {kind:"mcq", q:"`A + B → AB` is what type of reaction?", options:["Synthesis","Decomposition","Combustion","Double replacement"], answer:0, explain:"Two reactants combine into one product → synthesis.（合成。）"},
+    {kind:"mcq", q:"`AB → A + B` is what type?", options:["Decomposition","Synthesis","Combustion","Single replacement"], answer:0, explain:"One reactant breaks into parts → decomposition.（分解。）"},
+    {kind:"mcq", q:"1 mole contains how many particles?", options:["6.02 × 10²³","6.02 × 10²²","1.0 × 10²³","2.0 × 10²³"], answer:0, explain:"Avogadro's number: 6.02 × 10²³.（阿伏伽德罗常数。）"},
+    {kind:"trace", q:"What is the molar mass of H₂O (H=1, O=16)?", options:["18 g/mol","16 g/mol","2 g/mol","20 g/mol"], answer:0, explain:"2(1) + 16 = 18 g/mol.（2×1+16=18。）"},
+    {kind:"trace", q:"How many moles is 36 g of H₂O (molar mass 18)?", options:["2 mol","18 mol","36 mol","0.5 mol"], answer:0, explain:"moles = mass / molar mass = 36/18 = 2.（质量/摩尔质量。）"},
+    {kind:"mcq", q:"Burning methane (CH₄ + O₂ → CO₂ + H₂O) is what type?", options:["Combustion","Decomposition","Synthesis","Single replacement"], answer:0, explain:"A fuel reacts with O₂ to give CO₂ and H₂O → combustion.（燃烧。）"},
+  ],
+});
+
+UNITS.push({
+  id: 4, title: "Acids and Bases", cn: "酸碱", icon: "🧪",
+  objective: "Understand acids, bases, pH, and neutralization · 掌握酸碱、pH 与中和",
+  lesson: [
+    {t:"h", text:"What are Acids and Bases? · 酸碱是什么"},
+    {t:"p", text:"**Acids** (酸) release **H⁺** ions; **bases** (碱) release **OH⁻** ions. Think of acids as \"H⁺ donors\" and bases as \"H⁺/OH⁻ partners\"."},
+    {t:"c", code:`Acid:  HCl → H⁺ + Cl⁻
+Base:  NaOH → Na⁺ + OH⁻`},
+    {t:"h", text:"The pH Scale · pH 标度"},
+    {t:"p", text:"The **pH scale** runs from 0 to 14: **pH < 7 acidic, pH = 7 neutral, pH > 7 basic**. Each step of 1 is a 10× change in H⁺ concentration."},
+    {t:"c", code:`pH = −log[H⁺]
+pH 1  → very acidic
+pH 7  → neutral (pure water)
+pH 13 → very basic`},
+    {t:"h", text:"Neutralization · 中和反应"},
+    {t:"p", text:"**Acid + base → salt + water**. The H⁺ and OH⁻ combine to form water, and the remaining ions form a salt."},
+    {t:"c", code:`HCl + NaOH → NaCl + H₂O
+H₂SO₄ + 2NaOH → Na₂SO₄ + 2H₂O`},
+    {t:"h", text:"Strong vs Weak · 强酸与弱酸"},
+    {t:"p", text:"**Strong acids** fully dissociate (HCl → H⁺ + Cl⁻, all of it). **Weak acids** only partially dissociate (e.g. acetic acid). Strong ≠ concentrated — strength is about how much it dissociates."},
+    {t:"li", items:["Acids release H⁺; bases release OH⁻","pH < 7 acidic, 7 neutral, > 7 basic","Acid + base → salt + water","Strong acids fully dissociate"]},
+  ],
+  questions: [
+    {kind:"mcq", q:"An acid releases which ion?", options:["H⁺","OH⁻","Na⁺","Cl⁻"], answer:0, explain:"Acids release H⁺ ions.（酸释放 H⁺。）"},
+    {kind:"mcq", q:"A solution with pH = 3 is?", options:["Acidic","Neutral","Basic","Impossible"], answer:0, explain:"pH < 7 is acidic.（pH<7 显酸性。）"},
+    {kind:"mcq", q:"A solution with pH = 7 is?", options:["Neutral","Acidic","Basic","Strongly acidic"], answer:0, explain:"pH 7 is neutral (pure water).（中性。）"},
+    {kind:"mcq", q:"Acid + base → ?", options:["Salt + water","Salt + CO₂","Water only","H₂ gas"], answer:0, explain:"Neutralization gives salt + water.（中和生成盐和水。）"},
+    {kind:"mcq", q:"Which is a strong acid?", options:["HCl","CH₃COOH (acetic acid)","H₂O","NaCl"], answer:0, explain:"HCl fully dissociates → strong acid.（HCl 完全电离。）"},
+    {kind:"trace", q:"`HCl + NaOH → ?` What are the products?", options:["NaCl + H₂O","NaCl + H₂","NaOH + H₂","HCl + H₂O"], answer:0, explain:"Neutralization: salt + water → NaCl + H₂O.（盐+水。）"},
+    {kind:"mcq", q:"A solution with pH = 11 is?", options:["Basic","Acidic","Neutral","Strongly acidic"], answer:0, explain:"pH > 7 is basic.（pH>7 显碱性。）"},
+    {kind:"mcq", q:"A base releases which ion?", options:["OH⁻","H⁺","Cl⁻","O₂"], answer:0, explain:"Bases release OH⁻ ions.（碱释放 OH⁻。）"},
+  ],
+});
+
+const FRQS = [];
+FRQS.push({
+  id: 1, icon: "⚛️", title: "FRQ 1 · Atomic Structure", topic: "Protons, neutrons, isotopes, configuration",
+  prompt: "A neutral atom of chlorine-35 (Z = 17) is given. Answer:\n\n(a) How many protons, neutrons, and electrons does it have?\n\n(b) Write its electron configuration.\n\n(c) Explain how Cl-37 differs from Cl-35, and how the two are used to calculate chlorine's relative atomic mass.",
+  points: [
+    "Protons = 17, electrons = 17 (neutral)",
+    "Neutrons = mass number − protons = 35 − 17 = 18",
+    "Configuration: 1s² 2s² 2p⁶ 3s² 3p⁵",
+    "Cl-37 has 2 more neutrons (20); same protons/electrons",
+    "Ar = weighted average of isotope masses by abundance",
+  ],
+  answerText: "Key ideas: Z gives protons (and electrons if neutral); neutrons = mass number − Z; isotopes differ in neutrons; Ar is a weighted average.",
+  answer: "(a) Protons = 17, electrons = 17 (neutral atom)\n\n(b) 1s² 2s² 2p⁶ 3s² 3p⁵\n\n(c) Cl-37 has 35 → 37, so neutrons 18 → 20 (same 17 protons).\n    Ar is the weighted average: Ar = Σ(isotope mass × abundance)",
+});
+
+FRQS.push({
+  id: 2, icon: "🧂", title: "FRQ 2 · Ionic Compounds", topic: "Formulas & naming",
+  prompt: "Answer the following about ionic compounds:\n\n(a) Write the formula for the compound formed from Al³⁺ and O²⁻.\n\n(b) Write the formula for calcium nitrate, using Ca²⁺ and NO₃⁻.\n\n(c) Name NaCl and NaNO₃, explaining the naming rule you use.",
+  points: [
+    "Criss-cross for Al³⁺ and O²⁻ → Al₂O₃",
+    "Criss-cross/balance Ca²⁺ with 2 NO₃⁻ → Ca(NO₃)₂",
+    "NaCl = sodium chloride (metal + nonmetal-ide)",
+    "NaNO₃ = sodium nitrate (metal + polyatomic name)",
+    "Correct charges and subscripts throughout",
+  ],
+  answerText: "Always criss-cross the charges, then simplify the ratio. For naming: metal name + nonmetal-ide, or metal name + polyatomic ion name (unchanged).",
+  answer: "(a) Al³⁺ + O²⁻ → Al₂O₃ (criss-cross 3 and 2)\n\n(b) Ca²⁺ + 2 NO₃⁻ → Ca(NO₃)₂\n\n(c) NaCl = sodium chloride (metal + nonmetal with -ide ending)\n    NaNO₃ = sodium nitrate (metal + polyatomic ion name, unchanged)",
+});
+
+FRQS.push({
+  id: 3, icon: "⚗️", title: "FRQ 3 · Balancing & Moles", topic: "Balance an equation, use molar mass",
+  prompt: "Consider the reaction: __ H₂ + __ O₂ → __ H₂O.\n\n(a) Balance the equation.\n\n(b) Explain why you change coefficients but not subscripts.\n\n(c) How many grams of H₂O are produced from 2 moles of H₂ (H=1, O=16)?",
+  points: [
+    "Balanced: 2H₂ + O₂ → 2H₂O",
+    "Changing subscripts would change the substance; coefficients just change amount",
+    "Conservation of mass requires equal atoms on both sides",
+    "2 mol H₂ → 2 mol H₂O",
+    "Mass = moles × molar mass = 2 × 18 = 36 g",
+  ],
+  answerText: "Balance by counting atoms. Then use the mole ratio from the balanced equation and moles = mass / molar mass.",
+  answer: "(a) 2H₂ + O₂ → 2H₂O\n\n(b) Coefficients change the amount only; changing subscripts would make a different substance. Mass must be conserved.\n\n(c) 2 mol H₂ → 2 mol H₂O. Molar mass H₂O = 2(1)+16 = 18.\n    mass = moles × molar mass = 2 × 18 = 36 g",
+});
+
+const CHEATSHEET = [
+  {t:"h", text:"1. Atomic Structure · 原子结构"},
+  {t:"c", code:"Proton p⁺ (+1), neutron n⁰ (0), electron e⁻ (−1)\nAtomic number Z = protons (= electrons if neutral)\nMass number A = protons + neutrons\nIsotopes: same protons, different neutrons\nIon: lose e⁻ → +, gain e⁻ → −  (Na → Na⁺, Cl → Cl⁻)\n\nElectron config order: 1s → 2s → 2p → 3s → 3p → 4s\n  s=2, p=6, d=10"},
+  {t:"h", text:"2. Compounds & Ionic Bonds · 化合物与离子键"},
+  {t:"c", code:"Ionic bond: metal (loses e⁻) + nonmetal (gains e⁻)\nCriss-cross charges to write formulas:\n  Mg²⁺ + Cl⁻ → MgCl₂\n  Al³⁺ + O²⁻ → Al₂O₃\n\nPolyatomic ions: OH⁻ NO₃⁻ SO₄²⁻ CO₃²⁻ NH₄⁺\nNaming: metal + nonmetal-ide, or metal + polyatomic name"},
+  {t:"h", text:"3. Reactions & Moles · 反应与摩尔"},
+  {t:"c", code:"Conservation of mass: atoms equal on both sides\nBalance by changing COEFFICIENTS only\nTypes: synthesis, decomposition, combustion, replacement\n1 mol = 6.02 × 10²³ particles\nmoles = mass / molar mass  (H₂O = 18 g/mol)"},
+  {t:"h", text:"4. Acids & Bases · 酸碱"},
+  {t:"c", code:"Acid: releases H⁺      Base: releases OH⁻\npH < 7 acidic, = 7 neutral, > 7 basic\npH = −log[H⁺]\nNeutralization: acid + base → salt + water\n  HCl + NaOH → NaCl + H₂O"},
+  {t:"tip", text:"Top traps: ① Z is protons, not mass number; ② balance by coefficients, never subscripts; ③ criss-cross charges for ionic formulas."},
+];
+
+const REALEXAM = [
+  {topic:"Atomic", q:"An atom has 17 protons and 18 neutrons. Its mass number A is?", options:["35","17","18","1"], answer:0, explain:"A = 17 + 18 = 35.（质量数=35。）"},
+  {topic:"Atomic", q:"Which subatomic particle has a negative charge?", options:["Electron","Proton","Neutron","Nucleus"], answer:0, explain:"Electrons are negative.（电子带负电。）"},
+  {topic:"Config", q:"Electron configuration of Li (Z = 3)?", options:["1s² 2s¹","1s³","1s² 2p¹","2s² 2p¹"], answer:0, explain:"2 + 1 = 3: 1s² 2s¹.（锂的排布。）"},
+  {topic:"Isotopes", q:"Carbon-14 and carbon-12 differ in?", options:["Neutrons","Protons","Electrons","Charge"], answer:0, explain:"Same 6 protons, different neutrons (8 vs 6).（中子数不同。）"},
+  {topic:"Ions", q:"Mg loses two electrons. It becomes?", options:["Mg²⁺","Mg²⁻","Mg⁺","Neutral Mg"], answer:0, explain:"Losing 2 electrons → +2 → Mg²⁺.（失两电子→+2。）"},
+  {topic:"Formulas", q:"The formula for sodium oxide (Na⁺, O²⁻) is?", options:["Na₂O","NaO","NaO₂","Na₂O₂"], answer:0, explain:"Criss-cross 1 and 2 → Na₂O.（交叉得 Na₂O。）"},
+  {topic:"Naming", q:"The name of KBr is?", options:["Potassium bromide","Potassium bromine","Bromide potassium","Potassium bromate"], answer:0, explain:"Metal + nonmetal-ide → potassium bromide.（钾+溴-ide。）"},
+  {topic:"Reactions", q:"Balance `H₂ + Cl₂ → HCl`. Coefficients?", options:["1, 1, 2","2, 1, 2","1, 2, 2","2, 2, 2"], answer:0, explain:"H₂ + Cl₂ → 2HCl (2 H, 2 Cl each side).（1,1,2。）"},
+  {topic:"Moles", q:"1 mole of any substance contains?", options:["6.02 × 10²³ particles","6.02 × 10²² particles","1 particle","1 gram"], answer:0, explain:"Avogadro's number.（6.02×10²³。）"},
+  {topic:"Acids", q:"A solution with pH = 2 is?", options:["Acidic","Neutral","Basic","Impossible"], answer:0, explain:"pH < 7 is acidic.（酸性。）"},
+];
+
+const BANK = [
+{unit:1, topic:"Atomic", q:"What is the atomic number of an atom with 8 protons?", options:["8","16","24","0"], answer:0, explain:"Z = number of protons = 8.（Z=质子数=8。）"},
+{unit:1, topic:"Atomic", q:"An atom has 6 protons and 7 neutrons. Mass number?", options:["13","6","7","1"], answer:0, explain:"A = 6 + 7 = 13.（质量数=13。）"},
+{unit:1, topic:"Isotopes", q:"Isotopes have the same number of?", options:["Protons","Neutrons","Mass","Charge"], answer:0, explain:"Same protons, different neutrons.（质子相同。）"},
+{unit:1, topic:"Ions", q:"Cl gains one electron. It becomes?", options:["Cl⁻","Cl⁺","Cl²⁻","Neutral Cl"], answer:0, explain:"Gain one negative → −1 → Cl⁻.（得电子→单负）"},
+{unit:2, topic:"Ions", q:"Which is a polyatomic ion?", options:["SO₄²⁻","K⁺","Ca²⁺","Cl⁻"], answer:0, explain:"SO₄²⁻ is a group of atoms carrying a charge.（硫酸根是多原子离子。）"},
+{unit:2, topic:"Bonding", q:"Ionic bonds form between?", options:["A metal and a nonmetal","Two metals","Two nonmetals","Two noble gases"], answer:0, explain:"Metal loses e⁻, nonmetal gains e⁻.（金属+非金属。）"},
+{unit:2, topic:"Formulas", q:"Mg²⁺ and O²⁻ give which formula?", options:["MgO","Mg₂O","MgO₂","Mg₂O₂"], answer:0, explain:"2+ balances 2− → MgO.（1:1，MgO。）"},
+{unit:2, topic:"Naming", q:"The name of CaCl₂ is?", options:["Calcium chloride","Calcium chlorate","Calcium chlorite","Chlorine calcium"], answer:0, explain:"Metal + nonmetal-ide → calcium chloride.（氯化钙。）"},
+{unit:3, topic:"Reactions", q:"Balance `Mg + O₂ → MgO`. Coefficients?", options:["2, 1, 2","1, 1, 2","2, 2, 2","1, 2, 1"], answer:0, explain:"2Mg + O₂ → 2MgO (2 Mg, 2 O each side).（2,1,2。）"},
+{unit:3, topic:"Moles", q:"Molar mass of CO₂ (C=12, O=16)?", options:["44 g/mol","28 g/mol","16 g/mol","12 g/mol"], answer:0, explain:"12 + 2(16) = 44 g/mol.（12+32=44。）"},
+{unit:3, topic:"Moles", q:"How many moles is 44 g of CO₂ (molar mass 44)?", options:["1 mol","44 mol","0.5 mol","2 mol"], answer:0, explain:"moles = 44/44 = 1.（质量/摩尔质量。）"},
+{unit:3, topic:"Types", q:"`2H₂ + O₂ → 2H₂O` is what type?", options:["Synthesis","Decomposition","Combustion","Single replacement"], answer:0, explain:"Two reactants join into a product → synthesis.（合成。）"},
+{unit:4, topic:"Acids", q:"A base releases which ion?", options:["OH⁻","H⁺","Cl⁻","O₂"], answer:0, explain:"Bases release OH⁻.（碱释放 OH⁻。）"},
+{unit:4, topic:"pH", q:"A solution with pH = 12 is?", options:["Basic","Acidic","Neutral","Strongly acidic"], answer:0, explain:"pH > 7 is basic.（碱性。）"},
+{unit:4, topic:"Neutralization", q:"`HCl + NaOH → ?`", options:["NaCl + H₂O","NaCl + H₂","NaOH + H₂","HCl + H₂O"], answer:0, explain:"Acid + base → salt + water.（盐+水。）"},
+{unit:4, topic:"Acids", q:"Which is a strong acid?", options:["HCl","CH₃COOH","H₂O","NaCl"], answer:0, explain:"HCl fully dissociates.（完全电离。）"},
+];
+
+const LEVEL_TITLES = ["新手","学徒","入门者","进阶者","熟练者","高手","达人","大师","宗师","传奇","化学新星","原子掌控者","元素大师","反应达人","AP 满分战神"];
+const BADGES = [
+  {id:"first_xp", ico:"🎉", name:"初次得分", desc:"第一次获得积分"},
+  {id:"unit1",     ico:"🧱", name:"奠基者", desc:"完成第一个单元"},
+  {id:"unit3",     ico:"🌱", name:"渐入佳境", desc:"完成 3 个单元"},
+  {id:"all",       ico:"👑", name:"全通关", desc:"完成全部单元"},
+  {id:"perfect",   ico:"💯", name:"满分", desc:"某单元一次全对"},
+  {id:"exam60",    ico:"🥉", name:"模考及格", desc:"模拟考正确率 ≥ 60%"},
+  {id:"exam80",    ico:"🏆", name:"模考 80+", desc:"模拟考正确率 ≥ 80%"},
+  {id:"exam90",    ico:"🥇", name:"模考 90+", desc:"模拟考正确率 ≥ 90%"},
+  {id:"exam100",   ico:"💎", name:"模考满分", desc:"模拟考正确率 100%"},
+  {id:"streak3",   ico:"🔥", name:"连续 3 天", desc:"连续学习 3 天"},
+  {id:"streak7",   ico:"📅", name:"坚持 7 天", desc:"连续学习 7 天"},
+  {id:"streak14",  ico:"📆", name:"坚持 14 天", desc:"连续学习 14 天"},
+  {id:"streak30",  ico:"🗓️", name:"坚持 30 天", desc:"连续学习 30 天"},
+  {id:"xp100",     ico:"⭐", name:"百炼成钢", desc:"累计 100 XP"},
+  {id:"xp500",     ico:"🌟", name:"五百积分", desc:"累计 500 XP"},
+  {id:"xp1000",    ico:"💫", name:"千分大佬", desc:"累计 1000 XP"},
+  {id:"xp3000",    ico:"☄️", name:"三千传说", desc:"累计 3000 XP"},
+  {id:"first_frq", ico:"📝", name:"首道 FRQ", desc:"完成第一道 FRQ"},
+  {id:"first_real",ico:"🎯", name:"真题首练", desc:"完成一次真题演练"},
+  {id:"level5",    ico:"⭐", name:"五级达成", desc:"等级达到 5 级"},
+  {id:"level10",   ico:"🌟", name:"十级宗师", desc:"等级达到 10 级"},
+];
+</script>
+
+<script>
+/* ============================================================
+   应用逻辑
+   ============================================================ */
+const KEY = "apchem_v1";
+const $  = (s, el=document) => el.querySelector(s);
+const $$ = (s, el=document) => [...el.querySelectorAll(s)];
+
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function inline(s){ return esc(s).replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>"); }
+function hl(code){
+  const re = /(\/\/[^\n]*)|(&quot;(?:[^&]|&(?!quot;))*?&quot;)|(&#39;[^&]*?&#39;)|\b(public|private|protected|static|final|void|int|double|boolean|char|String|byte|short|long|float|class|interface|extends|implements|new|return|if|else|for|while|do|switch|case|break|continue|this|super|true|false|null|import|package|instanceof)\b|\b(\d+(?:\.\d+)?)\b/g;
+  return esc(code).replace(re, (m, cm, st, ch, kw, num) => {
+    if (cm) return '<span class="cm">'+cm+'</span>';
+    if (st) return '<span class="st">'+st+'</span>';
+    if (ch) return '<span class="st">'+ch+'</span>';
+    if (kw) return '<span class="kw">'+kw+'</span>';
+    if (num) return '<span class="num">'+num+'</span>';
+    return m;
+  });
+}
+function renderBlocks(blocks){
+  return blocks.map(b => {
+    if (b.t === "h") return "<h3>"+inline(b.text)+"</h3>";
+    if (b.t === "p") return "<p class='body'>"+inline(b.text)+"</p>";
+    if (b.t === "c") return "<div class='block-code'>"+hl(b.code)+"</div>";
+    if (b.t === "tip") return "<div class='callout tip'><span class='ico'>💡</span><div>"+inline(b.text)+"</div></div>";
+    if (b.t === "warn") return "<div class='callout warn'><span class='ico'>⚠️</span><div>"+inline(b.text)+"</div></div>";
+    if (b.t === "err") return "<div class='callout err'><span class='ico'>❌</span><div>"+inline(b.text)+"</div></div>";
+    if (b.t === "li") return "<ul class='li'>"+b.items.map(x=>"<li>"+inline(x)+"</li>").join("")+"</ul>";
+    if (b.t === "table") return "<div class='table-wrap'><table>"+b.rows.map((r,i)=> "<tr>"+r.map((c,j)=> (i===0?"<th>":"<td>")+inline(c)+(i===0?"</th>":"</td>")).join("")+"</tr>").join("")+"</table></div>";
+    if (b.t === "demo") return renderDemo(b.type);
+    if (b.t === "video") return renderVideo(b);
+    return "";
+  }).join("");
+}
+
+/* ---------- 状态 ---------- */
+function todayStr(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function defaultState(){ return {xp:0, lastDay:todayStr(), streak:1, badges:[], lessonsRead:{}, q:{}, quizDone:{}, frqDone:{}, examBest:null, examAttempts:0}; }
+let state;
+try{ state = JSON.parse(localStorage.getItem(KEY)) || defaultState(); }catch(e){ state = defaultState(); }
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+function todayStr2(){ return state.lastDay; }
+function updateStreak(){
+  const t = todayStr();
+  if (state.lastDay === t) return;
+  const y = new Date(Date.now()-86400000);
+  const ystr = y.getFullYear()+"-"+String(y.getMonth()+1).padStart(2,"0")+"-"+String(y.getDate()).padStart(2,"0");
+  state.streak = (state.lastDay === ystr) ? state.streak+1 : 1;
+  state.lastDay = t;
+}
+function level(){ return Math.min(15, Math.floor(state.xp/150)+1); }
+function levelTitle(){ return LEVEL_TITLES[Math.min(LEVEL_TITLES.length-1, level()-1)]; }
+function gid(uid, qi){ return uid+":"+qi; }
+
+/* ---------- 积分与徽章 ---------- */
+function addXP(n){
+  if(n<=0) return;
+  const before = level();
+  state.xp += n;
+  const after = level();
+  if(after > before){ toast("🎉 升级！现在是 Lv."+after+" "+levelTitle()); }
+}
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove("show"), 2600); }
+function checkBadges(){
+  const earned = new Set(state.badges);
+  const doneUnits = UNITS.filter(u=>state.quizDone[u.id]).length;
+  const perfect = UNITS.some(u=> state.quizDone[u.id] && u.questions.every((q,i)=> state.q[gid(u.id,i)] && state.q[gid(u.id,i)].ft === true));
+  const frqCount = Object.keys(state.frqDone || {}).length;
+  const realCount = state.realDone || 0;
+  const exam = state.examBest;
+  const lv = level();
+
+  const conds = [
+    ["first_xp", state.xp >= 10],
+    ["unit1", doneUnits >= 1],
+    ["unit3", doneUnits >= 3],
+    ["five", doneUnits >= 5],
+    ["unit8", doneUnits >= 8],
+    ["all", doneUnits >= UNITS.length && UNITS.length > 0],
+    ["perfect", perfect],
+    ["exam60", exam !== null && exam >= 60],
+    ["exam80", exam !== null && exam >= 80],
+    ["exam90", exam !== null && exam >= 90],
+    ["exam100", exam !== null && exam >= 100],
+    ["streak3", state.streak >= 3],
+    ["streak7", state.streak >= 7],
+    ["streak14", state.streak >= 14],
+    ["streak30", state.streak >= 30],
+    ["xp100", state.xp >= 100],
+    ["xp500", state.xp >= 500],
+    ["xp1000", state.xp >= 1000],
+    ["xp3000", state.xp >= 3000],
+    ["first_frq", frqCount >= 1],
+    ["first_real", realCount >= 1],
+    ["level5", lv >= 5],
+    ["level10", lv >= 10],
+  ];
+  const newOnes = [];
+  conds.forEach(([id, ok])=>{
+    if(ok && !earned.has(id)){ state.badges.push(id); newOnes.push(id); }
+  });
+  if(newOnes.length){
+    save();
+    const names = newOnes.map(id => BADGES.find(b=>b.id===id).name).join("、");
+    toast("🏅 获得徽章：" + names);
+  }
+}
+
+/* ---------- 题目统计 ---------- */
+function qStatus(uid, qi){ return state.q[gid(uid,qi)] || null; }
+function unitStats(unit){
+  let correct=0, attempted=0, firstTryRight=0;
+  unit.questions.forEach((q,i)=>{
+    const s = qStatus(unit.id, i);
+    if(s){ attempted++; if(s.correct) correct++; if(s.ft) firstTryRight++; }
+  });
+  return {correct, attempted, total:unit.questions.length, firstTryRight};
+}
+function overallStats(){
+  let correct=0, total=0;
+  UNITS.forEach(u=>{ const s=unitStats(u); correct+=s.correct; total+=s.total; });
+  return total ? Math.round(correct/total*100) : 0;
+}
+function flattenAll(){
+  const arr=[];
+  UNITS.forEach(u=> u.questions.forEach((q,i)=> arr.push({q, uid:u.id, qi:i, unit:u})));
+  return arr;
+}
+
+/* ---------- 视图状态 ---------- */
+let view = {name:"home"};
+let quizSession = null;   // {uid, idx, order, locked}
+let examSession = null;
+let realSession = null;
+
+function nav(){
+  const sb = $("#sidebar");
+  let html = '<button class="nav-btn" data-go="home">🏠 首页</button>';
+  html += '<div class="nav-group">学习单元</div>';
+  UNITS.forEach(u=>{
+    const st = unitStats(u);
+    const done = state.quizDone[u.id];
+    html += '<button class="nav-btn'+(view.name==="unit"&&view.uid===u.id?" active":"")+(done?" done":"")+'" data-go="unit" data-uid="'+u.id+'">'+
+      '<span class="dot"></span><span>'+u.icon+' '+u.cn+'</span></button>';
+  });
+  html += '<div class="nav-group">综合</div>';
+  html += '<button class="nav-btn'+(view.name==="frq"?" active":"")+'" data-go="frq">📝 FRQ 练习</button>';
+  html += '<button class="nav-btn'+(view.name==="awards"?" active":"")+'" data-go="awards">🏆 成就馆</button>';
+  html += '<button class="nav-btn'+(view.name==="real"?" active":"")+'" data-go="real">🎯 真题演练</button>';
+  html += '<button class="nav-btn'+(view.name==="exam"?" active":"")+'" data-go="exam">🎯 模拟考试</button>';
+  html += '<button class="nav-btn'+(view.name==="cheat"?" active":"")+'" data-go="cheat">📋 速查表</button>';
+  sb.innerHTML = html;
+}
+function refreshHeader(){
+  $("#stat-level").textContent = "Lv."+level()+" "+levelTitle();
+  $("#stat-xp").textContent = state.xp+" XP";
+  $("#stat-streak").textContent = "🔥 "+state.streak+" 天";
+  $("#stat-pct").textContent = overallStats()+"% 掌握";
+}
+function go(name, params={}){
+  view = {name, ...params};
+  if(name==="unit"){ quizSession=null; }
+  examSession = null;
+  realSession = null;
+  bankSession = null;
+  nav(); render(); window.scrollTo({top:0, behavior:"smooth"});
+}
+function render(){ refreshHeader(); const m=$("#main");
+  if(view.name==="home") m.innerHTML = homeHTML();
+  else if(view.name==="unit") m.innerHTML = unitHTML();
+  else if(view.name==="quiz") m.innerHTML = quizHTML();
+  else if(view.name==="frq") m.innerHTML = frqHTML();
+  else if(view.name==="awards") m.innerHTML = awardsHTML();
+  else if(view.name==="real") m.innerHTML = realHTML();
+  else if(view.name==="exam") m.innerHTML = examHTML();
+  else if(view.name==="cheat") m.innerHTML = cheatHTML();
+  else if(view.name==="unitresult") m.innerHTML = resultHTML();
+}
+
+/* ================= 首页 ================= */
+function homeHTML(){
+  const done = UNITS.filter(u=>state.quizDone[u.id]).length;
+  const s = overallStats();
+  let cards = UNITS.map(u=>{
+    const st = unitStats(u);
+    const pct = st.total? Math.round(st.correct/st.total*100):0;
+    return '<div class="unit-card" data-go="unit" data-uid="'+u.id+'">'+
+      '<span class="bar"><i style="width:'+pct+'%"></i></span>'+
+      '<div class="icon">'+u.icon+'</div><h3>'+u.cn+'</h3>'+
+      '<div class="cn">'+u.title+'</div><div class="pct">'+st.correct+'/'+st.total+' 题 · '+pct+'%</div></div>';
+  }).join("");
+  const earned = BADGES.filter(b=>state.badges.includes(b.id));
+  const badgesHTML = BADGES.map(b=>{
+    const e = state.badges.includes(b.id);
+    return '<div class="badge'+(e?" earned":"")+'"><span class="b-ico">'+b.ico+'</span><b>'+b.name+'</b><span class="muted">'+b.desc+'</span></div>';
+  }).join("");
+
+  return ''+
+  '<div class="hero"><h1>你好！一起拿下 AP Chemistry 👋</h1>'+
+  '<p>这套课程按 <b>College Board 官方大纲的 4 个单元</b> 编排，从最基础的原子讲起。每个单元先学知识点，再做即时反馈的练习题；全部学完后去做 FRQ 和模拟考试。</p>'+
+  '<div class="row"><button class="btn" data-go="unit" data-uid="'+(UNITS[0]?UNITS[0].id:1)+'">🚀 开始学习</button>'+
+  '<button class="btn ghost" data-go="random">🎲 随机练习一题</button></div></div>'+
+  '<div class="card"><div class="spread"><h2 style="margin:0">📚 课程单元</h2><span class="muted">已完成 '+done+' / '+UNITS.length+'</span></div>'+
+  '<div class="pbar" style="margin:14px 0"><i style="width:'+s+'%"></i></div>'+
+  '<div class="unit-grid">'+cards+'</div></div>'+
+  '<div class="card"><h2 style="margin-top:0">🏅 我的徽章</h2><div class="badges">'+badgesHTML+'</div></div>'+
+  '<div class="card"><h2 style="margin-top:0">💾 进度备份</h2>'+
+  '<p class="sub">学习进度会自动保存在<b>当前这个浏览器</b>里，不用手动保存。但换设备、换浏览器或清理缓存前，建议先导出备份；到新设备再导入即可恢复。</p>'+
+  '<div class="row" style="margin-top:10px">'+
+  '<button class="btn" data-export>⬇️ 导出备份文件</button>'+
+  '<button class="btn ghost" data-import>⬆️ 导入备份文件</button>'+
+  '<input type="file" id="importFile" accept=".json,application/json" style="display:none">'+
+  '</div></div>';
+}
+
+/* ================= 单元 ================= */
+function unitHTML(){
+  const u = UNITS.find(x=>x.id===view.uid) || UNITS[0];
+  const st = unitStats(u);
+  const pct = st.total? Math.round(st.correct/st.total*100):0;
+  const tab = view.tab || "lesson";
+  const lessonRead = state.lessonsRead[u.id];
+  const done = state.quizDone[u.id];
+  return ''+
+  '<div class="card"><div class="spread"><div><h1 style="margin:0">'+u.icon+' '+u.title+'</h1>'+
+  '<div class="sub">'+u.cn+' · 目标：'+inline(u.objective||"")+'</div></div>'+
+  '<div style="min-width:180px"><div class="row" style="justify-content:flex-end;margin-bottom:6px"><span class="muted" style="font-size:13px">掌握度 '+pct+'%</span></div>'+
+  '<div class="pbar"><i style="width:'+pct+'%"></i></div></div></div>'+
+  '<div class="tabs" style="margin-top:16px"><button class="tab'+(tab==="lesson"?" active":"")+'" data-tab="lesson">📖 学习知识点</button>'+
+  '<button class="tab'+(tab==="quiz"?" active":"")+'" data-tab="quiz">✏️ 练习题 ('+st.correct+'/'+st.total+')</button>'+
+  '<button class="tab'+(tab==="bank"?" active":"")+'" data-tab="bank">🎯 真题强化 ('+bankCount(u.id)+')</button></div></div>'+
+  (tab==="lesson" ? lessonHTML(u, lessonRead) : tab==="quiz" ? quizHTML(u, 0) : bankHTML(u));
+}
+function lessonHTML(u, read){
+  const blocks = renderBlocks(u.lesson);
+  return '<div class="card">'+blocks+
+  '<div style="margin-top:20px" class="spread">'+
+  '<button class="btn" data-tab="quiz">✏️ 去做练习 →</button>'+
+  '<button class="btn ghost" data-markread="'+u.id+'">'+(read?"✅ 已学完":"📌 标记为已学完")+'</button>'+
+  '</div></div>';
+}
+
+/* ================= 练习 ================= */
+function startQuiz(uid){
+  const u = UNITS.find(x=>x.id===uid);
+  quizSession = {uid, idx:0, order:u.questions.map((_,i)=>i)};
+}
+function quizHTML(u, idx){
+  if(!u) return "";
+  if(!quizSession){ startQuiz(u.id); }
+  const s = quizSession;
+  const qi = s.order[s.idx];
+  const q = u.questions[qi];
+  const st = qStatus(u.id, qi);
+  const answered = !!st;
+  const total = s.order.length;
+  let opts = "";
+  if(q.options){
+    opts = '<div class="options">'+q.options.map((o,i)=>{
+      let cls="opt"; let ltr="ABCD"[i];
+      if(answered){
+        cls += " disabled";
+        if(i===q.answer) cls += " correct";
+        else if(i===st.picked) cls += " wrong";
+      }
+      return '<button class="'+cls+'" data-opt="'+i+'"><span class="ltr">'+ltr+'.</span><span>'+inline(o)+'</span></button>';
+    }).join("")+'</div>';
+  }
+  const explain = answered ? '<div class="explain '+(st.correct?"good":"bad")+'"><b>'+(st.correct?"✅ 回答正确！":"❌ 回答错误")+'</b>'+inline(q.explain)+'</div>' : "";
+  const nextBtn = answered ? '<button class="btn" data-next>'+(s.idx < total-1 ? "下一题 →" : "查看结果 🎉")+'</button>' : "";
+  return ''+
+  '<div class="card"><div class="spread" style="margin-bottom:10px">'+
+  '<span class="q-meta">第 '+(s.idx+1)+' / '+total+' 题 · '+(q.kind==="trace"?"🔍 代码追踪":"🧩 概念题")+'</span>'+
+  '<span class="muted" style="font-size:13px">已掌握 '+unitStats(u).correct+'/'+total+'</span></div>'+
+  '<div class="q-text">'+inline(q.q)+'</div>'+
+  (q.code ? '<div class="block-code">'+hl(q.code)+'</div>' : "")+
+  opts + explain +
+  '<div style="margin-top:16px" class="row">'+nextBtn+
+  '<button class="btn ghost sm" data-tab="lesson">← 返回知识点</button></div></div>';
+}
+function answerQuestion(opt){
+  const u = UNITS.find(x=>x.id===quizSession.uid);
+  const qi = quizSession.order[quizSession.idx];
+  const q = u.questions[qi];
+  const key = gid(u.id, qi);
+  const prev = state.q[key];
+  const correct = opt === q.answer;
+  const firstTime = !prev;
+  const wasWrong = prev && !prev.correct;
+
+  if(firstTime){
+    if(correct){ addXP(10); state.q[key]={correct:true, ft:true, picked:opt}; toast("+10 XP 🎉"); }
+    else{ state.q[key]={correct:false, ft:false, picked:opt}; toast("再想想，看看解析吧 💪"); }
+  } else if(wasWrong && correct){
+    addXP(4); state.q[key]={correct:true, ft:prev.ft, picked:opt}; toast("+4 XP 改正成功 ✅");
+  } else if(wasWrong && !correct){
+    state.q[key]={correct:false, ft:false, picked:opt};
+  } else {
+    state.q[key].picked = opt; // 已正确，随意重看
+  }
+  save(); render();
+}
+function nextQuestion(){
+  const u = UNITS.find(x=>x.id===quizSession.uid);
+  const total = quizSession.order.length;
+  if(quizSession.idx < total-1){ quizSession.idx++; render(); return; }
+  const st = unitStats(u);
+  const allCorrect = st.correct === total;
+  const perfect = st.firstTryRight === total;
+  if(!state.quizDone[u.id]){
+    state.quizDone[u.id] = true;
+    addXP(20);
+    if(allCorrect){ toast("🎊 完成本单元！+20 XP"); if(perfect) confetti(); }
+    else { toast("📦 完成本单元（可随时回来补错题）+20 XP"); }
+    save(); checkBadges();
+  }
+  quizSession = null;
+  view = {name:"unitresult", uid:u.id};
+  nav(); render();
+}
+function resultHTML(){
+  const u = UNITS.find(x=>x.id===view.uid);
+  const st = unitStats(u);
+  const pct = Math.round(st.correct/st.total*100);
+  const perfect = st.firstTryRight === st.total;
+  const nextU = UNITS.find(x=>x.id===u.id+1);
+  return '<div class="card" style="border-color:'+(pct>=80?'var(--good)':'var(--warn)')+'">'+
+  '<h1 style="margin:0">'+u.icon+' '+u.cn+' · 单元完成</h1>'+
+  '<p class="sub">答对 '+st.correct+' / '+st.total+' 题，正确率 <b style="font-size:22px">'+pct+'%</b>'+(perfect?" · 一次全对 💯":"")+'</p>'+
+  '<div class="pbar'+(pct>=80?" good":"")+'" style="margin:14px 0"><i style="width:'+pct+'%"></i></div>'+
+  '<p class="body">'+(pct>=80 ? "太棒了！继续下一个单元，或去挑战模拟考试。" : "错题是进步最快的路——点“再做一次”把错题搞懂，就能冲高分。")+'</p>'+
+  '<div class="row"><button class="btn" data-retry="'+u.id+'">🔁 再做一次</button>'+
+  '<button class="btn ghost" data-go="unit" data-uid="'+u.id+'">📖 复习知识点</button>'+
+  (nextU ? '<button class="btn" data-go="unit" data-uid="'+nextU.id+'">下一个单元 →</button>' : '<button class="btn" data-go="exam">🎯 去模考</button>')+
+  '</div></div>';
+}
+
+/* ================= FRQ ================= */
+function frqHTML(){
+  if(view.id != null) return frqDetailHTML();
+  const list = FRQS.map((f,i)=>{
+    const done = state.frqDone[f.id];
+    return '<div class="unit-card" data-go="frq" data-fid="'+f.id+'"><div class="icon">'+f.icon+'</div>'+
+    '<h3>'+f.title+'</h3><div class="cn">'+f.topic+'</div><div class="pct">'+(done?"✅ 已完成":"📌 未开始")+'</div></div>';
+  }).join("");
+  return '<div class="card"><h1>📝 FRQ 主观题练习</h1>'+
+  '<p class="sub">AP Chemistry 第二部分是 4 道编程大题（90 分钟）。这里按真实考试风格，给你题目 + 官方式评分标准，写完对照打分。</p>'+
+  '<div class="callout tip"><span class="ico">💡</span><div>建议：先在纸上/编译器里写完代码，再点“显示参考答案”对照。评分要点是阅卷老师真正给分的地方，一定要逐条自查。</div></div></div>'+
+  '<div class="unit-grid">'+list+'</div>';
+}
+function frqDetailHTML(){
+  const f = FRQS.find(x=>x.id===view.id) || FRQS[0];
+  const done = state.frqDone[f.id];
+  const rubric = f.points.map(p=>'<li>'+inline(p)+'</li>').join("");
+  return '<div class="card"><div class="spread"><h1 style="margin:0">'+f.icon+' '+f.title+'</h1>'+
+  '<button class="btn ghost sm" data-go="frq">← 返回列表</button></div>'+
+  '<div class="sub">'+f.topic+'</div>'+
+  '<h2>题目</h2><p class="body">'+inline(f.prompt)+'</p>'+
+  (f.code ? '<div class="block-code">'+hl(f.code)+'</div>' : "")+
+  '<h2>我的草稿</h2><textarea placeholder="在这里写你的答案（不会自动保存，建议写完后复制到别处）"></textarea>'+
+  '<div class="row"><button class="btn" data-reveal="answer">👀 显示参考答案</button>'+
+  '<button class="btn ghost" data-reveal="rubric">📊 显示评分标准</button>'+
+  (done?'<span class="btn sm" style="background:var(--good)">✅ 已完成</span>':'<button class="btn sm" data-frqdone="'+f.id+'">✅ 标记完成</button>')+
+  '</div><div id="frq-reveal"></div></div>';
+}
+function revealFRQ(which){
+  const f = FRQS.find(x=>x.id===view.id);
+  const box = $("#frq-reveal");
+  if(which==="answer"){
+    box.innerHTML = '<h2>参考答案</h2>'+(f.answerText?'<p class="body">'+inline(f.answerText)+'</p>':"")+'<div class="block-code">'+hl(f.answer)+'</div>';
+  } else {
+    box.innerHTML = '<div class="rubric"><b>📊 评分要点（每点对应阅卷给分）</b><ul class="li">'+f.points.map(p=>'<li>'+inline(p)+'</li>').join("")+'</ul></div>';
+  }
+}
+
+/* ================= 模拟考试 ================= */
+function examHTML(){
+  if(!examSession) return examIntroHTML();
+  if(view.finished) return examResultHTML();
+  const s = examSession;
+  const item = s.items[s.idx];
+  const answered = s.picked[s.idx] !== undefined;
+  return '<div class="card"><div class="spread" style="margin-bottom:10px">'+
+  '<span class="q-meta">模考第 '+(s.idx+1)+' / '+s.items.length+' 题</span>'+
+  '<span class="muted" style="font-size:13px">⏱️ '+examClock()+'</span></div>'+
+  '<div class="q-text">'+inline(item.q.q)+'</div>'+
+  (item.q.code?'<div class="block-code">'+hl(item.q.code)+'</div>':"")+
+  '<div class="options">'+item.q.options.map((o,i)=>{
+    let cls="opt"; if(answered){ cls+=" disabled"; if(i===s.picked[s.idx]) cls+=" active"; }
+    return '<button class="'+cls+'" data-examopt="'+i+'"><span class="ltr">'+"ABCD"[i]+'.</span><span>'+inline(o)+'</span></button>';
+  }).join("")+'</div>'+
+  '<div style="margin-top:16px" class="row">'+
+  (answered ? (s.idx<s.items.length-1?'<button class="btn" data-examnext>下一题 →</button>':'<button class="btn" data-examfinish>交卷 🏁</button>') : '<span class="muted" style="font-size:13px">选择一个答案后继续</span>')+
+  '</div></div>';
+}
+function examIntroHTML(){
+  const best = state.examBest;
+  return '<div class="card"><h1>🎯 模拟考试</h1>'+
+  '<p class="sub">随机抽取 '+(Math.min(30, flattenAll().length))+' 道覆盖全部单元的选择题。真实考试 MCQ 部分是 40 题 / 90 分钟，这里先热身。</p>'+
+  '<div class="callout tip"><span class="ico">⏱️</span><div>建议计时 30 分钟完成。答完可查看每一题的解析，错题会是你考前最该复习的清单。</div></div>'+
+  (best!==null? '<p class="body">历史最佳：<b>'+best+'%</b>（共 '+state.examAttempts+' 次）</p>':'<p class="body">还没有模考记录，来第一次挑战吧！</p>')+
+  '<button class="btn" data-startexam>▶️ 开始考试</button></div>';
+}
+function startExam(){
+  const pool = [...flattenAll(), ...flattenReal()];
+  const shuffled = [...pool].sort(()=>Math.random()-0.5).slice(0, Math.min(30, pool.length));
+  examSession = {items: shuffled, idx:0, picked: [], start: Date.now()};
+  state.examAttempts++;
+  save(); render();
+}
+function examClock(){
+  const sec = Math.floor((Date.now()-examSession.start)/1000);
+  return String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0");
+}
+function examPick(opt){ examSession.picked[examSession.idx] = opt; render(); }
+function examNext(){ examSession.idx++; render(); }
+function finishExam(){
+  const s = examSession;
+  const score = s.items.reduce((acc,it,i)=> acc + (s.picked[i]===it.q.answer?1:0), 0);
+  const pct = Math.round(score/s.items.length*100);
+  if(state.examBest===null || pct>state.examBest){ state.examBest=pct; }
+  view.finished = true; view.score=score; view.total=s.items.length; view.pct=pct;
+  addXP(score * 2);
+  if(pct >= 80) addXP(10);
+  save(); checkBadges(); render();
+  if(pct>=80) confetti();
+}
+function examResultHTML(){
+  const pct = view.pct;
+  const s = examSession;
+  const wrong = s.items.map((it,i)=>({it,i})).filter(x=> s.picked[x.i] !== x.it.q.answer);
+  return '<div class="card"><h1>'+(pct>=80?"🏆 太厉害了！":"📊 模考完成")+'</h1>'+
+  '<p class="sub">答对 '+view.score+' / '+view.total+' 题，正确率 <b style="font-size:22px">'+pct+'%</b></p>'+
+  '<div class="pbar'+(pct>=80?" good":"")+'" style="margin:14px 0"><i style="width:'+pct+'%"></i></div>'+
+  (pct>=80 ? '<div class="callout tip"><span class="ico">🎉</span><div>已经达到 5 分水平线！去把 FRQ 也过一遍就能上考场了。</div></div>' :
+   '<div class="callout warn"><span class="ico">💪</span><div>别灰心，错题就是提分点。下面是错题清单，回到对应单元再巩固一遍。</div></div>')+
+  '<h2>错题回顾</h2>'+
+  (wrong.length===0 ? '<p class="sub">全部答对，没有错题！👏</p>' :
+    wrong.map(w=> '<div style="margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:12px">'+
+      '<b>'+w.it.unit.cn+'：</b>'+inline(w.it.q.q)+
+      (w.it.q.code?'<div class="block-code">'+hl(w.it.q.code)+'</div>':"")+
+      '<div class="muted" style="font-size:13px">你的答案：'+(s.picked[w.i]!==undefined?"ABCD"[s.picked[w.i]]:"未作答")+' · 正确答案：'+"ABCD"[w.it.q.answer]+'</div>'+
+      '<div class="muted" style="font-size:13px">'+inline(w.it.q.explain)+'</div></div>').join("")
+  )+
+  '<div class="row" style="margin-top:16px"><button class="btn" data-go="exam">🔁 再考一次</button>'+
+  '<button class="btn ghost" data-go="home">🏠 回首页</button></div></div>';
+}
+
+/* ================= 真题演练 ================= */
+function flattenReal(){
+  return REALEXAM.map((q,i)=>({q, uid:-1, qi:i, unit:{cn: q.topic}}));
+}
+function startReal(){
+  realSession = {idx:0, order:REALEXAM.map((_,i)=>i), answers:[], finished:false};
+  view = {name:"real"};
+  nav(); render();
+}
+function realIntroHTML(){
+  return '<div class="card"><h1>🎯 真题演练</h1>'+
+  '<p class="sub">'+REALEXAM.length+' 道<b>真题风格</b>选择题，形式与难度对齐 AP Chemistry 正式考试（代码追踪为主、4 个选项）。逐题练习，答完立刻看解析。</p>'+
+  '<div class="callout warn"><span class="ico">⚠️</span><div>正式考试是 40 题 / 90 分钟，这里先热身。官方历年 FRQ 可在 College Board 官网 AP Central 免费下载。</div></div>'+
+  '<button class="btn" data-startreal>▶️ 开始演练</button></div>';
+}
+function realHTML(){
+  if(!realSession) return realIntroHTML();
+  if(realSession.finished) return realResultHTML();
+  const s = realSession;
+  const qi = s.order[s.idx];
+  const q = REALEXAM[qi];
+  const total = s.order.length;
+  const ans = s.answers[s.idx];
+  const answered = !!ans;
+  let opts = '';
+  if(q.options){
+    opts = '<div class="options">'+q.options.map((o,i)=>{
+      let cls="opt";
+      if(answered){ cls += " disabled"; if(i===q.answer) cls += " correct"; else if(i===ans.picked) cls += " wrong"; }
+      return '<button class="'+cls+'" data-realopt="'+i+'"><span class="ltr">'+"ABCD"[i]+'.</span><span>'+inline(o)+'</span></button>';
+    }).join("")+'</div>';
+  }
+  const explain = answered ? '<div class="explain '+(ans.correct?"good":"bad")+'"><b>'+(ans.correct?"✅ 正确":"❌ 错误")+'</b>'+inline(q.explain)+'</div>' : "";
+  const nextBtn = answered ? '<button class="btn" data-realnext>'+(s.idx<total-1?"下一题 →":"查看成绩 🎉")+'</button>' : "";
+  return '<div class="card"><div class="spread" style="margin-bottom:10px">'+
+  '<span class="q-meta">真题演练 · 第 '+(s.idx+1)+' / '+total+' 题 · '+inline(q.topic)+'</span>'+
+  '<button class="btn ghost sm" data-realexit>✕ 退出</button></div>'+
+  '<div class="q-text">'+inline(q.q)+'</div>'+
+  (q.code?'<div class="block-code">'+hl(q.code)+'</div>':"")+
+  opts + explain +
+  '<div style="margin-top:16px" class="row">'+nextBtn+'</div></div>';
+}
+function realAnswer(opt){
+  const s = realSession;
+  const qi = s.order[s.idx];
+  const q = REALEXAM[qi];
+  const correct = opt === q.answer;
+  s.answers[s.idx] = {picked:opt, correct};
+  if(correct){ addXP(8); toast("+8 XP ✅"); }
+  else { toast("看看解析 💪"); }
+  save(); render();
+}
+function realNext(){
+  const s = realSession;
+  if(s.idx < s.order.length-1){ s.idx++; render(); return; }
+  s.finished = true;
+  if(!state.realDone) state.realDone = 0;
+  state.realDone++;
+  save(); checkBadges();
+  render();
+}
+function realResultHTML(){
+  const s = realSession;
+  const total = s.order.length;
+  const correct = s.answers.filter(a=>a && a.correct).length;
+  const pct = Math.round(correct/total*100);
+  const wrong = [];
+  s.order.forEach((qi,i)=>{ if(!s.answers[i] || !s.answers[i].correct) wrong.push({q:REALEXAM[qi], i}); });
+  return '<div class="card"><h1>'+(pct>=80?"🏆 成绩不错！":"📊 演练完成")+'</h1>'+
+  '<p class="sub">答对 '+correct+' / '+total+' 题，正确率 <b style="font-size:22px">'+pct+'%</b></p>'+
+  '<div class="pbar'+(pct>=80?" good":"")+'" style="margin:14px 0"><i style="width:'+pct+'%"></i></div>'+
+  '<h2>错题回顾</h2>'+
+  (wrong.length===0 ? '<p class="sub">全部答对，太强了！👏</p>' :
+    wrong.map(w=> '<div style="margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:12px">'+
+      '<b>'+w.q.topic+'：</b>'+inline(w.q.q)+
+      (w.q.code?'<div class="block-code">'+hl(w.q.code)+'</div>':"")+
+      '<div class="muted" style="font-size:13px">你的答案：'+(s.answers[w.i]&&s.answers[w.i].picked!==undefined?"ABCD"[s.answers[w.i].picked]:"未作答")+' · 正确答案：'+"ABCD"[w.q.answer]+'</div>'+
+      '<div class="muted" style="font-size:13px">'+inline(w.q.explain)+'</div></div>').join("")
+  )+
+  '<div class="row" style="margin-top:16px"><button class="btn" data-startreal>🔁 再练一次</button>'+
+  '<button class="btn ghost" data-go="home">🏠 回首页</button></div></div>';
+}
+
+/* ================= 速查表 ================= */
+function cheatHTML(){
+  return '<div class="card"><h1>📋 速查表</h1><p class="sub">考前 10 分钟过一遍，专治“明明会但想不起来”。</p></div>'+
+  '<div class="card">'+renderBlocks(CHEATSHEET)+'</div>';
+}
+
+/* ================= 彩带 ================= */
+function confetti(){
+  const colors = ["#6366f1","#8b5cf6","#10b981","#f59e0b","#ef4444","#ec4899","#06b6d4"];
+  for(let i=0;i<90;i++){
+    const d=document.createElement("div");
+    d.className="confetti";
+    d.style.left=Math.random()*100+"vw";
+    d.style.width=(6+Math.random()*8)+"px";
+    d.style.height=(10+Math.random()*10)+"px";
+    d.style.background=colors[Math.floor(Math.random()*colors.length)];
+    d.style.animationDuration=(2.2+Math.random()*2)+"s";
+    d.style.animationDelay=(Math.random()*0.6)+"s";
+    d.style.borderRadius=Math.random()>0.5?"50%":"2px";
+    document.body.appendChild(d);
+    setTimeout(()=>d.remove(), 5000);
+  }
+}
+
+/* ================= 事件绑定 ================= */
+document.addEventListener("click", e=>{
+  const t = e.target;
+  const goBtn = t.closest("[data-go]");
+  if(goBtn){
+    if(goBtn.dataset.go==="unit"){ go("unit", {uid:+goBtn.dataset.uid, tab:"lesson"}); return; }
+    if(goBtn.dataset.go==="frq" && goBtn.dataset.fid){ go("frq", {id:+goBtn.dataset.fid}); return; }
+    if(goBtn.dataset.go==="random"){ view={name:"random"}; nav(); $("#main").innerHTML = randomHTML(); return; }
+    go(goBtn.dataset.go);
+    return;
+  }
+  const tabBtn = t.closest("[data-tab]");
+  if(tabBtn){ view.tab = tabBtn.dataset.tab; if(view.name==="unit") render(); return; }
+  const mark = t.closest("[data-markread]");
+  if(mark){
+    const uid = +mark.dataset.markread;
+    if(!state.lessonsRead[uid]){ state.lessonsRead[uid]=true; addXP(5); toast("+5 XP 完成学习 ✅"); save(); }
+    else { state.lessonsRead[uid]=false; save(); }
+    render(); return;
+  }
+  const opt = t.closest("[data-opt]");
+  if(opt){ answerQuestion(+opt.dataset.opt); return; }
+  const nx = t.closest("[data-next]");
+  if(nx){ nextQuestion(); return; }
+  const retry = t.closest("[data-retry]");
+  if(retry){ startQuiz(+retry.dataset.retry); view = {name:"unit", uid:+retry.dataset.retry, tab:"quiz"}; nav(); render(); return; }
+  const reveal = t.closest("[data-reveal]");
+  if(reveal){ revealFRQ(reveal.dataset.reveal); return; }
+  const frqdone = t.closest("[data-frqdone]");
+  if(frqdone){ const fid=+frqdone.dataset.frqdone; if(!state.frqDone[fid]){ state.frqDone[fid]=true; addXP(20); toast("🎉 完成一道 FRQ！+20 XP"); } save(); checkBadges(); render(); return; }
+  const se = t.closest("[data-startexam]");
+  if(se){ startExam(); return; }
+  const eo = t.closest("[data-examopt]");
+  if(eo){ examPick(+eo.dataset.examopt); return; }
+  const en = t.closest("[data-examnext]");
+  if(en){ examNext(); return; }
+  const ef = t.closest("[data-examfinish]");
+  if(ef){ finishExam(); return; }
+  const ro = t.closest("[data-randopt]");
+  if(ro){ answerRandom(+ro.dataset.randopt); return; }
+  const ex = t.closest("[data-export]");
+  if(ex){ exportData(); return; }
+  const im = t.closest("[data-import]");
+  if(im){ const inp = $("#importFile"); if(inp) inp.click(); return; }
+  const sr = t.closest("[data-startreal]");
+  if(sr){ startReal(); return; }
+  const rp = t.closest("[data-realopt]");
+  if(rp){ realAnswer(+rp.dataset.realopt); return; }
+  const rn = t.closest("[data-realnext]");
+  if(rn){ realNext(); return; }
+  const rx = t.closest("[data-realexit]");
+  if(rx){ go("home"); return; }
+  const bo = t.closest("[data-bankopt]");
+  if(bo){ bankAnswer(+bo.dataset.bankopt); return; }
+  const bn = t.closest("[data-banknext]");
+  if(bn){ bankNext(); return; }
+  const br = t.closest("[data-bankretry]");
+  if(br){ if(bankSession){ bankInit(bankSession.uid); render(); } return; }
+});
+document.addEventListener("change", e=>{
+  if(e.target && e.target.id === "importFile"){ importData(e.target.files && e.target.files[0]); }
+});
+
+/* 随机练习答题（简化版） */
+let randomCurrent = null;
+function answerRandom(opt){
+  if(!randomCurrent) return;
+  const pick = randomCurrent;
+  const key = gid(pick.uid, pick.qi);
+  const prev = state.q[key];
+  const correct = opt === pick.q.answer;
+  if(!prev){
+    if(correct){ addXP(10); state.q[key]={correct:true,ft:true,picked:opt}; toast("+10 XP 🎉"); }
+    else{ state.q[key]={correct:false,ft:false,picked:opt}; }
+  } else if(!prev.correct && correct){
+    addXP(4); state.q[key]={correct:true,ft:prev.ft,picked:opt}; toast("+4 XP ✅");
+  } else if(!prev.correct && !correct){
+    state.q[key]={correct:false,ft:false,picked:opt};
+  } else { state.q[key].picked=opt; }
+  save(); nav(); $("#main").innerHTML = randomHTML();
+}
+
+/* 随机练习：记录当前题目以便答题 */
+function randomHTML(){
+  const pool = flattenAll();
+  const pick = pool[Math.floor(Math.random()*pool.length)];
+  randomCurrent = pick;
+  const st = qStatus(pick.uid, pick.qi);
+  const answered = !!st;
+  return '<div class="card"><div class="spread" style="margin-bottom:10px">'+
+  '<span class="q-meta">🎲 随机练习 · 来自「'+pick.unit.cn+'」</span>'+
+  '<button class="btn ghost sm" data-go="unit" data-uid="'+pick.uid+'">去该单元 →</button></div>'+
+  '<div class="q-text">'+inline(pick.q.q)+'</div>'+
+  (pick.q.code?'<div class="block-code">'+hl(pick.q.code)+'</div>':"")+
+  '<div class="options">'+pick.q.options.map((o,i)=>{
+    let cls="opt"; if(answered){ cls+=" disabled"; if(i===pick.q.answer)cls+=" correct"; else if(i===st.picked)cls+=" wrong"; }
+    return '<button class="'+cls+'" data-randopt="'+i+'"><span class="ltr">'+"ABCD"[i]+'.</span><span>'+inline(o)+'</span></button>';
+  }).join("")+'</div>'+
+  (answered?'<div class="explain '+(st.correct?"good":"bad")+'"><b>'+(st.correct?"✅ 正确":"❌ 错误")+'</b>'+inline(pick.q.explain)+'</div>':"")+
+  '<div style="margin-top:14px" class="row">'+(answered?'<button class="btn" data-go="random">🎲 再来一题</button>':'')+
+  '<button class="btn ghost" data-go="home">🏠 回首页</button></div></div>';
+};
+
+/* ================= 进度备份 / 恢复 ================= */
+function exportData(){
+  try{
+    const data = JSON.stringify(state, null, 2);
+    const blob = new Blob([data], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "apcsa-progress-" + todayStr() + ".json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    toast("✅ 备份文件已下载");
+  }catch(e){ toast("❌ 导出失败：" + e.message); }
+}
+function importData(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    try{
+      const obj = JSON.parse(ev.target.result);
+      if(!obj || typeof obj !== "object" || (!("xp" in obj) && !("q" in obj))){ toast("❌ 这不是有效的备份文件"); return; }
+      state = obj;
+      if(!state.q) state.q = {};
+      if(!state.lessonsRead) state.lessonsRead = {};
+      if(!state.quizDone) state.quizDone = {};
+      if(!state.frqDone) state.frqDone = {};
+      if(!state.badges) state.badges = [];
+      if(state.examBest === undefined) state.examBest = null;
+      if(!state.examAttempts) state.examAttempts = 0;
+      save();
+      go("home");
+      toast("✅ 进度已恢复");
+    }catch(e){ toast("❌ 备份文件解析失败"); }
+  };
+  reader.readAsText(file);
+}
+
+/* ================= 成就馆 ================= */
+function awardsHTML(){
+  const lv = level();
+  const lvTitle = levelTitle();
+  const curXp = state.xp;
+  const need = 150;
+  const into = curXp - (lv-1)*need;
+  const pct = Math.min(100, Math.round(into/need*100));
+  const ladder = LEVEL_TITLES.map((t,i)=>{
+    const tl = i+1;
+    let bg="transparent", bd="var(--line)";
+    if(tl<lv){ bg="var(--good-soft)"; bd="var(--good)"; }
+    if(tl===lv){ bg="var(--accent-soft)"; bd="var(--accent)"; }
+    return '<div style="display:flex;align-items:center;gap:12px;padding:8px 14px;border-radius:12px;border:1px solid '+bd+';background:'+bg+';font-size:14px;'+(tl===lv?'font-weight:700;':'')+'">'+
+      '<span style="font-weight:700;min-width:50px;color:'+(tl<=lv?'var(--accent)':'var(--soft)')+'">Lv.'+tl+'</span>'+
+      '<span>'+t+'</span>'+(tl===lv?'<span style="margin-left:auto;font-size:12px;color:var(--accent);font-weight:700">👈 当前</span>':(tl<lv?'<span style="margin-left:auto;font-size:12px;color:var(--good)">已解锁</span>':'<span style="margin-left:auto;font-size:12px;color:var(--soft)">🔒</span>'))+'</div>';
+  }).join("");
+  const badgesHTML = BADGES.map(b=>{
+    const e = state.badges.includes(b.id);
+    return '<div class="badge'+(e?" earned":"")+'"><span class="b-ico">'+b.ico+'</span><b>'+b.name+'</b><span class="muted">'+(e?b.desc:'🔒 '+b.desc)+'</span></div>';
+  }).join("");
+  const earnedCount = BADGES.filter(b=>state.badges.includes(b.id)).length;
+  const nextInfo = lv < LEVEL_TITLES.length ? ('Lv.'+(lv+1)+' · '+LEVEL_TITLES[lv]) : '已满级';
+  const remain = lv < LEVEL_TITLES.length ? (need - into) : 0;
+  return '<div class="card"><h1>🏆 成就馆</h1>'+
+  '<div class="spread"><div><div class="sub">当前等级</div><div style="font-size:42px;font-weight:800;line-height:1.1">Lv.'+lv+' · '+lvTitle+'</div></div>'+
+  '<div style="text-align:right"><div class="muted" style="font-size:13px">累计积分</div><div style="font-size:24px;font-weight:700">'+curXp+' XP</div></div></div>'+
+  '<div class="pbar" style="margin:16px 0"><i style="width:'+pct+'%"></i></div>'+
+  '<div class="muted" style="font-size:13px">下一级 '+nextInfo+(lv<LEVEL_TITLES.length?' · 还差 '+remain+' XP':'')+'</div></div>'+
+  '<div class="card"><h2 style="margin-top:0">👑 称号阶梯</h2><p class="sub">每升一级解锁一个新称号，看看你能走到多远。</p>'+
+  '<div style="display:flex;flex-direction:column;gap:6px;margin-top:12px">'+ladder+'</div></div>'+
+  '<div class="card"><div class="spread"><h2 style="margin:0">🎖️ 勋章墙</h2><span class="muted">已获得 '+earnedCount+' / '+BADGES.length+'</span></div>'+
+  '<div class="badges" style="margin-top:12px">'+badgesHTML+'</div></div>';
+}
+
+/* ================= 交互式演示（化学） ================= */
+const DEMOS = {
+  bohr: {
+    title: "Build an Atom · 原子模型",
+    note: "Drag the atomic number Z. Protons (p⁺) and electrons (e⁻) both equal Z; electrons fill shells 2, 8, 8... The configuration follows the Aufbau order (1s → 2s → 2p → 3s → 3p → 4s).",
+    controls: [
+      {id:"z", label:"Atomic Number Z (原子序数)", min:1, max:20, step:1, value:6},
+    ],
+  },
+  ionic: {
+    title: "Ionic Bonding · 离子键（电子转移）",
+    note: "Na has 1 outer electron; Cl needs 1. Drag the slider: Na loses its outer electron (becomes Na⁺) while Cl gains it (becomes Cl⁻). The ions then attract → NaCl.",
+    controls: [
+      {id:"t", label:"Electron Transfer (电子转移)", min:0, max:100, step:5, value:0},
+    ],
+  },
+};
+
+const ELEMENTS = ["H","He","Li","Be","B","C","N","O","F","Ne","Na","Mg","Al","Si","P","S","Cl","Ar","K","Ca"];
+const MASSES = [1,4,7,9,11,12,14,16,19,20,23,24,27,28,31,32,35,40,39,40];
+
+function shellCounts(Z){
+  const caps = [2,8,8,2];
+  let rem = Z, out = [];
+  for(const cap of caps){ if(rem<=0) break; const n = Math.min(cap, rem); out.push(n); rem -= n; }
+  return out;
+}
+function supNum(n){ const m={1:"¹",2:"²",3:"³",4:"⁴",5:"⁵",6:"⁶",7:"⁷",8:"⁸",9:"⁹"}; return m[n]||String(n); }
+function configFor(Z){
+  const order = [["1s",2],["2s",2],["2p",6],["3s",2],["3p",6],["4s",2]];
+  let rem = Z, parts = [];
+  for(const [orb,cap] of order){ if(rem<=0) break; const n = Math.min(cap, rem); parts.push(orb+supNum(n)); rem -= n; }
+  return parts.join(" ");
+}
+
+function bohrSVG(p){
+  const Z = Math.max(1, Math.min(20, Math.round(p.z)));
+  const W = 420, H = 300, cx = W/2, cy = H/2;
+  const el = ELEMENTS[Z-1], mass = MASSES[Z-1], neutrons = Math.round(mass) - Z;
+  const shells = shellCounts(Z);
+  let s = '';
+  const maxR = 128;
+  for(let i=0;i<shells.length;i++){
+    const r = 34 + i * ((maxR-34)/Math.max(1, shells.length-1 || 1));
+    s += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="#dfe4ef" stroke-width="1.2"/>';
+  }
+  s += '<circle cx="'+cx+'" cy="'+cy+'" r="20" fill="#5e5ce6"/>';
+  s += '<text x="'+cx+'" y="'+(cy+5)+'" text-anchor="middle" fill="#fff" font-size="14" font-weight="800">'+el+'</text>';
+  for(let i=0;i<shells.length;i++){
+    const r = 34 + i * ((maxR-34)/Math.max(1, shells.length-1 || 1));
+    const n = shells[i];
+    for(let k=0;k<n;k++){
+      const a = (2*Math.PI*k)/n - Math.PI/2;
+      const ex = cx + r*Math.cos(a), ey = cy + r*Math.sin(a);
+      s += '<circle cx="'+ex.toFixed(1)+'" cy="'+ey.toFixed(1)+'" r="3.2" fill="#0a84ff"/>';
+    }
+  }
+  s += '<text x="'+cx+'" y="16" text-anchor="middle" fill="#333" font-size="13" font-weight="700">Z = '+Z+'　'+el+'　p⁺ '+Z+'　n⁰ '+neutrons+'　e⁻ '+Z+'</text>';
+  s += '<text x="'+cx+'" y="'+(H-8)+'" text-anchor="middle" fill="#5e5ce6" font-size="12" font-weight="600">'+configFor(Z)+'</text>';
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;background:#fbfcff;border-radius:12px">'+s+'</svg>';
+}
+
+function ionicSVG(p){
+  const t = Math.max(0, Math.min(100, p.t)) / 100;
+  const W = 460, H = 300, cy = 150;
+  const naX = 120, clX = 340;
+  let s = '';
+  // Na atom
+  s += '<circle cx="'+naX+'" cy="'+cy+'" r="46" fill="#eef4ff" stroke="#9bb6ff" stroke-width="1.5"/>';
+  s += '<circle cx="'+naX+'" cy="'+cy+'" r="7" fill="#ff9500"/>';
+  s += '<text x="'+naX+'" y="'+(cy-58)+'" text-anchor="middle" fill="#0a84ff" font-size="14" font-weight="700">Na</text>';
+  // Na outer electron (the one that transfers)
+  const eX = naX + 46, eY = cy;
+  // Cl atom
+  s += '<circle cx="'+clX+'" cy="'+cy+'" r="46" fill="#eef4ff" stroke="#9bb6ff" stroke-width="1.5"/>';
+  s += '<circle cx="'+clX+'" cy="'+cy+'" r="7" fill="#34c759"/>';
+  s += '<text x="'+clX+'" y="'+(cy-58)+'" text-anchor="middle" fill="#0a84ff" font-size="14" font-weight="700">Cl</text>';
+  // moving electron
+  const mx = eX + (clX - 46 - eX) * t;
+  s += '<circle cx="'+mx.toFixed(1)+'" cy="'+cy+'" r="4" fill="#ff3b30"/>';
+  s += '<text x="'+naX+'" y="'+(cy+64)+'" text-anchor="middle" fill="'+(t>0.5?'#1a9d5c':'#888')+'" font-size="12" font-weight="700">'+(t>0.5?'Na⁺':'Na')+'</text>';
+  s += '<text x="'+clX+'" y="'+(cy+64)+'" text-anchor="middle" fill="'+(t>0.5?'#1a9d5c':'#888')+'" font-size="12" font-weight="700">'+(t>0.5?'Cl⁻':'Cl')+'</text>';
+  s += '<text x="'+(W/2)+'" y="'+(H-14)+'" text-anchor="middle" fill="#5e5ce6" font-size="12" font-weight="600">'+
+    (t>0.5 ? 'Na⁺ + Cl⁻ → NaCl (ions attract · 离子相互吸引)' : 'Drag to move one electron from Na to Cl · 拖动把电子从 Na 转移到 Cl')+'</text>';
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;background:#fbfcff;border-radius:12px">'+s+'</svg>';
+}
+
+function demoDraw(type, p){
+  if(type==="bohr") return bohrSVG(p);
+  if(type==="ionic") return ionicSVG(p);
+  return "";
+}
+function renderDemo(type){
+  const def = DEMOS[type];
+  if(!def) return "";
+  const p = {};
+  def.controls.forEach(c => p[c.id] = c.value);
+  const svg = demoDraw(type, p);
+  const controls = def.controls.map(c =>
+    '<label class="demo-ctl"><span>'+c.label+'：<b id="dv-'+type+'-'+c.id+'">'+c.value+'</b></span>'+
+    '<input type="range" data-demoslider="'+type+'" data-param="'+c.id+'" min="'+c.min+'" max="'+c.max+'" step="'+c.step+'" value="'+c.value+'"></label>'
+  ).join("");
+  return '<div class="demo"><div class="demo-title">'+def.title+'</div>'+
+    '<div class="demo-svg" id="demo-svg-'+type+'">'+svg+'</div>'+
+    '<div class="demo-controls">'+controls+'</div>'+
+    '<div class="demo-note">'+def.note+'</div></div>';
+}
+function demoRefresh(type){
+  const def = DEMOS[type];
+  if(!def) return;
+  const p = {};
+  def.controls.forEach(c => {
+    const inp = document.querySelector('[data-demoslider="'+type+'"][data-param="'+c.id+'"]');
+    p[c.id] = inp ? parseFloat(inp.value) : c.value;
+    const lab = document.getElementById('dv-'+type+'-'+c.id);
+    if(lab) lab.textContent = p[c.id];
+  });
+  const box = document.getElementById('demo-svg-'+type);
+  if(box) box.innerHTML = demoDraw(type, p);
+}
+document.addEventListener("input", e=>{
+  const s = e.target && e.target.closest ? e.target.closest("[data-demoslider]") : null;
+  if(s){ demoRefresh(s.dataset.demoslider); }
+});
+
+function renderVideo(b){
+  const links = (b.links||[]).map(l =>
+    '<a class="video-link" href="'+l.url+'" target="_blank" rel="noopener">'+
+    '<span class="video-ico">'+(l.site==="YouTube"?"▶️":"📺")+'</span>'+
+    '<span class="video-txt"><b>'+l.site+'</b> · '+l.label+'</span><span class="video-arrow">↗</span></a>'
+  ).join("");
+  return '<div class="video-block"><div class="video-title">🎬 '+(b.title||"Recommended Videos · 推荐视频")+'</div>'+links+'</div>';
+}
+
+
+/* ================= Unit Exam Bank (真题强化) ================= */
+function bankList(uid){ return BANK.filter(q=>q.unit===uid); }
+function bankCount(uid){ return bankList(uid).length; }
+let bankSession = null;
+function bankInit(uid){ bankSession = {uid:uid, idx:0, answers:[], finished:false}; }
+function bankHTML(u){
+  const list = bankList(u.id);
+  if(list.length===0) return '<div class="card"><p class="sub">No exam questions for this unit yet. · 本单元暂无真题。</p></div>';
+  if(!bankSession || bankSession.uid!==u.id){ bankInit(u.id); }
+  const s = bankSession;
+  if(s.finished) return bankResultHTML(u);
+  const q = list[s.idx];
+  const total = list.length;
+  const ans = s.answers[s.idx];
+  const answered = !!ans;
+  let opts = '';
+  if(q.options){
+    opts = '<div class="options">'+q.options.map((o,i)=>{
+      let cls="opt";
+      if(answered){ cls+=" disabled"; if(i===q.answer) cls+=" correct"; else if(i===ans.picked) cls+=" wrong"; }
+      return '<button class="'+cls+'" data-bankopt="'+i+'"><span class="ltr">'+"ABCD"[i]+'.</span><span>'+inline(o)+'</span></button>';
+    }).join("")+'</div>';
+  }
+  const explain = answered ? '<div class="explain '+(ans.correct?"good":"bad")+'"><b>'+(ans.correct?"✅ Correct · 正确":"❌ Try again · 再想想")+'</b>'+inline(q.explain)+'</div>' : "";
+  const nextBtn = answered ? '<button class="btn" data-banknext>'+(s.idx<total-1?"Next · 下一题 →":"See result · 查看成绩 🎉")+'</button>' : "";
+  return '<div class="card"><div class="spread" style="margin-bottom:10px">'+
+  '<span class="q-meta">🎯 Exam Practice · '+inline(q.topic||"")+' · '+(s.idx+1)+' / '+total+'</span>'+
+  '<span class="muted" style="font-size:13px">已答 '+s.answers.filter(a=>a).length+' / '+total+'</span></div>'+
+  '<div class="q-text">'+inline(q.q)+'</div>'+
+  (q.code?'<div class="block-code">'+hl(q.code)+'</div>':"")+
+  opts + explain +
+  '<div style="margin-top:16px" class="row">'+nextBtn+'</div></div>';
+}
+function bankResultHTML(u){
+  const list = bankList(u.id);
+  const s = bankSession;
+  const correct = s.answers.filter(a=>a&&a.correct).length;
+  const pct = Math.round(correct/list.length*100);
+  return '<div class="card"><h2 style="margin-top:0">🎯 Exam Practice Complete · 真题强化完成</h2>'+
+  '<p class="sub">Correct · 答对：<b>'+correct+' / '+list.length+'</b>（'+pct+'%）</p>'+
+  '<div class="pbar'+(pct>=80?" good":"")+'" style="margin:12px 0"><i style="width:'+pct+'%"></i></div>'+
+  '<div class="row"><button class="btn" data-bankretry>🔁 Retry · 再来一次</button>'+
+  '<button class="btn ghost" data-tab="lesson">📖 Review lesson · 复习知识点</button></div></div>';
+}
+function bankAnswer(opt){
+  const s = bankSession;
+  if(!s || s.answers[s.idx]) return;
+  const q = bankList(s.uid)[s.idx];
+  const correct = opt === q.answer;
+  s.answers[s.idx] = {picked:opt, correct:correct};
+  if(correct){ addXP(8); toast("+8 XP ✅"); }
+  else { toast("Keep going 💪"); }
+  save(); render();
+}
+function bankNext(){
+  const s = bankSession;
+  const list = bankList(s.uid);
+  if(s.idx < list.length-1){ s.idx++; render(); return; }
+  s.finished = true;
+  render();
+}
+
+
+/* ================= 启动 ================= */
+function init(){
+  updateStreak();
+  // 兼容旧状态字段
+  if(!state.q) state.q={};
+  if(!state.lessonsRead) state.lessonsRead={};
+  if(!state.quizDone) state.quizDone={};
+  if(!state.frqDone) state.frqDone={};
+  if(state.badges===undefined) state.badges=[];
+  save();
+  nav(); render(); checkBadges();
+}
+init();
+</script>
+</body>
+</html>
