@@ -1398,26 +1398,26 @@ function expSVG(p){
 
 function ppcSVG(p){
   const W=420, H=300, L=48, R=16, T=22, B=42;
-  const g=p.growth, max=10*g;
-  const X=x=>L+(x/(max*1.2))*(W-L-R);
-  const Y=y=>H-B-(y/(max*1.2))*(H-T-B);
+  const g=p.growth, curveMax=10*g, axisMax=16;
+  const X=x=>L+(x/axisMax)*(W-L-R);
+  const Y=y=>H-B-(y/axisMax)*(H-T-B);
   let s='';
-  s+='<line x1="'+L+'" y1="'+Y(0)+'" x2="'+X(max*1.15)+'" y2="'+Y(0)+'" stroke="#b6bcc8" stroke-width="1.5"/>';
-  s+='<line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(0)+'" y2="'+Y(max*1.15)+'" stroke="#b6bcc8" stroke-width="1.5"/>';
+  s+='<line x1="'+L+'" y1="'+Y(0)+'" x2="'+X(axisMax)+'" y2="'+Y(0)+'" stroke="#b6bcc8" stroke-width="1.5"/>';
+  s+='<line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(0)+'" y2="'+Y(axisMax)+'" stroke="#b6bcc8" stroke-width="1.5"/>';
   let d='';
-  for(let i=0;i<=120;i++){ const x=max*i/120; const y=max*Math.sqrt(1-Math.pow(x/max,2)); d+=(i?' L':'M')+X(x).toFixed(1)+' '+Y(y).toFixed(1); }
+  for(let i=0;i<=120;i++){ const x=curveMax*i/120; const y=curveMax*Math.sqrt(1-Math.pow(x/curveMax,2)); d+=(i?' L':'M')+X(x).toFixed(1)+' '+Y(y).toFixed(1); }
   s+='<path d="'+d+'" fill="none" stroke="#f59e0b" stroke-width="2.8" stroke-linejoin="round"/>';
-  let ex=0.5*max, ey=max*Math.sqrt(1-0.25);
+  let ex=0.5*curveMax, ey=curveMax*Math.sqrt(1-0.25);
   s+='<circle cx="'+X(ex)+'" cy="'+Y(ey)+'" r="4" fill="#34c759"/>';
   s+='<text x="'+X(ex)+'" y="'+Y(ey)+'" fill="#1a9d5c" font-size="11" dx="8" dy="-6">Efficient</text>';
-  let ix=0.4*max, iy=0.4*max;
+  let ix=0.4*curveMax, iy=0.4*curveMax;
   s+='<circle cx="'+X(ix)+'" cy="'+Y(iy)+'" r="4" fill="#ff9500"/>';
   s+='<text x="'+X(ix)+'" y="'+Y(iy)+'" fill="#c76e00" font-size="11" dx="8" dy="16">Inefficient</text>';
-  let ux=0.85*max, uy=0.85*max;
+  let ux=0.85*curveMax, uy=0.85*curveMax;
   s+='<circle cx="'+X(ux)+'" cy="'+Y(uy)+'" r="4" fill="#ff3b30"/>';
   s+='<text x="'+X(ux)+'" y="'+Y(uy)+'" fill="#c40000" font-size="11" dx="8" dy="-6">Unattainable</text>';
-  s+='<text x="'+X(max)+'" y="'+Y(0)+'" fill="#9aa0aa" font-size="11" dy="16">Good A</text>';
-  s+='<text x="'+X(0)+'" y="'+Y(max)+'" fill="#9aa0aa" font-size="11" dx="-34" dy="-4">Good B</text>';
+  s+='<text x="'+X(axisMax)+'" y="'+Y(0)+'" fill="#9aa0aa" font-size="11" dy="16">Good A</text>';
+  s+='<text x="'+X(0)+'" y="'+Y(axisMax)+'" fill="#9aa0aa" font-size="11" dx="-34" dy="-4">Good B</text>';
   return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;background:#fbfcff;border-radius:12px">'+s+'</svg>';
 }
 
